@@ -17,20 +17,25 @@
 # Debugger Files
 *.pdb
 
-# Compiled Dynamic libraries
+# Compiled Dynamic libraries (except in ThirdParty)
 *.so
 *.dylib
 *.dll
+!Engine/Source/ThirdParty/**/*.dll
+!Engine/Source/ThirdParty/**/*.so
+!Engine/Source/ThirdParty/**/*.dylib
 
 # Fortran module files
 *.mod
 *.smod
 
-# Compiled Static libraries
+# Compiled Static libraries (except in ThirdParty)
 *.lai
 *.la
 *.a
 *.lib
+!Engine/Source/ThirdParty/**/*.a
+!Engine/Source/ThirdParty/**/*.lib
 
 # Executables
 *.exe
@@ -39,3 +44,15 @@
 
 # debug information files
 *.dwo
+
+# Build directories
+cmake-build-*/
+build/
+out/
+
+# IDE files
+.idea/
+.vs/
+*.vcxproj
+*.vcxproj.filters
+*.sln
