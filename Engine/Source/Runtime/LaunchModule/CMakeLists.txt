@@ -4,7 +4,7 @@ add_executable(LaunchModule
 
 target_link_libraries(LaunchModule
         PRIVATE
-            EventBusModule
+        EngineBusesModule
 )
 
 target_include_directories(LaunchModule
@@ -24,6 +24,3 @@ set_target_properties(LaunchModule PROPERTIES
         CXX_STANDARD 20
         CXX_STANDARD_REQUIRED ON
 )
-
-
-

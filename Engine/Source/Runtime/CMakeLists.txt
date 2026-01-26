@@ -1,7 +1,5 @@
 add_subdirectory(WindowProviderModule)
-add_subdirectory(EventBusModule)
+add_subdirectory(EventBusCoreModule)
 add_subdirectory(DelegateModule)
 add_subdirectory(LaunchModule)
-
-
-
+add_subdirectory(EngineBusesModule)
