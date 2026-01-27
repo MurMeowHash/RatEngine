@@ -1,5 +1,12 @@
 add_library(DelegateModule INTERFACE)
 
+target_sources(DelegateModule
+        PUBLIC
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IDelegate.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/ObjectDelegate.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/StaticDelegate.h
+)
+
 target_include_directories(DelegateModule
         INTERFACE
             ${CMAKE_CURRENT_SOURCE_DIR}/Public

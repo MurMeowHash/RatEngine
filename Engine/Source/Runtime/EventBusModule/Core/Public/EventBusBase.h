@@ -11,7 +11,7 @@ template<typename TEventBase>
 class EventBusBase {
 public:
     template<typename TEvent> requires(std::is_base_of_v<TEventBase, TEvent>)
-    void Publish(const TEvent& event) {
+    void Publish(const TEvent& event) const {
         auto eventHandlers = m_listeners.find(typeid(TEvent));
         if(eventHandlers == m_listeners.end())
             return;
