@@ -7,5 +7,5 @@ namespace Rat::Core {
         Warning = 2
     };
 
-    bool g_isEngineQuitRequested = false;
+    extern bool g_isEngineQuitRequested;
 }

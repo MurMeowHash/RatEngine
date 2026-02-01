@@ -1,4 +1,5 @@
 #include "../Public/GlfwProvider/GlfwWindowProvider.h"
+#include "GLFW/glfw3.h"
 
 Rat::WindowProviderModule::ExecResult GlfwWindowProvider::CreateMainWindow(const WindowCreateInfo& windowCreateInfo) {
     if(!m_isInitialized) {

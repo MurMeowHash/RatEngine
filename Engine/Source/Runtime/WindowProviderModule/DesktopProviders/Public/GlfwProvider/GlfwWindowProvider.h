@@ -1,7 +1,8 @@
 #pragma once
 
 #include "IWindowProvider.h"
-#include "GLFW/glfw3.h"
+
+class GLFWwindow;
 
 class GlfwWindowProvider : IWindowProvider {
 public:

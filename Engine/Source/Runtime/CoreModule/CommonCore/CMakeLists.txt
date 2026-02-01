@@ -11,6 +11,7 @@ target_sources(CoreModule.Common
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ProjectSettings/ProjectSettings.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ProjectSettings/HardCodedProjectSettingsInitializer.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/CoreGlobals.cpp
 )
 
 target_include_directories(CoreModule.Common

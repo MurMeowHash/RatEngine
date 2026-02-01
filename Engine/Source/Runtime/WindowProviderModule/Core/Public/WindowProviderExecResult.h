@@ -9,14 +9,7 @@ namespace Rat::WindowProviderModule {
         PlatformNotSupported = 4,
     };
 
-    static const char* g_resultDescriptions[] = {
-            "Success",
-            "Failed to initialize windowing API",
-            "Failed to create window",
-            "Window already exists"
-    };
+    extern const char* g_resultDescriptions[5];
 
-    const char* GetErrorDescription(ExecResult execResult) {
-        return g_resultDescriptions[static_cast<int>(execResult)];
-    }
+    extern const char* GetErrorDescription(ExecResult execResult);
 }
