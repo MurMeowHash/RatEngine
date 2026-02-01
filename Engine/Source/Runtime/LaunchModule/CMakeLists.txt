@@ -4,11 +4,7 @@ add_executable(LaunchModule
 
 target_link_libraries(LaunchModule
         PRIVATE
-        InjectionModule.Core
-        InjectionModule.Engine
-        DebugModule
-        EventBusModule.Core
-        EventBusModule.Engine
+        EngineLoopModule
 )
 
 target_include_directories(LaunchModule

@@ -19,6 +19,8 @@ target_link_libraries(InjectionModule.Engine
         InjectionModule.Core
         DebugModule
         EventBusModule.Engine
+        CoreModule.Installation
+        WindowProviderModule.Installation
 )
 
 if(MSVC)
