@@ -16,7 +16,7 @@ target_include_directories(EngineLoopModule
 )
 
 target_link_libraries(EngineLoopModule
-        PUBLIC
+        PRIVATE
         InjectionModule.Core
         InjectionModule.Engine
         EventBusModule.Core

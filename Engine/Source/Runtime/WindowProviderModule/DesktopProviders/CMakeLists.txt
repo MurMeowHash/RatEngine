@@ -18,6 +18,7 @@ target_link_libraries(WindowProviderModule.Desktop
         PRIVATE
             glfw3
             WindowProviderModule.Core
+            CoreModule.Common
 )
 
 if(MSVC)

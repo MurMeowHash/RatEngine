@@ -1,8 +1,15 @@
 #include "../Public/CoreLoop.h"
 #include "CoreUtils.h"
+#include "IWindowProvider.h"
+#include "EngineDependencyContext.h"
+#include "EngineCoreEventBus.h"
+#include "ProjectSettings/ProjectSettings.h"
+#include "ProjectSettings/IProjectSettingsInitializer.h"
+#include "ILogger.h"
 
 Rat::Core::ErrorSeverity CoreLoop::Initialize() {
-    m_engineDependencyContext.OpenContext();
+    m_engineDependencyContext = new EngineDependencyContext;
+    m_engineDependencyContext->OpenContext();
     AcquireNeededDependencies();
 
     m_projectSettingsInitializer->Initialize();
@@ -21,7 +28,7 @@ Rat::Core::ErrorSeverity CoreLoop::Initialize() {
 Rat::Core::ErrorSeverity CoreLoop::Tick() {
     Rat::Core::ErrorSeverity errorSeverity = Rat::Core::ErrorSeverity::Success;
 
-
+    m_windowProvider->Tick();
 
     return errorSeverity;
 }
@@ -29,12 +36,13 @@ Rat::Core::ErrorSeverity CoreLoop::Tick() {
 Rat::Core::ErrorSeverity CoreLoop::Exit() {
     Rat::Core::ErrorSeverity errorSeverity = Rat::Core::ErrorSeverity::Success;
     m_windowProvider->Shutdown();
-    m_engineDependencyContext.CloseContext();
+    m_engineDependencyContext->CloseContext();
+    delete m_engineDependencyContext;
     return errorSeverity;
 }
 
 void CoreLoop::AcquireNeededDependencies() {
-    const DiContainer& diContainer = m_engineDependencyContext.GetContainer();
+    const DiContainer& diContainer = m_engineDependencyContext->GetContainer();
     m_windowProvider = diContainer.Resolve<IWindowProvider>();
     m_engineCoreEventBus = diContainer.Resolve<EngineCoreEventBus>();
     m_projectSettings = diContainer.Resolve<ProjectSettings>();

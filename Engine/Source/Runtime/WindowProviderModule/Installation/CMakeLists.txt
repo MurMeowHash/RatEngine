@@ -18,6 +18,7 @@ target_link_libraries(WindowProviderModule.Installation
         PRIVATE
             InjectionModule.Core
             WindowProviderModule.Core
+            CoreModule.Common
 )
 
 if(WIN32 OR APPLE OR UNIX)

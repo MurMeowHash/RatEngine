@@ -1,12 +1,13 @@
 #pragma once
 
 #include "IEngineLoop.h"
-#include "IWindowProvider.h"
-#include "EngineDependencyContext.h"
-#include "EngineCoreEventBus.h"
-#include "ProjectSettings/ProjectSettings.h"
-#include "ProjectSettings/IProjectSettingsInitializer.h"
-#include "ILogger.h"
+
+class IWindowProvider;
+class EngineCoreEventBus;
+class ProjectSettings;
+class IProjectSettingsInitializer;
+class ILogger;
+class EngineDependencyContext;
 
 class CoreLoop : IEngineLoop {
 public:
@@ -19,7 +20,7 @@ private:
     ProjectSettings* m_projectSettings;
     IProjectSettingsInitializer* m_projectSettingsInitializer;
     ILogger* m_logger;
-    EngineDependencyContext m_engineDependencyContext;
+    EngineDependencyContext* m_engineDependencyContext;
 
     void AcquireNeededDependencies();
     Rat::Core::ErrorSeverity CreateMainWindow();

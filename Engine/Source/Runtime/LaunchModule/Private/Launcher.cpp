@@ -3,7 +3,13 @@
 CoreLoop g_coreLoop;
 
 int main() {
-    g_coreLoop.Initialize();
+    Rat::Core::ErrorSeverity errorSeverity;
+    errorSeverity = g_coreLoop.Initialize();
+
+    while(!Rat::Core::g_isEngineQuitRequested && errorSeverity != Rat::Core::ErrorSeverity::Fatal) {
+        errorSeverity = g_coreLoop.Tick();
+    }
+
     g_coreLoop.Exit();
     return 0;
 }

@@ -1,5 +1,9 @@
 #include "../Public/GlfwProvider/GlfwWindowProvider.h"
 #include "GLFW/glfw3.h"
+#include "PlatformInteractors/IPlatformInteractor.h"
+
+GlfwWindowProvider::GlfwWindowProvider(IPlatformInteractor *platformInteractor)
+: m_platformInteractor(platformInteractor) {}
 
 Rat::WindowProviderModule::ExecResult GlfwWindowProvider::CreateMainWindow(const WindowCreateInfo& windowCreateInfo) {
     if(!m_isInitialized) {
@@ -30,6 +34,9 @@ Rat::WindowProviderModule::ExecResult GlfwWindowProvider::CreateMainWindow(const
 
 void GlfwWindowProvider::Tick() {
     glfwPollEvents();
+
+    if(glfwWindowShouldClose(m_mainWindow))
+        m_platformInteractor->RequestQuit(false);
 }
 
 void GlfwWindowProvider::Shutdown() {
