@@ -22,3 +22,6 @@ if(WIN32 OR APPLE OR UNIX)
 else()
     add_subdirectory(WindowProviderModule/MockProvider)
 endif()
+
+add_subdirectory(RenderProviderModule/Core)
+add_subdirectory(RenderProviderModule/Vulkan)

@@ -8,10 +8,12 @@ target_sources(CoreModule.Common
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/CoreUtils.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/CoreGlobals.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/PlatformInteractors/IPlatformInteractor.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Application/Application.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ProjectSettings/ProjectSettings.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ProjectSettings/HardCodedProjectSettingsInitializer.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/CoreGlobals.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Application/Application.cpp
 )
 
 target_include_directories(CoreModule.Common

@@ -8,6 +8,9 @@ struct WindowSettings {
 
 struct GeneralSettings {
     const char* m_projectTitle;
+    int m_versionMajor;
+    int m_versionMinor;
+    int m_versionPatch;
 };
 
 class ProjectSettings {
