@@ -3,6 +3,7 @@ add_library(RenderProviderModule.Core INTERFACE)
 target_sources(RenderProviderModule.Core
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/IRenderProvider.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderProviderExecResult.h
 )
 
 target_include_directories(RenderProviderModule.Core

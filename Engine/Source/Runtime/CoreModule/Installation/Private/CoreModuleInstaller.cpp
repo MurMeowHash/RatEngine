@@ -3,6 +3,7 @@
 #include "ProjectSettings/IProjectSettingsInitializer.h"
 #include "ProjectSettings/HardCodedProjectSettingsInitializer.h"
 #include "Application/Application.h"
+#include "BuildSettings/BuildSettings.h"
 
 #if defined(__WIN32)
 #include "PlatformInteractors/WindowsPlatformInteractor.h"
@@ -16,6 +17,7 @@ void CoreModuleInstaller::InstallBindings(DiContainer &diContainer) const {
         return new HardCodedProjectSettingsInitializer(diContainer.Resolve<ProjectSettings>());
     }, std::vector<std::type_index>{typeid(ProjectSettings)}));
     diContainer.Bind<Application>(ClientBinding([](){return new Application();}));
+    diContainer.Bind<BuildSettings>(ClientBinding([](){return new BuildSettings();}));
 
 #if defined(__WIN32)
     diContainer.Bind<IPlatformInteractor>(ClientBinding([](){return new WindowsPlatformInteractor();}));

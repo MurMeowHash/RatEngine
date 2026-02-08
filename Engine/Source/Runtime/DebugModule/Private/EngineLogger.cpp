@@ -15,3 +15,7 @@ void EngineLogger::PrintWarning(const std::string &msg) const {
 void EngineLogger::PrintMsg(const std::string &msg) const {
     *m_outputStream << msg;
 }
+
+void EngineLogger::PrintInfo(const std::string &msg) const {
+    PrintMsg(msg);
+}

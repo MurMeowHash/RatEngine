@@ -7,12 +7,18 @@ struct VulkanApiVersion {
     int m_versionPatch;
 };
 
+struct VulkanSettings {
+    VulkanApiVersion m_apiVersion;
+    bool m_validationEnabled;
+};
+
 struct ApplicationVersion {
     int m_engineVersionMajor;
     int m_engineVersionMinor;
     int m_engineVersionPatch;
 };
 
+//TODO: lacks initialization
 class Application {
 public:
     [[nodiscard]] const char* GetEngineName() const { return m_engineName; }
