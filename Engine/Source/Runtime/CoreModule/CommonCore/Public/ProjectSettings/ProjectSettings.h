@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 struct WindowSettings {
     int m_windowWidth;
     int m_windowHeight;

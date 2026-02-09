@@ -5,6 +5,7 @@ namespace Rat::RenderProviderModule {
         Success = 0,
         IncompatibleDriver = 1,
         UnknownFailure = 2,
-        DebugCreationFailed = 3
+        DebugCreationFailed = 3,
+        APINotSupported = 4
     };
 }

@@ -24,4 +24,10 @@ else()
 endif()
 
 add_subdirectory(RenderProviderModule/Core)
-add_subdirectory(RenderProviderModule/Vulkan)
+add_subdirectory(RenderProviderModule/Installation)
+
+if(WIN32 OR APPLE OR UNIX)
+    add_subdirectory(RenderProviderModule/Vulkan)
+else()
+    add_subdirectory(RenderProviderModule/Mock)
+endif()

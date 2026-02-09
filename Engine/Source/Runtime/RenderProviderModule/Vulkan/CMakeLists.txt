@@ -41,9 +41,10 @@ target_include_directories(RenderProviderModule.Vulkan
 )
 
 target_link_libraries(RenderProviderModule.Vulkan
+        PUBLIC
+        vulkan
         PRIVATE
         RenderProviderModule.Core
-        vulkan
         CoreModule.Common
         InjectionModule.Core
         DebugModule
