@@ -12,9 +12,9 @@ std::unique_ptr<IRenderProvider> WindowsRenderProviderFactory::CreateRenderProvi
         case RenderingApi::Vulkan:
             return std::make_unique<VulkanRenderProvider>(
                     m_diContainer->Resolve<ProjectSettings>(),
-                            m_diContainer->Resolve<Application>(),
-                                    m_diContainer->Resolve<BuildSettings>(),
-                                            m_diContainer);
+                    m_diContainer->Resolve<Application>(),
+                    m_diContainer->Resolve<BuildSettings>(),
+                    m_diContainer);
         default:
             return nullptr;
     }
