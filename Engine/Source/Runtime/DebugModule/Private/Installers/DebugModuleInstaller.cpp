@@ -2,6 +2,6 @@
 #include "ILogger.h"
 #include "EngineLogger.h"
 
-void DebugModuleInstaller::InstallBindings(DiContainer &diContainer) const {
-    diContainer.Bind<ILogger>(ClientBinding([](){return new EngineLogger();}));
+void DebugModuleInstaller::InstallBindings(DiContainer* diContainer) const {
+    diContainer->Bind<ILogger>(ClientBinding([](){return new EngineLogger();}));
 }

@@ -4,5 +4,5 @@
 
 class CoreModuleInstaller : public DependencyInstallerBase<CoreModuleInstaller> {
 public:
-    void InstallBindings(DiContainer &diContainer) const override;
+    void InstallBindings(DiContainer* diContainer) const override;
 };

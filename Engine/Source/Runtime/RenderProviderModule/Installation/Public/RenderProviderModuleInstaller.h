@@ -4,5 +4,5 @@
 
 class RenderProviderModuleInstaller : public DependencyInstallerBase<RenderProviderModuleInstaller> {
 public:
-    void InstallBindings(DiContainer &diContainer) const override;
+    void InstallBindings(DiContainer* diContainer) const override;
 };

@@ -15,6 +15,8 @@ struct ClientBinding {
 
 class DiContainer {
 public:
+    explicit DiContainer(const DiContainer* parentContainer = nullptr);
+
     template<typename TTarget>
     void Bind(ClientBinding &&clientBinding) {
         BindingInstance bindingInstance(nullptr, [](void* instance){
@@ -27,10 +29,20 @@ public:
     template<typename TType>
     TType* Resolve() const {
         auto dependencyIterator = m_dependencies.find(typeid(TType));
-        if(dependencyIterator == m_dependencies.end())
-            throw std::runtime_error(StringFormatter("Unable to resolve dependency ", typeid(TType).name()));
+        if(dependencyIterator != m_dependencies.end())
+            return static_cast<TType *>(dependencyIterator->second.m_instance);
 
-        return static_cast<TType *>(dependencyIterator->second.m_instance);
+        if(m_parentContainer)
+            return m_parentContainer->Resolve<TType>();
+
+        throw std::runtime_error(StringFormatter("Unable to resolve dependency ", typeid(TType).name()));
+    }
+
+    bool ContainsDependency(const std::type_index& depType) const;
+
+    template<typename TType>
+    bool ContainsDependency() const {
+        return ContainsDependency(typeid(TType));
     }
 
     void ResolveDependencies();
@@ -53,6 +65,7 @@ private:
 
     std::unordered_map<std::type_index, ClientBindingWithInstance> m_clientBindings;
     std::unordered_map<std::type_index, BindingInstance> m_dependencies;
+    const DiContainer* m_parentContainer = nullptr;
 
     void TopoSortUtil(const ClientBindingWithInstance& node,
                       const std::type_index &bindingType,

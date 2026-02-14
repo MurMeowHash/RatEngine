@@ -6,7 +6,7 @@
 #include "ValidationLayers/VulkanLayersValidator.h"
 #include "ValidationLayers/IVulkanDebugAdapter.h"
 #include "ValidationLayers/VulkanDebugAdapter.h"
-#include "BuildSettings/BuildSettings.h"
+#include "ILogger.h"
 
 #if defined(__WIN64)
 #include "Extensions/VulkanWindowsExtensionsProvider.h"
@@ -14,18 +14,18 @@
 #include "Extensions/VulkanMockExtensionsProvider.h"
 #endif
 
-void VulkanInstaller::InstallBindings(DiContainer &diContainer) const {
-    diContainer.Bind<IVulkanExtensionsAssembler>(ClientBinding([&diContainer](){
-        return new VulkanExtensionsAssembler(diContainer.Resolve<IVulkanPlatformExtensionsProvider>());
+void VulkanInstaller::InstallBindings(DiContainer* diContainer) const {
+    diContainer->Bind<IVulkanExtensionsAssembler>(ClientBinding([diContainer](){
+        return new VulkanExtensionsAssembler(diContainer->Resolve<IVulkanPlatformExtensionsProvider>());
     }, std::vector<std::type_index>{typeid(IVulkanPlatformExtensionsProvider)}));
-    diContainer.Bind<IVulkanLayersValidator>(ClientBinding([](){return new VulkanLayersValidator();}));
-//    diContainer.Bind<IVulkanDebugAdapter>(ClientBinding([](){
-//        return new VulkanDebugAdapter()
-//    }))
+    diContainer->Bind<IVulkanLayersValidator>(ClientBinding([](){return new VulkanLayersValidator();}));
+    diContainer->Bind<IVulkanDebugAdapter>(ClientBinding([diContainer](){
+        return new VulkanDebugAdapter(diContainer->Resolve<ILogger>());
+    }, std::vector<std::type_index> { typeid(ILogger) }));
 
 #if defined(__WIN64)
-    diContainer.Bind<IVulkanPlatformExtensionsProvider>(ClientBinding([](){return new VulkanWindowsExtensionsProvider();}));
+    diContainer->Bind<IVulkanPlatformExtensionsProvider>(ClientBinding([](){return new VulkanWindowsExtensionsProvider();}));
 #else
-    diContainer.Bind<IVulkanPlatformExtensionsProvider>(ClientBinding([](){return new VulkanMockExtensionsProvider();}));
+    diContainer->Bind<IVulkanPlatformExtensionsProvider>(ClientBinding([](){return new VulkanMockExtensionsProvider();}));
 #endif
 }

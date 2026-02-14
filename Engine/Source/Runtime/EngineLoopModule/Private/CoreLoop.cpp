@@ -1,3 +1,4 @@
+#include <iostream>
 #include "../Public/CoreLoop.h"
 #include "CoreUtils.h"
 #include "IWindowProvider.h"
@@ -9,11 +10,19 @@
 #include "IRenderProviderInitializer.h"
 #include "RenderProviderAccessor.h"
 
+CoreLoop::CoreLoop() {
+    m_engineDependencyContext = new EngineDependencyContext(nullptr);
+}
+
+CoreLoop::~CoreLoop() {
+    delete m_engineDependencyContext;
+}
+
 Rat::Core::ErrorSeverity CoreLoop::Initialize() {
-    m_engineDependencyContext = new EngineDependencyContext;
     m_engineDependencyContext->OpenContext();
     AcquireNeededDependencies();
-//TODO: set output stream for logger
+
+    m_logger->SetOutputStream(&std::cout); //TODO: set output stream for logger in diff place
     m_projectSettingsInitializer->Initialize();
 
     Rat::Core::ErrorSeverity errorSeverity = Rat::Core::ErrorSeverity::Success;
@@ -43,19 +52,18 @@ Rat::Core::ErrorSeverity CoreLoop::Exit() {
     Rat::Core::ErrorSeverity errorSeverity = Rat::Core::ErrorSeverity::Success;
     m_windowProvider->Shutdown();
     m_engineDependencyContext->CloseContext();
-    delete m_engineDependencyContext;
     return errorSeverity;
 }
 
 void CoreLoop::AcquireNeededDependencies() {
-    const DiContainer& diContainer = m_engineDependencyContext->GetContainer();
-    m_windowProvider = diContainer.Resolve<IWindowProvider>();
-    m_engineCoreEventBus = diContainer.Resolve<EngineCoreEventBus>();
-    m_projectSettings = diContainer.Resolve<ProjectSettings>();
-    m_projectSettingsInitializer = diContainer.Resolve<IProjectSettingsInitializer>();
-    m_logger = diContainer.Resolve<ILogger>();
-    m_renderProviderInitializer = diContainer.Resolve<IRenderProviderInitializer>();
-    m_renderProviderAccessor = diContainer.Resolve<RenderProviderAccessor>();
+    const DiContainer* diContainer = m_engineDependencyContext->GetContainer();
+    m_windowProvider = diContainer->Resolve<IWindowProvider>();
+    m_engineCoreEventBus = diContainer->Resolve<EngineCoreEventBus>();
+    m_projectSettings = diContainer->Resolve<ProjectSettings>();
+    m_projectSettingsInitializer = diContainer->Resolve<IProjectSettingsInitializer>();
+    m_logger = diContainer->Resolve<ILogger>();
+    m_renderProviderInitializer = diContainer->Resolve<IRenderProviderInitializer>();
+    m_renderProviderAccessor = diContainer->Resolve<RenderProviderAccessor>();
 }
 
 Rat::Core::ErrorSeverity CoreLoop::CreateMainWindow() {

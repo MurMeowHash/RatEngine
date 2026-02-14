@@ -14,13 +14,16 @@ class BuildSettings;
 
 class VulkanRenderProvider : public IRenderProvider {
 public:
-    VulkanRenderProvider(ProjectSettings* projectSettings, Application* application, BuildSettings* buildSettings);
+    VulkanRenderProvider(ProjectSettings* projectSettings, Application* application, BuildSettings* buildSettings,
+                         const DiContainer* diContainer);
     Rat::RenderProviderModule::ExecResult Initialize() override;
     void Shutdown() override;
     [[nodiscard]] uint32_t GetApiVersion() const override;
     [[nodiscard]] bool CanContinueExecution(const Rat::RenderProviderModule::ExecResult &execResult) const override;
+
+    ~VulkanRenderProvider() override;
 private:
-    VulkanDependencyContext m_vulkanDependencyContext;
+    VulkanDependencyContext* m_vulkanDependencyContext = nullptr;
 
     ProjectSettings* m_projectSettings = nullptr;
     Application* m_application = nullptr;
@@ -28,6 +31,7 @@ private:
     IVulkanExtensionsAssembler* m_vulkanExtensionsAssembler = nullptr;
     IVulkanLayersValidator* m_vulkanLayersValidator = nullptr;
     IVulkanDebugAdapter* m_vulkanDebugAdapter = nullptr;
+    const DiContainer* m_diContainer = nullptr;
 
     uint32_t m_apiVersion = 0;
 

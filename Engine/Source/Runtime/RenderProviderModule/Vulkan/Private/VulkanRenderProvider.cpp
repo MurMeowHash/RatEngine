@@ -3,24 +3,30 @@
 #include "Application/Application.h"
 #include "BuildSettings/BuildSettings.h"
 
-VulkanRenderProvider::VulkanRenderProvider(ProjectSettings *projectSettings, Application* application, BuildSettings* buildSettings)
-: m_projectSettings(projectSettings), m_application(application), m_buildSettings(buildSettings) {}
+VulkanRenderProvider::VulkanRenderProvider(ProjectSettings *projectSettings, Application* application, BuildSettings* buildSettings,
+                                           const DiContainer* diContainer)
+: m_projectSettings(projectSettings), m_application(application), m_buildSettings(buildSettings),
+m_diContainer(diContainer) {
+    m_vulkanDependencyContext = new VulkanDependencyContext(m_diContainer);
+}
 
 Rat::RenderProviderModule::ExecResult VulkanRenderProvider::Initialize() {
-    m_vulkanDependencyContext.OpenContext();
+    m_vulkanDependencyContext->OpenContext();
     AcquireInternalDependencies();
 
     Rat::RenderProviderModule::ExecResult execResult = CreateVulkanInstance();
     if(!CanContinueExecution(execResult))
         return execResult;
 
-    execResult = InitializeVulkanDebug();
+    if(m_buildSettings->GetIsDevelopmentBuild())
+        execResult = InitializeVulkanDebug();
 
+    return Rat::RenderProviderModule::ExecResult::IncompatibleDriver;
     return execResult;
 }
 
 void VulkanRenderProvider::Shutdown() {
-    m_vulkanDependencyContext.CloseContext();
+    m_vulkanDependencyContext->CloseContext();
 }
 
 Rat::RenderProviderModule::ExecResult VulkanRenderProvider::CreateVulkanInstance() {
@@ -89,7 +95,8 @@ bool VulkanRenderProvider::CanContinueExecution(const Rat::RenderProviderModule:
 
 Rat::RenderProviderModule::ExecResult VulkanRenderProvider::InitializeVulkanDebug() {
     vk::DebugUtilsMessengerCreateInfoEXT debugUtilsMessengerCreateInfoEXT;
-    debugUtilsMessengerCreateInfoEXT.pfnUserCallback = m_vulkanDebugAdapter->GetVulkanDebugCallback(); // TODO: why not filtering
+    debugUtilsMessengerCreateInfoEXT.pfnUserCallback = m_vulkanDebugAdapter->GetVulkanDebugCallback();
+
     vk::ResultValue<vk::raii::DebugUtilsMessengerEXT> debugMessangerWrapper =
             m_vulkanInstance.createDebugUtilsMessengerEXT(debugUtilsMessengerCreateInfoEXT);
 
@@ -101,8 +108,12 @@ Rat::RenderProviderModule::ExecResult VulkanRenderProvider::InitializeVulkanDebu
 }
 
 void VulkanRenderProvider::AcquireInternalDependencies() {
-    const DiContainer& diContainer = m_vulkanDependencyContext.GetContainer();
-    m_vulkanExtensionsAssembler = diContainer.Resolve<IVulkanExtensionsAssembler>();
-    m_vulkanLayersValidator = diContainer.Resolve<IVulkanLayersValidator>();
-    m_vulkanDebugAdapter = diContainer.Resolve<IVulkanDebugAdapter>();
+    const DiContainer* diContainer = m_vulkanDependencyContext->GetContainer();
+    m_vulkanExtensionsAssembler = diContainer->Resolve<IVulkanExtensionsAssembler>();
+    m_vulkanLayersValidator = diContainer->Resolve<IVulkanLayersValidator>();
+    m_vulkanDebugAdapter = diContainer->Resolve<IVulkanDebugAdapter>();
+}
+
+VulkanRenderProvider::~VulkanRenderProvider() {
+    delete m_vulkanDependencyContext;
 }
