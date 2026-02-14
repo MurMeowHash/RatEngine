@@ -9,6 +9,8 @@
 #include "ILogger.h"
 #include "IRenderProviderInitializer.h"
 #include "RenderProviderAccessor.h"
+#include "BuildSettings/IBuildSettingsInitializer.h"
+#include "Application/IApplicationInitializer.h"
 
 CoreLoop::CoreLoop() {
     m_engineDependencyContext = new EngineDependencyContext(nullptr);
@@ -24,6 +26,8 @@ Rat::Core::ErrorSeverity CoreLoop::Initialize() {
 
     m_logger->SetOutputStream(&std::cout); //TODO: set output stream for logger in diff place
     m_projectSettingsInitializer->Initialize();
+    m_buildSettingsInitializer->Initialize();
+    m_applicationInitializer->Initialize();
 
     Rat::Core::ErrorSeverity errorSeverity = Rat::Core::ErrorSeverity::Success;
 
@@ -64,6 +68,8 @@ void CoreLoop::AcquireNeededDependencies() {
     m_logger = diContainer->Resolve<ILogger>();
     m_renderProviderInitializer = diContainer->Resolve<IRenderProviderInitializer>();
     m_renderProviderAccessor = diContainer->Resolve<RenderProviderAccessor>();
+    m_buildSettingsInitializer = diContainer->Resolve<IBuildSettingsInitializer>();
+    m_applicationInitializer = diContainer->Resolve<IApplicationInitializer>();
 }
 
 Rat::Core::ErrorSeverity CoreLoop::CreateMainWindow() {

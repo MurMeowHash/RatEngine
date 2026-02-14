@@ -94,6 +94,14 @@ bool VulkanRenderProvider::CanContinueExecution(const Rat::RenderProviderModule:
 
 Rat::RenderProviderModule::ExecResult VulkanRenderProvider::InitializeVulkanDebug() {
     vk::DebugUtilsMessengerCreateInfoEXT debugUtilsMessengerCreateInfoEXT;
+    debugUtilsMessengerCreateInfoEXT.messageSeverity =
+            vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
+            vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
+            vk::DebugUtilsMessageSeverityFlagBitsEXT::eError;
+    debugUtilsMessengerCreateInfoEXT.messageType =
+            vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
+            vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
+            vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance;
     debugUtilsMessengerCreateInfoEXT.pfnUserCallback = m_vulkanDebugAdapter->GetVulkanDebugCallback();
 
     vk::ResultValue<vk::raii::DebugUtilsMessengerEXT> debugMessangerWrapper =
