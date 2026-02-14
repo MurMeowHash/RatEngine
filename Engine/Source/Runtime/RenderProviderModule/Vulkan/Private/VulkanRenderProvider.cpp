@@ -21,7 +21,6 @@ Rat::RenderProviderModule::ExecResult VulkanRenderProvider::Initialize() {
     if(m_buildSettings->GetIsDevelopmentBuild())
         execResult = InitializeVulkanDebug();
 
-    return Rat::RenderProviderModule::ExecResult::IncompatibleDriver;
     return execResult;
 }
 

@@ -1,6 +1,5 @@
 #pragma once
 
-//TODO: lacks initialization
 class BuildSettings {
 public:
     void SetIsDevelopmentBuild(bool isDevelopment);
