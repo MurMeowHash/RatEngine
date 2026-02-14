@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 struct WindowSettings {
     int m_windowWidth;
     int m_windowHeight;
@@ -13,17 +15,11 @@ struct GeneralSettings {
     int m_versionPatch;
 };
 
-enum class RenderingApi {
-    None = 0,
-    Vulkan = 1
-};
-
 struct VulkanRenderingSettings {
     std::vector<const char*> m_validationLayersNames;
 };
 
 struct RenderingSettings {
-    RenderingApi m_renderingApi;
     VulkanRenderingSettings m_vulkanRenderingSettings;
 };
 

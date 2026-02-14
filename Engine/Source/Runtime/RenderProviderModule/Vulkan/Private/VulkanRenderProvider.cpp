@@ -1,14 +1,15 @@
 #include "../Public/VulkanRenderProvider.h"
 #include "ProjectSettings/ProjectSettings.h"
 #include "Application/Application.h"
+#include "BuildSettings/BuildSettings.h"
 
-VulkanRenderProvider::VulkanRenderProvider(ProjectSettings *projectSettings, Application* application,
-                                           IVulkanExtensionsAssembler* vulkanExtensionsAssembler, IVulkanLayersValidator* vulkanLayersValidator,
-                                           IVulkanDebugAdapter* vulkanDebugAdapter)
-: m_projectSettings(projectSettings), m_application(application), m_vulkanExtensionsAssembler(vulkanExtensionsAssembler),
-m_vulkanLayersValidator(vulkanLayersValidator), m_vulkanDebugAdapter(vulkanDebugAdapter) {}
+VulkanRenderProvider::VulkanRenderProvider(ProjectSettings *projectSettings, Application* application, BuildSettings* buildSettings)
+: m_projectSettings(projectSettings), m_application(application), m_buildSettings(buildSettings) {}
 
 Rat::RenderProviderModule::ExecResult VulkanRenderProvider::Initialize() {
+    m_vulkanDependencyContext.OpenContext();
+    AcquireInternalDependencies();
+
     Rat::RenderProviderModule::ExecResult execResult = CreateVulkanInstance();
     if(!CanContinueExecution(execResult))
         return execResult;
@@ -16,6 +17,10 @@ Rat::RenderProviderModule::ExecResult VulkanRenderProvider::Initialize() {
     execResult = InitializeVulkanDebug();
 
     return execResult;
+}
+
+void VulkanRenderProvider::Shutdown() {
+    m_vulkanDependencyContext.CloseContext();
 }
 
 Rat::RenderProviderModule::ExecResult VulkanRenderProvider::CreateVulkanInstance() {
@@ -43,7 +48,11 @@ Rat::RenderProviderModule::ExecResult VulkanRenderProvider::CreateVulkanInstance
 
     vk::InstanceCreateInfo instanceInfo;
     instanceInfo.pApplicationInfo = &appInfo;
-    std::vector<const char*> availableExtensions = m_vulkanExtensionsAssembler->GetAvailableInstanceExtensions(m_vulkanContext);
+    Rat::RenderProviderModule::Vulkan::ExtensionAssembleFlags extensionAssembleFlags = Rat::RenderProviderModule::Vulkan::ExtensionAssembleFlags::None;
+    if(m_buildSettings->GetIsDevelopmentBuild())
+        extensionAssembleFlags |= Rat::RenderProviderModule::Vulkan::ExtensionAssembleFlags::IncludeDebug;
+
+    std::vector<const char*> availableExtensions = m_vulkanExtensionsAssembler->GetAvailableInstanceExtensions(m_vulkanContext, extensionAssembleFlags);
     instanceInfo.enabledExtensionCount = availableExtensions.size();
     instanceInfo.ppEnabledExtensionNames = availableExtensions.data();
     std::vector<const char*> availableLayers = m_vulkanLayersValidator->ValidateLayers(m_vulkanContext,
@@ -89,4 +98,11 @@ Rat::RenderProviderModule::ExecResult VulkanRenderProvider::InitializeVulkanDebu
 
     m_vulkanDebugMessanger = std::move(debugMessangerWrapper.value);
     return Rat::RenderProviderModule::ExecResult::Success;
+}
+
+void VulkanRenderProvider::AcquireInternalDependencies() {
+    const DiContainer& diContainer = m_vulkanDependencyContext.GetContainer();
+    m_vulkanExtensionsAssembler = diContainer.Resolve<IVulkanExtensionsAssembler>();
+    m_vulkanLayersValidator = diContainer.Resolve<IVulkanLayersValidator>();
+    m_vulkanDebugAdapter = diContainer.Resolve<IVulkanDebugAdapter>();
 }

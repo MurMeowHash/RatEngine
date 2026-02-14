@@ -21,6 +21,7 @@ target_link_libraries(InjectionModule.Engine
         EventBusModule.Engine
         CoreModule.Installation
         WindowProviderModule.Installation
+        RenderProviderModule.Installation
 )
 
 if(MSVC)

@@ -6,17 +6,20 @@ target_sources(RenderProviderModule.Vulkan
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Extensions/IVulkanExtensionsAssembler.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Extensions/VulkanExtensionsAssembler.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Extensions/IVulkanPlatformExtensionsProvider.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Installers/VulkanRenderModuleInstaller.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Injection/Installers/VulkanInstaller.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/ValidationLayers/IVulkanLayersValidator.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/ValidationLayers/VulkanLayersValidator.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/ValidationLayers/IVulkanDebugAdapter.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/ValidationLayers/VulkanDebugAdapter.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Injection/VulkanDependencyContext.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Extensions/ExtensionAssembleFlags.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/VulkanRenderProvider.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Extensions/VulkanExtensionsAssembler.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Installers/VulkanRenderModuleInstaller.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Injection/Installers/VulkanInstaller.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ValidationLayers/VulkanLayersValidator.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ValidationLayers/VulkanDebugAdapter.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Injection/VulkanDependencyContext.cpp
 )
 
 if(WIN32)
@@ -41,9 +44,10 @@ target_include_directories(RenderProviderModule.Vulkan
 )
 
 target_link_libraries(RenderProviderModule.Vulkan
+        PUBLIC
+        vulkan
         PRIVATE
         RenderProviderModule.Core
-        vulkan
         CoreModule.Common
         InjectionModule.Core
         DebugModule

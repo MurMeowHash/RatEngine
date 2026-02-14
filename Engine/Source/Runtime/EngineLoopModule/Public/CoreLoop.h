@@ -8,6 +8,8 @@ class ProjectSettings;
 class IProjectSettingsInitializer;
 class ILogger;
 class EngineDependencyContext;
+class IRenderProviderInitializer;
+class RenderProviderAccessor;
 
 class CoreLoop : IEngineLoop {
 public:
@@ -21,7 +23,10 @@ private:
     IProjectSettingsInitializer* m_projectSettingsInitializer;
     ILogger* m_logger;
     EngineDependencyContext* m_engineDependencyContext;
+    IRenderProviderInitializer* m_renderProviderInitializer;
+    RenderProviderAccessor* m_renderProviderAccessor;
 
     void AcquireNeededDependencies();
     Rat::Core::ErrorSeverity CreateMainWindow();
+    Rat::Core::ErrorSeverity InitializeRenderProvider();
 };

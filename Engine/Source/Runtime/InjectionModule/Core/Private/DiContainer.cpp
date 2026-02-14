@@ -30,7 +30,7 @@ void DiContainer::TopoSortUtil(const ClientBindingWithInstance& node,
         if (bindingIterator != bindingMap.end())
             TopoSortUtil(bindingIterator->second, bindingIterator->first, bindingMap, visited, visiting, sorted);
         else
-            throw std::runtime_error("Dependency not found: " + std::string(depType.name()));
+            throw std::runtime_error(StringFormatter("Dependency not found: ", depType.name()));
     }
 
     visiting.erase(bindingType);

@@ -2,7 +2,7 @@
 
 #include "DependencyInstallerBase.h"
 
-class VulkanRenderModuleInstaller : public DependencyInstallerBase<VulkanRenderModuleInstaller> {
+class VulkanInstaller : public DependencyInstallerBase<VulkanInstaller> {
 public:
     void InstallBindings(DiContainer &diContainer) const override;
 };

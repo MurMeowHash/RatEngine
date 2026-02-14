@@ -1,16 +1,14 @@
 #include "../../Public/Extensions/VulkanExtensionsAssembler.h"
 #include <vulkan/vulkan_raii.hpp>
-#include "BuildSettings/BuildSettings.h"
 
-VulkanExtensionsAssembler::VulkanExtensionsAssembler(IVulkanPlatformExtensionsProvider *vulkanPlatformExtensionsProvider,
-                                                     BuildSettings* buildSettings)
-: m_vulkanPlatformExtensionsProvider(vulkanPlatformExtensionsProvider), m_buildSettings(buildSettings) {}
+VulkanExtensionsAssembler::VulkanExtensionsAssembler(IVulkanPlatformExtensionsProvider *vulkanPlatformExtensionsProvider)
+: m_vulkanPlatformExtensionsProvider(vulkanPlatformExtensionsProvider) {}
 
-std::vector<const char *> VulkanExtensionsAssembler::GetRequestedInstanceExtensions() const {
+std::vector<const char *> VulkanExtensionsAssembler::GetRequestedInstanceExtensions(Rat::RenderProviderModule::Vulkan::ExtensionAssembleFlags flags) const {
     std::vector<const char*> requestedInstanceExtensions;
     requestedInstanceExtensions.emplace_back(vk::KHRSurfaceExtensionName);
 
-    if(m_buildSettings->GetIsDevelopmentBuild())
+    if(Rat::RenderProviderModule::Vulkan::IsFlagSet(flags, Rat::RenderProviderModule::Vulkan::ExtensionAssembleFlags::IncludeDebug))
         requestedInstanceExtensions.emplace_back(vk::EXTDebugUtilsExtensionName);
 
     std::vector<const char*> platformInstanceExtensions = m_vulkanPlatformExtensionsProvider->GetRequiredInstanceExtensions();
@@ -21,9 +19,10 @@ std::vector<const char *> VulkanExtensionsAssembler::GetRequestedInstanceExtensi
     return requestedInstanceExtensions;
 }
 
-std::vector<const char *> VulkanExtensionsAssembler::GetAvailableInstanceExtensions(const vk::raii::Context &vulkanContext) const {
+std::vector<const char *> VulkanExtensionsAssembler::GetAvailableInstanceExtensions(const vk::raii::Context &vulkanContext,
+                                                                                    Rat::RenderProviderModule::Vulkan::ExtensionAssembleFlags flags) const {
     std::vector<vk::ExtensionProperties> supportedInstanceExtensions = vulkanContext.enumerateInstanceExtensionProperties();
-    std::vector<const char*> requestedInstanceExtensions = GetRequestedInstanceExtensions();
+    std::vector<const char*> requestedInstanceExtensions = GetRequestedInstanceExtensions(flags);
     std::vector<const char*> intersectedExtensions;
     intersectedExtensions.reserve(supportedInstanceExtensions.size());
 

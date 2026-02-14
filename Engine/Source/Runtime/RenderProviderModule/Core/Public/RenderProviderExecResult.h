@@ -7,4 +7,8 @@ namespace Rat::RenderProviderModule {
         UnknownFailure = 2,
         DebugCreationFailed = 3
     };
+
+    extern const char* g_resultDescriptions[4];
+
+    extern const char* GetErrorDescription(ExecResult execResult);
 }

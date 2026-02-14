@@ -6,6 +6,7 @@
 #include <typeindex>
 #include <functional>
 #include <exception>
+#include "CoreUtils.h"
 
 struct ClientBinding {
     std::function<void*()> m_instantiateFunc;
@@ -27,7 +28,7 @@ public:
     TType* Resolve() const {
         auto dependencyIterator = m_dependencies.find(typeid(TType));
         if(dependencyIterator == m_dependencies.end())
-            throw std::runtime_error("Unable to resolve"); // TODO: better exception description
+            throw std::runtime_error(StringFormatter("Unable to resolve dependency ", typeid(TType).name()));
 
         return static_cast<TType *>(dependencyIterator->second.m_instance);
     }

@@ -7,10 +7,10 @@ HardCodedProjectSettingsInitializer::HardCodedProjectSettingsInitializer(Project
 void HardCodedProjectSettingsInitializer::Initialize() {
     GeneralSettings generalSettings = GeneralSettings("RatEngine");
     WindowSettings windowSettings = WindowSettings(800, 600, false);
-    VulkanRenderingSettings vulkanRenderingSettings = VulkanRenderingSettings;
+    VulkanRenderingSettings vulkanRenderingSettings = VulkanRenderingSettings();
     vulkanRenderingSettings.m_validationLayersNames = std::vector<const char*>{"VK_LAYER_KHRONOS_validation"};
-    RenderingSettings renderingSettings = RenderingSettings(RenderingApi::Vulkan, vulkanRenderingSettings);
+//    RenderingSettings renderingSettings = RenderingSettings(RenderingApi::Vulkan, vulkanRenderingSettings);
     m_projectSettings->SetGeneralSettings(generalSettings);
     m_projectSettings->SetWindowSettings(windowSettings);
-    m_projectSettings->SetRenderingSettings(renderingSettings);
+//    m_projectSettings->SetRenderingSettings(renderingSettings);
 }
