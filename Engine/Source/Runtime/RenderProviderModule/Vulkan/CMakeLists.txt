@@ -12,7 +12,9 @@ target_sources(RenderProviderModule.Vulkan
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/ValidationLayers/IVulkanDebugAdapter.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/ValidationLayers/VulkanDebugAdapter.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Injection/VulkanDependencyContext.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Extensions/ExtensionAssembleFlags.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IVulkanDeviceProvider.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/VulkanGlobals.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/VulkanDeviceProvider.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/VulkanRenderProvider.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Extensions/VulkanExtensionsAssembler.cpp
@@ -20,6 +22,7 @@ target_sources(RenderProviderModule.Vulkan
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ValidationLayers/VulkanLayersValidator.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ValidationLayers/VulkanDebugAdapter.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Injection/VulkanDependencyContext.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/VulkanDeviceProvider.cpp
 )
 
 if(WIN32)

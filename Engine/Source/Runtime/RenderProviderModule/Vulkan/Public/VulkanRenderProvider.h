@@ -7,6 +7,7 @@
 #include "ValidationLayers/IVulkanLayersValidator.h"
 #include "ValidationLayers/IVulkanDebugAdapter.h"
 #include "Injection/VulkanDependencyContext.h"
+#include "IVulkanDeviceProvider.h"
 
 class ProjectSettings;
 class Application;
@@ -31,6 +32,7 @@ private:
     IVulkanExtensionsAssembler* m_vulkanExtensionsAssembler = nullptr;
     IVulkanLayersValidator* m_vulkanLayersValidator = nullptr;
     IVulkanDebugAdapter* m_vulkanDebugAdapter = nullptr;
+    IVulkanDeviceProvider* m_vulkanDeviceProvider = nullptr;
     const DiContainer* m_diContainer = nullptr;
 
     uint32_t m_apiVersion = 0;

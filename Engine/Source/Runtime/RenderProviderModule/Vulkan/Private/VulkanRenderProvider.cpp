@@ -2,6 +2,9 @@
 #include "ProjectSettings/ProjectSettings.h"
 #include "Application/Application.h"
 #include "BuildSettings/BuildSettings.h"
+#include "CoreUtils.h"
+
+using Rat::Core::Flags::operator|=;
 
 VulkanRenderProvider::VulkanRenderProvider(ProjectSettings *projectSettings, Application* application, BuildSettings* buildSettings,
                                            const DiContainer* diContainer)
@@ -119,6 +122,7 @@ void VulkanRenderProvider::AcquireInternalDependencies() {
     m_vulkanExtensionsAssembler = diContainer->Resolve<IVulkanExtensionsAssembler>();
     m_vulkanLayersValidator = diContainer->Resolve<IVulkanLayersValidator>();
     m_vulkanDebugAdapter = diContainer->Resolve<IVulkanDebugAdapter>();
+    m_vulkanDeviceProvider = diContainer->Resolve<IVulkanDeviceProvider>();
 }
 
 VulkanRenderProvider::~VulkanRenderProvider() {

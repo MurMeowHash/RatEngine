@@ -24,7 +24,8 @@ Rat::Core::ErrorSeverity CoreLoop::Initialize() {
     m_engineDependencyContext->OpenContext();
     AcquireNeededDependencies();
 
-    m_logger->SetOutputStream(&std::cout); //TODO: set output stream for logger in diff place
+    //TODO: refactor for better initialization
+    m_logger->SetOutputStream(&std::cout);
     m_projectSettingsInitializer->Initialize();
     m_buildSettingsInitializer->Initialize();
     m_applicationInitializer->Initialize();

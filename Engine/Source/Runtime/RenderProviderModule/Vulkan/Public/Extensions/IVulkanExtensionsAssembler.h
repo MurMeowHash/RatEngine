@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "ExtensionAssembleFlags.h"
+#include "VulkanGlobals.h"
 
 namespace vk::raii {
     class Context;

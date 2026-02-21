@@ -1,5 +1,6 @@
 #include "../../Public/Extensions/VulkanExtensionsAssembler.h"
 #include <vulkan/vulkan_raii.hpp>
+#include "CoreUtils.h"
 
 VulkanExtensionsAssembler::VulkanExtensionsAssembler(IVulkanPlatformExtensionsProvider *vulkanPlatformExtensionsProvider)
 : m_vulkanPlatformExtensionsProvider(vulkanPlatformExtensionsProvider) {}
@@ -8,7 +9,7 @@ std::vector<const char *> VulkanExtensionsAssembler::GetRequestedInstanceExtensi
     std::vector<const char*> requestedInstanceExtensions;
     requestedInstanceExtensions.emplace_back(vk::KHRSurfaceExtensionName);
 
-    if(Rat::RenderProviderModule::Vulkan::IsFlagSet(flags, Rat::RenderProviderModule::Vulkan::ExtensionAssembleFlags::IncludeDebug))
+    if(Rat::Core::Flags::IsFlagSet(flags, Rat::RenderProviderModule::Vulkan::ExtensionAssembleFlags::IncludeDebug))
         requestedInstanceExtensions.emplace_back(vk::EXTDebugUtilsExtensionName);
 
     std::vector<const char*> platformInstanceExtensions = m_vulkanPlatformExtensionsProvider->GetRequiredInstanceExtensions();
