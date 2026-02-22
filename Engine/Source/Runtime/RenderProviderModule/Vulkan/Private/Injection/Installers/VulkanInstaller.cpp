@@ -7,6 +7,12 @@
 #include "ValidationLayers/IVulkanDebugAdapter.h"
 #include "ValidationLayers/VulkanDebugAdapter.h"
 #include "ILogger.h"
+#include "IVulkanDeviceProvider.h"
+#include "VulkanDeviceProvider.h"
+#include "Features/IDeviceFeaturesAssembler.h"
+#include "Features/DeviceFeaturesAssembler.h"
+#include "IVulkanDeviceFactory.h"
+#include "VulkanDeviceFactory.h"
 
 #if defined(__WIN64)
 #include "Extensions/VulkanWindowsExtensionsProvider.h"
@@ -28,4 +34,12 @@ void VulkanInstaller::InstallBindings(DiContainer* diContainer) const {
 #else
     diContainer->Bind<IVulkanPlatformExtensionsProvider>(ClientBinding([](){return new VulkanMockExtensionsProvider();}));
 #endif
+    diContainer->Bind<IVulkanDeviceProvider>(ClientBinding([](){return new VulkanDeviceProvider();}));
+    diContainer->Bind<IDeviceFeaturesAssembler>(ClientBinding([](){return new DeviceFeaturesAssembler();}));
+
+    diContainer->Bind<IVulkanDeviceFactory>(ClientBinding([diContainer](){
+        return new VulkanDeviceFactory(diContainer->Resolve<IVulkanExtensionsAssembler>(),
+                diContainer->Resolve<IDeviceFeaturesAssembler>(),
+                        diContainer);
+    }, std::vector<std::type_index>{ typeid(IVulkanExtensionsAssembler), typeid(IDeviceFeaturesAssembler) }));
 }

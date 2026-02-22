@@ -8,6 +8,8 @@
 #include "ValidationLayers/IVulkanDebugAdapter.h"
 #include "Injection/VulkanDependencyContext.h"
 #include "IVulkanDeviceProvider.h"
+#include "IVulkanDevice.h"
+#include "IVulkanDeviceFactory.h"
 
 class ProjectSettings;
 class Application;
@@ -33,6 +35,7 @@ private:
     IVulkanLayersValidator* m_vulkanLayersValidator = nullptr;
     IVulkanDebugAdapter* m_vulkanDebugAdapter = nullptr;
     IVulkanDeviceProvider* m_vulkanDeviceProvider = nullptr;
+    IVulkanDeviceFactory* m_vulkanDeviceFactory = nullptr;
     const DiContainer* m_diContainer = nullptr;
 
     uint32_t m_apiVersion = 0;
@@ -40,7 +43,11 @@ private:
     vk::raii::Context m_vulkanContext;
     vk::raii::Instance m_vulkanInstance = nullptr;
     vk::raii::DebugUtilsMessengerEXT m_vulkanDebugMessanger = nullptr;
+
+    IVulkanDevice* m_vulkanDevice = nullptr;
+
     Rat::RenderProviderModule::ExecResult CreateVulkanInstance();
     Rat::RenderProviderModule::ExecResult InitializeVulkanDebug();
+    Rat::RenderProviderModule::ExecResult InitializeVulkanDevice();
     void AcquireInternalDependencies();
 };

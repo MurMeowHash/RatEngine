@@ -55,6 +55,7 @@ Rat::Core::ErrorSeverity CoreLoop::Tick() {
 
 Rat::Core::ErrorSeverity CoreLoop::Exit() {
     Rat::Core::ErrorSeverity errorSeverity = Rat::Core::ErrorSeverity::Success;
+    m_renderProviderAccessor->m_renderProvider->Shutdown();
     m_windowProvider->Shutdown();
     m_engineDependencyContext->CloseContext();
     return errorSeverity;

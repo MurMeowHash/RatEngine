@@ -3,6 +3,7 @@
 #include "Application/Application.h"
 #include "BuildSettings/BuildSettings.h"
 #include "CoreUtils.h"
+#include "VulkanDevice.h"
 
 using Rat::Core::Flags::operator|=;
 
@@ -24,10 +25,12 @@ Rat::RenderProviderModule::ExecResult VulkanRenderProvider::Initialize() {
     if(m_buildSettings->GetIsDevelopmentBuild())
         execResult = InitializeVulkanDebug();
 
+    execResult = InitializeVulkanDevice();
     return execResult;
 }
 
 void VulkanRenderProvider::Shutdown() {
+    delete m_vulkanDevice;
     m_vulkanDependencyContext->CloseContext();
 }
 
@@ -117,12 +120,29 @@ Rat::RenderProviderModule::ExecResult VulkanRenderProvider::InitializeVulkanDebu
     return Rat::RenderProviderModule::ExecResult::Success;
 }
 
+Rat::RenderProviderModule::ExecResult VulkanRenderProvider::InitializeVulkanDevice() {
+    using Rat::Core::Flags::operator|;
+
+    vk::raii::PhysicalDevice physicalDevice = nullptr;
+    if(!m_vulkanDeviceProvider->TryFindVulkanDevice(m_vulkanInstance, 0,
+                                                    DeviceSearchFlags::RenderingOnly | DeviceSearchFlags::AllowNonGpu, &physicalDevice))
+        return Rat::RenderProviderModule::ExecResult::PhysicalAdaptorNotFound;
+
+    bool deviceInitialized;
+    m_vulkanDevice = m_vulkanDeviceFactory->CreateVulkanDevice(physicalDevice, vk::QueueFlagBits::eGraphics, &deviceInitialized);
+    if(!deviceInitialized)
+        return Rat::RenderProviderModule::ExecResult::AdaptorCreationFailed;
+
+    return Rat::RenderProviderModule::ExecResult::Success;
+}
+
 void VulkanRenderProvider::AcquireInternalDependencies() {
     const DiContainer* diContainer = m_vulkanDependencyContext->GetContainer();
     m_vulkanExtensionsAssembler = diContainer->Resolve<IVulkanExtensionsAssembler>();
     m_vulkanLayersValidator = diContainer->Resolve<IVulkanLayersValidator>();
     m_vulkanDebugAdapter = diContainer->Resolve<IVulkanDebugAdapter>();
     m_vulkanDeviceProvider = diContainer->Resolve<IVulkanDeviceProvider>();
+    m_vulkanDeviceFactory = diContainer->Resolve<IVulkanDeviceFactory>();
 }
 
 VulkanRenderProvider::~VulkanRenderProvider() {

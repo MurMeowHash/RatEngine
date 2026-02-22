@@ -15,6 +15,15 @@ target_sources(RenderProviderModule.Vulkan
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/IVulkanDeviceProvider.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/VulkanGlobals.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/VulkanDeviceProvider.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IVulkanDevice.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/VulkanDevice.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Extensions/VulkanExtension.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Features/DeviceFeature.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Features/DeviceFeatureType.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Features/IDeviceFeaturesAssembler.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Features/DeviceFeaturesAssembler.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IVulkanDeviceFactory.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/VulkanDeviceFactory.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/VulkanRenderProvider.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Extensions/VulkanExtensionsAssembler.cpp
@@ -23,6 +32,11 @@ target_sources(RenderProviderModule.Vulkan
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ValidationLayers/VulkanDebugAdapter.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Injection/VulkanDependencyContext.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/VulkanDeviceProvider.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/VulkanDevice.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Extensions/DeviceExtension.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Features/DeviceFeature.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Features/DeviceFeaturesAssembler.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/VulkanDeviceFactory.cpp
 )
 
 if(WIN32)

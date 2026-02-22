@@ -9,6 +9,9 @@ public:
     [[nodiscard]] std::vector<const char *> GetRequestedInstanceExtensions(Rat::RenderProviderModule::Vulkan::ExtensionAssembleFlags flags) const override;
     [[nodiscard]] std::vector<const char *> GetAvailableInstanceExtensions(const vk::raii::Context &vulkanContext,
                                                                            Rat::RenderProviderModule::Vulkan::ExtensionAssembleFlags flags) const override;
+
+    [[nodiscard]] std::vector<VulkanExtension> GetDefaultDeviceExtensions() override;
+
 private:
     IVulkanPlatformExtensionsProvider* m_vulkanPlatformExtensionsProvider;
 };

@@ -1,5 +1,4 @@
 #include "../../Public/Extensions/VulkanExtensionsAssembler.h"
-#include <vulkan/vulkan_raii.hpp>
 #include "CoreUtils.h"
 
 VulkanExtensionsAssembler::VulkanExtensionsAssembler(IVulkanPlatformExtensionsProvider *vulkanPlatformExtensionsProvider)
@@ -38,4 +37,14 @@ std::vector<const char *> VulkanExtensionsAssembler::GetAvailableInstanceExtensi
     }
 
     return intersectedExtensions;
+}
+
+std::vector<VulkanExtension> VulkanExtensionsAssembler::GetDefaultDeviceExtensions() {
+    std::vector<VulkanExtension> deviceExtensions;
+    deviceExtensions.emplace_back(vk::KHRSwapchainExtensionName, true);
+    deviceExtensions.emplace_back(vk::KHRSpirv14ExtensionName, true);
+    deviceExtensions.emplace_back(vk::KHRCreateRenderpass2ExtensionName, true);
+    deviceExtensions.emplace_back(vk::KHRSynchronization2ExtensionName, false);
+    deviceExtensions.emplace_back(vk::KHRDynamicRenderingExtensionName, false);
+    return deviceExtensions;
 }
