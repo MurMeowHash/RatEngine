@@ -1,6 +1,6 @@
-add_library(RenderProviderModule.Core.Mock STATIC)
+add_library(RenderHardwareModule.Core.Mock STATIC)
 
-target_sources(RenderProviderModule.Core.Mock
+target_sources(RenderHardwareModule.Core.Mock
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/Public/MockRenderProviderFactory.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Public/MockRenderPriorityQueue.h
@@ -9,25 +9,25 @@ target_sources(RenderProviderModule.Core.Mock
         ${CMAKE_CURRENT_SOURCE_DIR}/Private/MockRenderPriorityQueue.cpp
 )
 
-target_include_directories(RenderProviderModule.Core.Mock
+target_include_directories(RenderHardwareModule.Core.Mock
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private
 )
 
-target_link_libraries(RenderProviderModule.Core.Mock
+target_link_libraries(RenderHardwareModule.Core.Mock
         PRIVATE
-        RenderProviderModule.Core
+        RenderHardwareModule.Core
 )
 
 if(MSVC)
-    target_compile_options(RenderProviderModule.Core.Mock PRIVATE /W4)
+    target_compile_options(RenderHardwareModule.Core.Mock PRIVATE /W4)
 else()
-    target_compile_options(RenderProviderModule.Core.Mock PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_options(RenderHardwareModule.Core.Mock PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-set_target_properties(RenderProviderModule.Core.Mock PROPERTIES
+set_target_properties(RenderHardwareModule.Core.Mock PROPERTIES
         CXX_STANDARD 20
         CXX_STANDARD_REQUIRED ON
 )

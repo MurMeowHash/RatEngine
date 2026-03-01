@@ -1,6 +1,6 @@
-add_library(RenderProviderModule.Core STATIC)
+add_library(RenderHardwareModule.Core STATIC)
 
-target_sources(RenderProviderModule.Core
+target_sources(RenderHardwareModule.Core
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/IRenderProvider.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderProviderExecResult.h
@@ -15,23 +15,23 @@ target_sources(RenderProviderModule.Core
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/RenderProviderExecResult.cpp
 )
 
-target_include_directories(RenderProviderModule.Core
+target_include_directories(RenderHardwareModule.Core
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private
 )
 
-target_link_libraries(RenderProviderModule.Core
+target_link_libraries(RenderHardwareModule.Core
 )
 
 if(MSVC)
-    target_compile_options(RenderProviderModule.Core PRIVATE /W4)
+    target_compile_options(RenderHardwareModule.Core PRIVATE /W4)
 else()
-    target_compile_options(RenderProviderModule.Core PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_options(RenderHardwareModule.Core PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-set_target_properties(RenderProviderModule.Core PROPERTIES
+set_target_properties(RenderHardwareModule.Core PROPERTIES
         CXX_STANDARD 20
         CXX_STANDARD_REQUIRED ON
 )

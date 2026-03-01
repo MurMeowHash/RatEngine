@@ -1,6 +1,6 @@
-add_library(RenderProviderModule.Vulkan STATIC)
+add_library(RenderHardwareModule.Vulkan STATIC)
 
-target_sources(RenderProviderModule.Vulkan
+target_sources(RenderHardwareModule.Vulkan
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/VulkanRenderProvider.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Extensions/IVulkanExtensionsAssembler.h
@@ -40,43 +40,43 @@ target_sources(RenderProviderModule.Vulkan
 )
 
 if(WIN32)
-    target_sources(RenderProviderModule.Vulkan
+    target_sources(RenderHardwareModule.Vulkan
             PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Extensions/VulkanWindowsExtensionsProvider.h
             PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Extensions/VulkanWindowsExtensionsProvider.cpp
     )
 else()
-    target_sources(RenderProviderModule.Vulkan
+    target_sources(RenderHardwareModule.Vulkan
             PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Extensions/VulkanMockExtensionsProvider.h
     )
 endif()
 
-target_include_directories(RenderProviderModule.Vulkan
+target_include_directories(RenderHardwareModule.Vulkan
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private
 )
 
-target_link_libraries(RenderProviderModule.Vulkan
+target_link_libraries(RenderHardwareModule.Vulkan
         PUBLIC
         vulkan
         PRIVATE
-        RenderProviderModule.Core
+        RenderHardwareModule.Core
         CoreModule.Common
         InjectionModule.Core
         DebugModule
 )
 
 if(MSVC)
-    target_compile_options(RenderProviderModule.Vulkan PRIVATE /W4)
+    target_compile_options(RenderHardwareModule.Vulkan PRIVATE /W4)
 else()
-    target_compile_options(RenderProviderModule.Vulkan PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_options(RenderHardwareModule.Vulkan PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-set_target_properties(RenderProviderModule.Vulkan PROPERTIES
+set_target_properties(RenderHardwareModule.Vulkan PROPERTIES
         CXX_STANDARD 20
         CXX_STANDARD_REQUIRED ON
 )
