@@ -5,14 +5,17 @@
 
 class DependencyContextBase : public IDependencyContext {
 public:
+    explicit DependencyContextBase(const DiContainer* parentContainer = nullptr);
     void OpenContext() override;
     void CloseContext() override;
 
-    const DiContainer &GetContainer() const override {
+    [[nodiscard]] const DiContainer* GetContainer() const override {
         return m_diContainer;
     }
+
+    ~DependencyContextBase() override;
 protected:
-    DiContainer m_diContainer;
+    DiContainer* m_diContainer;
 
     virtual void ConstructCompositionRoot() = 0;
 };

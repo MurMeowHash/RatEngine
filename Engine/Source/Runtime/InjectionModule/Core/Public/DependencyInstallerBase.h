@@ -5,7 +5,7 @@
 template<typename TInstaller>
 class DependencyInstallerBase : IDependencyInstaller {
 public:
-    static void InstallDependencies(DiContainer &diContainer) {
+    static void InstallDependencies(DiContainer* diContainer) {
         TInstaller installerInstance;
         installerInstance.InstallBindings(diContainer);
     }

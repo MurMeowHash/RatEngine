@@ -24,6 +24,7 @@ target_link_libraries(EngineLoopModule
         DebugModule
         CoreModule.Common
         WindowProviderModule.Core
+        RenderHardwareModule.Core
 )
 
 if(MSVC)

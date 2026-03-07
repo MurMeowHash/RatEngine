@@ -1,5 +1,8 @@
 #include "../Public/DiContainer.h"
 
+DiContainer::DiContainer(const DiContainer *parentContainer)
+: m_parentContainer(parentContainer) { }
+
 void DiContainer::ResolveDependencies() {
     m_dependencies.clear();
 
@@ -29,8 +32,8 @@ void DiContainer::TopoSortUtil(const ClientBindingWithInstance& node,
         auto bindingIterator = bindingMap.find(depType);
         if (bindingIterator != bindingMap.end())
             TopoSortUtil(bindingIterator->second, bindingIterator->first, bindingMap, visited, visiting, sorted);
-        else
-            throw std::runtime_error("Dependency not found: " + std::string(depType.name()));
+        else if(!ContainsDependency(depType))
+            throw std::runtime_error(StringFormatter("Dependency not found: ", depType.name()));
     }
 
     visiting.erase(bindingType);
@@ -57,4 +60,14 @@ void DiContainer::Destroy() {
     }
 
     m_dependencies.clear();
+}
+
+bool DiContainer::ContainsDependency(const std::type_index &depType) const {
+    if(m_dependencies.contains(depType))
+        return true;
+
+    if(m_parentContainer)
+        return m_parentContainer->ContainsDependency(depType);
+
+    return false;
 }

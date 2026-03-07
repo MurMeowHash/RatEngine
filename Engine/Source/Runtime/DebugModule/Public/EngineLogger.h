@@ -7,6 +7,7 @@ public:
     void SetOutputStream(std::ostream *outputStream) override;
     void PrintError(const std::string &msg) const override;
     void PrintWarning(const std::string &msg) const override;
+    void PrintInfo(const std::string &msg) const override;
 
 private:
     std::ostream *m_outputStream = nullptr;

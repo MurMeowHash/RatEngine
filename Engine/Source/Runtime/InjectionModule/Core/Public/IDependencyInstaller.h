@@ -4,6 +4,6 @@
 
 class IDependencyInstaller {
 public:
-    virtual void InstallBindings(DiContainer &diContainer) const = 0;
+    virtual void InstallBindings(DiContainer* diContainer) const = 0;
     virtual ~IDependencyInstaller() = default;
 };

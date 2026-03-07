@@ -4,5 +4,5 @@
 
 class DebugModuleInstaller : public DependencyInstallerBase<DebugModuleInstaller> {
 public:
-    void InstallBindings(DiContainer &diContainer) const override;
+    void InstallBindings(DiContainer* diContainer) const override;
 };

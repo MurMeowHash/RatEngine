@@ -8,10 +8,20 @@ target_sources(CoreModule.Common
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/CoreUtils.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/CoreGlobals.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/PlatformInteractors/IPlatformInteractor.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Application/Application.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/BuildSettings/BuildSettings.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Application/IApplicationInitializer.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Application/HardCodedApplicationInitializer.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/BuildSettings/IBuildSettingsInitializer.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/BuildSettings/HardCodedBuildSettingsInitializer.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ProjectSettings/ProjectSettings.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ProjectSettings/HardCodedProjectSettingsInitializer.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/CoreGlobals.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Application/Application.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/BuildSettings/BuildSettings.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Application/HardCodedApplicationInitializer.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/BuildSettings/HardCodedBuildSettingsInitializer.cpp
 )
 
 target_include_directories(CoreModule.Common
