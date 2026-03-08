@@ -13,6 +13,9 @@ public:
         m_Func(std::forward<Args>(args)...);
     }
 
+    void operator()(Args... args) override {
+        Invoke(std::forward<Args>(args)...);
+    }
 private:
     FunctionHandler m_Func;
 };

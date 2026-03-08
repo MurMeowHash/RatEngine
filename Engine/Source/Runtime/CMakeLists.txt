@@ -33,3 +33,13 @@ endif()
 
 add_subdirectory(RenderHardwareModule/Installation)
 add_subdirectory(RenderHardwareModule/Vulkan)
+add_subdirectory(ConcurrencyModule/Core)
+
+if(WIN32)
+    add_subdirectory(ConcurrencyModule/Windows)
+else()
+    add_subdirectory(ConcurrencyModule/Mock)
+endif()
+
+add_subdirectory(ConcurrencyModule/Installation)
+add_subdirectory(RenderModule/Threading)

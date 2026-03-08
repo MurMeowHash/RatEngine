@@ -34,6 +34,12 @@ namespace Rat::Core::Flags {
     }
 
     template<typename TFlags>
+    inline TFlags& operator&=(TFlags& a, TFlags b) {
+        a = a & b;
+        return a;
+    }
+
+    template<typename TFlags>
     inline bool IsFlagSet(TFlags value, TFlags flag) {
         using T = std::underlying_type_t<TFlags>;
         return (static_cast<T>(value) & static_cast<T>(flag)) != 0;
