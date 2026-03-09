@@ -21,10 +21,11 @@ target_include_directories(ConcurrencyModule.Core
 )
 
 target_link_libraries(ConcurrencyModule.Core
+        PUBLIC
+        ConcurrencyModule.SynchronizationCommon
         PRIVATE
         DelegateModule
         CoreModule.Common
-        ConcurrencyModule.SynchronizationCommon
 )
 
 if(MSVC)
