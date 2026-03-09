@@ -3,10 +3,11 @@ add_library(ConcurrencyModule.Windows STATIC)
 target_sources(ConcurrencyModule.Windows
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/WindowsPlatformThread.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/WindowsPlatformThreadFactory.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/WindowsConcurrencyFactory.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/WindowsAtomicSynchronizer.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/WindowsPlatformThread.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/Private/WindowsPlatformThreadFactory.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/WindowsConcurrencyFactory.cpp
 )
 
 target_include_directories(ConcurrencyModule.Windows

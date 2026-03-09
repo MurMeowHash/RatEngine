@@ -43,3 +43,4 @@ endif()
 
 add_subdirectory(ConcurrencyModule/Installation)
 add_subdirectory(RenderModule/Threading)
+add_subdirectory(ConcurrencyModule/SynchronizationCommon)

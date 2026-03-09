@@ -1,15 +1,15 @@
 #include "../Public/ConcurrencyModuleInstaller.h"
-#include "IPlatformThreadFactory.h"
+#include "IConcurrencyFactory.h"
 
 #if defined(__WIN32)
-#include "WindowsPlatformThreadFactory.h"
+#include "WindowsConcurrencyFactory.h"
 #else
 #include "MockPlatformThreadFactory.h"
 #endif
 
 void ConcurrencyModuleInstaller::InstallBindings(DiContainer *diContainer) const {
 #if defined(__WIN32)
-    diContainer->Bind<IPlatformThreadFactory>(ClientBinding([](){return new WindowsPlatformThreadFactory();}));
+    diContainer->Bind<IConcurrencyFactory>(ClientBinding([](){return new WindowsConcurrencyFactory();}));
 #else
     diContainer->Bind<IPlatformThreadFactory>(ClientBinding([](){return new MockPlatformThreadFactory();}));
 #endif

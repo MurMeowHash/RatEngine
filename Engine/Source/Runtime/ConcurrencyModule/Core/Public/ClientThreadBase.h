@@ -1,7 +1,8 @@
 #pragma once
 
 #include "IClientThread.h"
-#include "IPlatformThreadFactory.h"
+#include "IConcurrencyFactory.h"
+#include "SynchronizationCommon.h"
 
 class ClientThreadBase : IClientThread {
 public:
@@ -14,7 +15,7 @@ public:
 
     ~ClientThreadBase() override;
 public:
-    explicit ClientThreadBase(IPlatformThreadFactory* platformThreadFactory);
+    explicit ClientThreadBase(IConcurrencyFactory* concurrencyFactory);
     void Create(size_t stackSize, ThreadCreationFlags threadCreationFlags) override;
     void SubmitRuntimeFlags(ThreadRuntimeFlags flags) override;
     [[nodiscard]] ThreadRuntimeFlags RetrieveRuntimeFlags();
@@ -24,8 +25,8 @@ protected:
     virtual void OnRelease() { };
 
 private:
-    ThreadRuntimeFlags m_threadRuntimeFlags = ThreadRuntimeFlags::None;
-    IPlatformThreadFactory* m_platformThreadFactory;
+    AtomicSynchronizer<ThreadRuntimeFlags> m_threadRuntimeFlags = AtomicSynchronizer<ThreadRuntimeFlags>(ThreadRuntimeFlags::None);
+    IConcurrencyFactory* m_concurrencyFactory;
     IPlatformThread* m_platformThread = nullptr;
 
     IDelegate<>* m_workDelegate;

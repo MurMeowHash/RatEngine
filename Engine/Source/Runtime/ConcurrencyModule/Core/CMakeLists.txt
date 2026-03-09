@@ -7,7 +7,8 @@ target_sources(ConcurrencyModule.Core
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/IPlatformThread.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/ClientThreadBase.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/ConcurrencyGlobals.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IPlatformThreadFactory.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IConcurrencyFactory.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IAtomicSynchronizer.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ClientThreadBase.cpp
 )
@@ -23,6 +24,7 @@ target_link_libraries(ConcurrencyModule.Core
         PRIVATE
         DelegateModule
         CoreModule.Common
+        ConcurrencyModule.SynchronizationCommon
 )
 
 if(MSVC)

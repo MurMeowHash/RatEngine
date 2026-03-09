@@ -4,6 +4,7 @@ target_sources(ConcurrencyModule.Mock
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/MockPlatformThreadFactory.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/MockPlatformThread.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/MockAtomicSynchronizer.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/MockPlatformThreadFactory.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/MockPlatformThread.cpp

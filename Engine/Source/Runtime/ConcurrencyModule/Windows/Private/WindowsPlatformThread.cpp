@@ -1,6 +1,4 @@
 #include "../Public/WindowsPlatformThread.h"
-#include <winbase.h>
-#include <winnt.h>
 #include "CoreUtils.h"
 #include "IDelegate.h"
 #include <cassert>
@@ -65,16 +63,4 @@ void WindowsPlatformThread::ReleaseThread() {
     CloseHandle(m_threadHandle);
     m_threadId = 0;
     m_threadHandle = nullptr;
-}
-
-void WindowsPlatformThread::SetSynchronizedValue64(uint64_t *destination, uint64_t value) {
-    InterlockedExchange(destination, value);
-}
-
-uint64_t WindowsPlatformThread::GetSynchronizedValue64(uint64_t *targetMem) {
-    return InterlockedCompareExchange(targetMem, 0, 0);
-}
-
-void WindowsPlatformThread::SetSynchronizedBitwiseOrValue64(uint64_t *destination, uint64_t bitwiseOperand) {
-    InterlockedOr(destination, bitwiseOperand);
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IPlatformThread.h"
-#include <processthreadsapi.h>
+#include <windows.h>
 
 class WindowsPlatformThread : public IPlatformThread {
 public:
@@ -15,9 +15,6 @@ public:
 
 public:
     void Create(IDelegate<>* executeAction, size_t stackSize, ThreadCreationFlags flags) override;
-    void SetSynchronizedValue64(uint64_t *destination, uint64_t value) override;
-    uint64_t GetSynchronizedValue64(uint64_t *targetMem) override;
-    void SetSynchronizedBitwiseOrValue64(uint64_t *destination, uint64_t bitwiseOperand) override;
 
 private:
     DWORD m_threadId = 0;

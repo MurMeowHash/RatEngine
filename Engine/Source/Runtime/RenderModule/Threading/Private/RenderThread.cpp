@@ -1,7 +1,7 @@
 #include "../Public/RenderThread.h"
 #include "CoreUtils.h"
 
-RenderThread::RenderThread(IPlatformThreadFactory *platformThreadFactory)
+RenderThread::RenderThread(IConcurrencyFactory *platformThreadFactory)
 : ClientThreadBase(platformThreadFactory) { }
 
 void RenderThread::SubmitWork() {

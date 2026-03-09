@@ -5,13 +5,13 @@
 
 using Rat::Core::Flags::operator&;
 
-ClientThreadBase::ClientThreadBase(IPlatformThreadFactory *platformThreadFactory)
-: m_platformThreadFactory(platformThreadFactory) {
+ClientThreadBase::ClientThreadBase(IConcurrencyFactory *concurrencyFactory)
+: m_concurrencyFactory(concurrencyFactory) {
     m_workDelegate = new ObjectDelegate(this, &ClientThreadBase::SubmitWork);
 }
 
 void ClientThreadBase::Create(size_t stackSize, ThreadCreationFlags threadCreationFlags) {
-    m_platformThread = m_platformThreadFactory->CreatePlatformThread(m_workDelegate, stackSize, threadCreationFlags);
+    m_platformThread = m_concurrencyFactory->CreatePlatformThread(m_workDelegate, stackSize, threadCreationFlags);
 }
 
 void ClientThreadBase::Execute() {
@@ -51,11 +51,9 @@ void ClientThreadBase::Terminate(bool forced) {
 }
 
 void ClientThreadBase::SubmitRuntimeFlags(ThreadRuntimeFlags flags) {
-    uint64_t* convertedRuntimeFlagsMem = reinterpret_cast<uint64_t*>(&m_threadRuntimeFlags);
-    m_platformThread->SetSynchronizedBitwiseOrValue64(convertedRuntimeFlagsMem, static_cast<uint64_t>(flags));
+    m_threadRuntimeFlags.BitwiseAdd(flags);
 }
 
 ThreadRuntimeFlags ClientThreadBase::RetrieveRuntimeFlags() {
-    uint64_t* convertedRuntimeFlagsMem = reinterpret_cast<uint64_t*>(&m_threadRuntimeFlags);
-    return static_cast<ThreadRuntimeFlags>(m_platformThread->GetSynchronizedValue64(convertedRuntimeFlagsMem));
+    return m_threadRuntimeFlags.RetrieveValue();
 }

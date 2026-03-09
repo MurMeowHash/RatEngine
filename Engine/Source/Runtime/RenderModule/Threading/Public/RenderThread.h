@@ -4,7 +4,7 @@
 
 class RenderThread : public ClientThreadBase {
 public:
-    explicit RenderThread(IPlatformThreadFactory* platformThreadFactory);
+    explicit RenderThread(IConcurrencyFactory* platformThreadFactory);
 protected:
     void SubmitWork() override;
 };
