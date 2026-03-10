@@ -51,9 +51,9 @@ void ClientThreadBase::Terminate(bool forced) {
 }
 
 void ClientThreadBase::SubmitRuntimeFlags(ThreadRuntimeFlags flags) {
-    m_threadRuntimeFlags.BitwiseAdd(flags, SynchronizationType::ThreadSynchronized);
+    m_threadRuntimeFlags.BitwiseAdd(flags, SynchronizationType::Global);
 }
 
 ThreadRuntimeFlags ClientThreadBase::RetrieveRuntimeFlags() {
-    return m_threadRuntimeFlags.RetrieveValue(SynchronizationType::ThreadSynchronized);
+    return m_threadRuntimeFlags.RetrieveValue(SynchronizationType::Global);
 }

@@ -2,5 +2,6 @@
 
 enum class SynchronizationType {
     None = 0,
-    ThreadSynchronized = 1,
+    Local = 1,
+    Global = 2,
 };

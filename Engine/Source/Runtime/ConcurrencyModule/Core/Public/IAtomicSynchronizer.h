@@ -10,5 +10,6 @@ public:
     virtual void StoreValue(TType value, SynchronizationType synchronizationType) = 0;
     virtual void BitwiseAdd(TType value, SynchronizationType synchronizationType) = 0;
     [[nodiscard]] virtual TType RetrieveValue(SynchronizationType synchronizationType) = 0;
+    virtual void Synchronize() = 0;
     virtual ~IAtomicSynchronizer() = default;
 };
