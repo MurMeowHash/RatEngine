@@ -41,7 +41,7 @@ public:
     }
 
 private:
-    TType m_value;
+    volatile TType m_value;
 };
 
 template<typename TType, bool = !std::is_pointer_v<TType>> requires(sizeof(TType) <= MAX_ATOMIC_BYTES_SIZE)
@@ -89,7 +89,7 @@ public:
     }
 
 private:
-    uint64_t m_value = 0;
+    volatile uint64_t m_value = 0;
 };
 
 template<typename TType> requires(sizeof(TType) <= MAX_ATOMIC_BYTES_SIZE)
