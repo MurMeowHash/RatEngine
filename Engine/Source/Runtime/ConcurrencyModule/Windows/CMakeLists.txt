@@ -5,9 +5,11 @@ target_sources(ConcurrencyModule.Windows
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/WindowsPlatformThread.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/WindowsConcurrencyFactory.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/WindowsAtomicSynchronizer.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/WindowsMutex.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/WindowsPlatformThread.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/WindowsConcurrencyFactory.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/WindowsMutex.cpp
 )
 
 target_include_directories(ConcurrencyModule.Windows

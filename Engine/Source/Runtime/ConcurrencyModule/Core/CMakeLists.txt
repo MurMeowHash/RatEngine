@@ -9,7 +9,8 @@ target_sources(ConcurrencyModule.Core
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/ConcurrencyGlobals.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/IConcurrencyFactory.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/IAtomicSynchronizer.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/Public/SynchronizationType.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/SynchronizationType.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IMutex.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ClientThreadBase.cpp
 )
