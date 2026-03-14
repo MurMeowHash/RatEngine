@@ -13,6 +13,8 @@ target_include_directories(ConcurrencyModule.CommandBuffers
 target_link_libraries(ConcurrencyModule.CommandBuffers
         INTERFACE
         DelegateModule
+        MemoryModule
+        CoreModule.Common
 )
 
 if(MSVC)
