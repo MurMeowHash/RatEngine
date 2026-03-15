@@ -10,34 +10,14 @@
 template<typename TType, bool = std::is_pointer_v<TType>>
 class WindowsAtomicSynchronizerPointer : public IAtomicSynchronizer<TType> {
 public:
-    void StoreValue(TType value, SynchronizationType synchronizationType) override {
-        switch (synchronizationType) {
-            case SynchronizationType::Local:
-                m_value = value;
-                break;
-            case SynchronizationType::Global:
-                InterlockedExchangePointer(&m_value, value);
-                break;
-            default:
-                throw std::runtime_error(StringFormatter("Synchronization of type ", synchronizationType, " is not supported"));
-        }
+    void StoreValue(TType value) override {
+        InterlockedExchangePointer(&m_value, value);
     }
 
-    void BitwiseAdd(TType value, SynchronizationType synchronizationType) override { }
+    void BitwiseAdd(TType value) override { }
 
-    TType RetrieveValue(SynchronizationType synchronizationType) override {
-        switch (synchronizationType) {
-            case SynchronizationType::Local:
-                return m_value;
-            case SynchronizationType::Global:
-                return InterlockedCompareExchangePointer(&m_value, nullptr, nullptr);
-            default:
-                throw std::runtime_error(StringFormatter("Synchronization of type ", synchronizationType, " is not supported"));
-        }
-    }
-
-    void Synchronize() override {
-        StoreValue(m_value, SynchronizationType::Global);
+    TType RetrieveValue() override {
+        return InterlockedCompareExchangePointer(&m_value, nullptr, nullptr);
     }
 
 private:
@@ -47,45 +27,16 @@ private:
 template<typename TType, bool = !std::is_pointer_v<TType>> requires(sizeof(TType) <= MAX_ATOMIC_BYTES_SIZE)
 class WindowsAtomicSynchronizerCommon : public IAtomicSynchronizer<TType> {
 public:
-    void StoreValue(TType value, SynchronizationType synchronizationType) override {
-        switch (synchronizationType) {
-            case SynchronizationType::Local:
-                m_value = static_cast<uint64_t>(value);
-                break;
-            case SynchronizationType::Global:
-                InterlockedExchange(&m_value, static_cast<uint64_t>(value));
-                break;
-            default:
-                throw std::runtime_error(StringFormatter("Synchronization of type ", synchronizationType, " is not supported"));
-        }
+    void StoreValue(TType value) override {
+        InterlockedExchange(&m_value, static_cast<uint64_t>(value));
     }
 
-    void BitwiseAdd(TType value, SynchronizationType synchronizationType) override {
-        switch (synchronizationType) {
-            case SynchronizationType::Local:
-                m_value |= static_cast<uint64_t>(value);
-                break;
-            case SynchronizationType::Global:
-                InterlockedOr(&m_value, static_cast<uint64_t>(value));
-                break;
-            default:
-                throw std::runtime_error(StringFormatter("Synchronization of type ", synchronizationType, " is not supported"));
-        }
+    void BitwiseAdd(TType value) override {
+        InterlockedOr(&m_value, static_cast<uint64_t>(value));
     }
 
-    TType RetrieveValue(SynchronizationType synchronizationType) override {
-        switch (synchronizationType) {
-            case SynchronizationType::Local:
-                return static_cast<TType>(m_value);
-            case SynchronizationType::Global:
-                return static_cast<TType>(InterlockedCompareExchange(&m_value, 0, 0));
-            default:
-                throw std::runtime_error(StringFormatter("Synchronization of type ", synchronizationType, " is not supported"));
-        }
-    }
-
-    void Synchronize() override {
-        StoreValue(m_value, SynchronizationType::Global);
+    TType RetrieveValue() override {
+        return static_cast<TType>(InterlockedCompareExchange(&m_value, 0, 0));
     }
 
 private:
@@ -96,42 +47,33 @@ template<typename TType> requires(sizeof(TType) <= MAX_ATOMIC_BYTES_SIZE)
 class WindowsAtomicSynchronizer : public IAtomicSynchronizer<TType> {
 public:
     explicit WindowsAtomicSynchronizer(TType value) {
-        StoreValue(value, SynchronizationType::Global);
+        StoreValue(value);
     }
 
-    void StoreValue(TType value, SynchronizationType synchronizationType) override {
+    void StoreValue(TType value) override {
         if constexpr (std::is_pointer_v<TType>) {
-            m_pointerAtomic.StoreValue(value, synchronizationType);
+            m_pointerAtomic.StoreValue(value);
         }
         else {
-            m_commonAtomic.StoreValue(value, synchronizationType);
-        }
-    }
-
-    void BitwiseAdd(TType value, SynchronizationType synchronizationType) override {
-        if constexpr (std::is_pointer_v<TType>) {
-            m_pointerAtomic.BitwiseAdd(value, synchronizationType);
-        }
-        else {
-            m_commonAtomic.BitwiseAdd(value, synchronizationType);
+            m_commonAtomic.StoreValue(value);
         }
     }
 
-    TType RetrieveValue(SynchronizationType synchronizationType) override {
+    void BitwiseAdd(TType value) override {
         if constexpr (std::is_pointer_v<TType>) {
-            return m_pointerAtomic.RetrieveValue(synchronizationType);
+            m_pointerAtomic.BitwiseAdd(value);
         }
         else {
-            return m_commonAtomic.RetrieveValue(synchronizationType);
+            m_commonAtomic.BitwiseAdd(value);
         }
     }
 
-    void Synchronize() override {
+    TType RetrieveValue() override {
         if constexpr (std::is_pointer_v<TType>) {
-            return m_pointerAtomic.Synchronize();
+            return m_pointerAtomic.RetrieveValue();
         }
         else {
-            return m_commonAtomic.Synchronize();
+            return m_commonAtomic.RetrieveValue();
         }
     }
 

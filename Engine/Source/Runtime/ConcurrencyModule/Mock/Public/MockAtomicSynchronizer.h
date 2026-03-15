@@ -13,6 +13,10 @@ public:
         return m_originalValue;
     }
 
+    void BitwiseAdd(TType value) override {
+        m_originalValue |= value;
+    }
+
 private:
     TType m_originalValue;
 };

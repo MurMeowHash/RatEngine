@@ -11,3 +11,9 @@ uint32_t MockPlatformThread::GetThreadId() {
 bool MockPlatformThread::IsValid() {
     return false;
 }
+
+bool MockPlatformThread::IsRunning() {
+    return false;
+}
+
+void MockPlatformThread::Terminate(bool forced) { }
