@@ -14,6 +14,11 @@ public:
     void Invoke(Args... args) override {
         (m_object->*m_MemberFunc)(std::forward<Args>(args)...);
     }
+
+    void operator()(Args... args) override {
+        Invoke(std::forward<Args>(args)...);
+    }
+
 private:
     TObject *m_object;
     MemberFunctionHandler m_MemberFunc;

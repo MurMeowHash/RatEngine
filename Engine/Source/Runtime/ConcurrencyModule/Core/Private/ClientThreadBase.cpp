@@ -1,0 +1,59 @@
+#include "../Public/ClientThreadBase.h"
+#include "ObjectDelegate.h"
+#include <cassert>
+#include "CoreUtils.h"
+
+using Rat::Core::Flags::operator&;
+
+ClientThreadBase::ClientThreadBase(IConcurrencyFactory *concurrencyFactory)
+: m_concurrencyFactory(concurrencyFactory) {
+    m_workDelegate = new ObjectDelegate(this, &ClientThreadBase::SubmitWork);
+}
+
+void ClientThreadBase::Create(size_t stackSize, ThreadCreationFlags threadCreationFlags) {
+    m_platformThread = m_concurrencyFactory->CreatePlatformThread(m_workDelegate, stackSize, threadCreationFlags);
+}
+
+void ClientThreadBase::Execute() {
+    assert(IsValid());
+    m_platformThread->Execute();
+}
+
+uint32_t ClientThreadBase::GetThreadId() {
+    if(m_platformThread == nullptr)
+        return 0;
+
+    return m_platformThread->GetThreadId();
+}
+
+bool ClientThreadBase::IsValid() {
+    if(m_platformThread == nullptr)
+        return false;
+
+    return m_platformThread->IsValid();
+}
+
+ClientThreadBase::~ClientThreadBase() {
+    delete m_workDelegate;
+}
+
+bool ClientThreadBase::IsRunning() {
+    if(m_platformThread == nullptr)
+        return false;
+
+    return m_platformThread->IsRunning();
+}
+
+void ClientThreadBase::Terminate(bool forced) {
+    assert(IsValid());
+    OnRelease();
+    m_platformThread->Terminate(forced);
+}
+
+void ClientThreadBase::SubmitRuntimeFlags(ThreadRuntimeFlags flags) {
+    m_threadRuntimeFlags.BitwiseAdd(flags, SynchronizationType::Global);
+}
+
+ThreadRuntimeFlags ClientThreadBase::RetrieveRuntimeFlags() {
+    return m_threadRuntimeFlags.RetrieveValue(SynchronizationType::Global);
+}
