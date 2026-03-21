@@ -17,7 +17,7 @@ struct ConcurrencyCommand {
     ConcurrencyCommand<TCommandDelegate>* m_next;
 };
 
-template<typename TCommandDelegate>
+template<typename TCommand>
 class ConcurrencyCommandBuffer {
 public:
     explicit ConcurrencyCommandBuffer(IAllocator* allocator = nullptr)
@@ -28,17 +28,17 @@ public:
         }
     }
 
-    ConcurrencyCommand<TCommandDelegate>* GetRoot() const { return m_root; }
+    ConcurrencyCommand<TCommand>* GetRoot() const { return m_root; }
 
-    void EqueueCommand(const TCommandDelegate& command) {
-        ConcurrencyCommand<TCommandDelegate>* commandNode;
-        void* memory = m_allocator->AllocateMemory(sizeof(ConcurrencyCommand<TCommandDelegate>));
-        commandNode = new (memory) ConcurrencyCommand<TCommandDelegate>(command, nullptr);
+    void EqueueCommand(const TCommand& command) {
+        ConcurrencyCommand<TCommand>* commandNode;
+        void* memory = m_allocator->AllocateMemory(sizeof(ConcurrencyCommand<TCommand>));
+        commandNode = new (memory) ConcurrencyCommand<TCommand>(command, nullptr);
         *m_tail = commandNode;
         m_tail = &commandNode->m_next;
     }
 
-    void TransferCommandBuffer(ConcurrencyCommandBuffer<TCommandDelegate>& srcCommandBuffer, bool invalidateSrcBuffer = true) {
+    void TransferCommandBuffer(ConcurrencyCommandBuffer<TCommand>& srcCommandBuffer, bool invalidateSrcBuffer = true) {
         if(m_root == nullptr) {
             m_root = srcCommandBuffer.m_root;
             m_tail = &m_root;
@@ -73,13 +73,13 @@ public:
     }
 
 private:
-    ConcurrencyCommand<TCommandDelegate>* m_root;
-    ConcurrencyCommand<TCommandDelegate>** m_tail = &m_root;
+    ConcurrencyCommand<TCommand>* m_root;
+    ConcurrencyCommand<TCommand>** m_tail = &m_root;
 
     IAllocator* m_allocator;
     bool m_usedBuiltInAllocator = false;
 
-    void TransferMemory(const ConcurrencyCommandBuffer<TCommandDelegate>& srcCommandBuffer) {
+    void TransferMemory(const ConcurrencyCommandBuffer<TCommand>& srcCommandBuffer) {
         if(!m_allocator->TryAdopt(srcCommandBuffer.m_allocator))
             throw std::runtime_error(StringFormatter("Failed to transfer memory on command buffer because no transfer defined between",
                                                      typeid(m_allocator).name(),

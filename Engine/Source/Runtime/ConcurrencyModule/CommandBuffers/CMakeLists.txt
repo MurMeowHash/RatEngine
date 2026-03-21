@@ -3,6 +3,8 @@ add_library(ConcurrencyModule.CommandBuffers INTERFACE)
 target_sources(ConcurrencyModule.CommandBuffers
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/ConcurrencyCommandBuffer.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IConcurrencyCommandBufferPool.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/ConcurrencyCommandBufferPool.h
 )
 
 target_include_directories(ConcurrencyModule.CommandBuffers
