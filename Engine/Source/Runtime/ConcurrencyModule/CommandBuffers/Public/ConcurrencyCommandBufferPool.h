@@ -3,7 +3,7 @@
 #include "IConcurrencyCommandBufferPool.h"
 #include <cstdint>
 #include <queue>
-#include "LinearAllocator.h"
+#include "SimpleAllocator.h"
 
 template<typename TCommand>
 class ConcurrencyCommandBufferPool : public IConcurrencyCommandBufferPool<TCommand> {
@@ -20,11 +20,11 @@ public:
         AllocatePool(poolSize);
     }
 
-    void ReturnBufferToPool(ConcurrencyCommandBuffer<TCommand> *commandBuffer) override {
+    void ReturnBufferToPool(ConcurrencyCommandBuffer<TCommand>* commandBuffer) override {
         m_commandBufferPool.push(commandBuffer);
     }
 
-    ConcurrencyCommandBuffer<TCommand> *PopBuffer() override {
+    ConcurrencyCommandBuffer<TCommand>* PopBuffer() override {
         if(m_commandBufferPool.empty()) {
             if(!TryExtendPool())
                 return nullptr;
@@ -35,7 +35,7 @@ public:
         return candidateBuffer;
     }
 
-    ~ConcurrencyCommandBufferPool() {
+    ~ConcurrencyCommandBufferPool() override {
         if(!m_usingBuiltInAllocator)
             return;
 

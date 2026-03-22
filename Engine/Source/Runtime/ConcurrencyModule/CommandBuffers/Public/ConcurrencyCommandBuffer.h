@@ -31,9 +31,8 @@ public:
     ConcurrencyCommand<TCommand>* GetRoot() const { return m_root; }
 
     void EqueueCommand(const TCommand& command) {
-        ConcurrencyCommand<TCommand>* commandNode;
         void* memory = m_allocator->AllocateMemory(sizeof(ConcurrencyCommand<TCommand>));
-        commandNode = new (memory) ConcurrencyCommand<TCommand>(command, nullptr);
+        ConcurrencyCommand<TCommand> *commandNode = new(memory) ConcurrencyCommand<TCommand>(command, nullptr);
         *m_tail = commandNode;
         m_tail = &commandNode->m_next;
     }
@@ -62,9 +61,7 @@ public:
             m_allocator->FreeMemory();
     }
 
-    virtual void Submit() = 0;
-
-    ~ConcurrencyCommandBuffer() {
+    virtual ~ConcurrencyCommandBuffer() {
         if(!m_usedBuiltInAllocator)
             return;
 

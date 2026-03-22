@@ -1,10 +1,11 @@
 #pragma once
 
-#include "ClientThreadBase.h"
+#include "InfiniteThread.h"
+#include "RenderThreadContext.h"
 
-class RenderThread : public ClientThreadBase {
+class RenderThread : public InfiniteThread {
 public:
     explicit RenderThread(IConcurrencyFactory* platformThreadFactory);
 protected:
-    void SubmitWork() override;
+    void SubmitInfiniteWork() override;
 };

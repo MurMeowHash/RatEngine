@@ -3,6 +3,7 @@
 #include "IClientThread.h"
 #include "IConcurrencyFactory.h"
 #include "SynchronizationCommon.h"
+#include "ThreadContext.h"
 
 class ClientThreadBase : IClientThread {
 public:
@@ -21,8 +22,11 @@ public:
     [[nodiscard]] ThreadRuntimeFlags RetrieveRuntimeFlags();
 
 protected:
+    ThreadContext m_threadContext;
+
     virtual void SubmitWork() = 0;
     virtual void OnRelease() { };
+    virtual void InitializeContext();
 
 private:
     AtomicSynchronizer<ThreadRuntimeFlags> m_threadRuntimeFlags = AtomicSynchronizer<ThreadRuntimeFlags>(ThreadRuntimeFlags::None);

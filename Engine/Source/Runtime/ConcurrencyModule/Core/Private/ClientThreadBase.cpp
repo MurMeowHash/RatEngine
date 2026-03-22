@@ -11,6 +11,8 @@ ClientThreadBase::ClientThreadBase(IConcurrencyFactory *concurrencyFactory)
 }
 
 void ClientThreadBase::Create(size_t stackSize, ThreadCreationFlags threadCreationFlags) {
+    InitializeContext();
+    m_threadContext.SetContextAssembled(true);
     m_platformThread = m_concurrencyFactory->CreatePlatformThread(m_workDelegate, stackSize, threadCreationFlags);
 }
 
@@ -48,12 +50,17 @@ void ClientThreadBase::Terminate(bool forced) {
     assert(IsValid());
     OnRelease();
     m_platformThread->Terminate(forced);
+    m_threadContext.MarkContextBeingDestroyed();
 }
 
 void ClientThreadBase::SubmitRuntimeFlags(ThreadRuntimeFlags flags) {
-    m_threadRuntimeFlags.BitwiseAdd(flags, SynchronizationType::Global);
+    m_threadRuntimeFlags.BitwiseAdd(flags);
 }
 
 ThreadRuntimeFlags ClientThreadBase::RetrieveRuntimeFlags() {
-    return m_threadRuntimeFlags.RetrieveValue(SynchronizationType::Global);
+    return m_threadRuntimeFlags.RetrieveValue();
+}
+
+void ClientThreadBase::InitializeContext() {
+
 }

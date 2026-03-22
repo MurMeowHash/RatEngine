@@ -1,11 +1,8 @@
 #include "../Public/RenderThread.h"
-#include "CoreUtils.h"
 
 RenderThread::RenderThread(IConcurrencyFactory *platformThreadFactory)
-: ClientThreadBase(platformThreadFactory) { }
+: InfiniteThread(platformThreadFactory) { }
 
-void RenderThread::SubmitWork() {
-    while(!Rat::Core::Flags::IsFlagSet(RetrieveRuntimeFlags(), ThreadRuntimeFlags::StopRequested)) {
-        //do some work
-    }
+void RenderThread::SubmitInfiniteWork() {
+
 }

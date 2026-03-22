@@ -10,8 +10,12 @@ target_sources(ConcurrencyModule.Core
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/IConcurrencyFactory.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/IAtomicSynchronizer.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/IMutex.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/ThreadContext.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/InfiniteThread.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/InfiniteThreadContext.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ClientThreadBase.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/InfiniteThread.cpp
 )
 
 target_include_directories(ConcurrencyModule.Core
