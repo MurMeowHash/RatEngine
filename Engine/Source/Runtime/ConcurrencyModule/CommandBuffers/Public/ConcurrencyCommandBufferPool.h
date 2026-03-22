@@ -4,14 +4,29 @@
 #include <cstdint>
 #include <queue>
 #include "SimpleAllocator.h"
+#include "IFunc.h"
+#include "StaticFunc.h"
 
 template<typename TCommand>
 class ConcurrencyCommandBufferPool : public IConcurrencyCommandBufferPool<TCommand> {
 public:
-    ConcurrencyCommandBufferPool(uint32_t poolSize, uint32_t maxPoolSize, IAllocator* allocator = nullptr, IAllocator* commandBufferAllocator = nullptr)
-    : m_poolSize(0), m_maxPoolSize(maxPoolSize), m_allocator(allocator), m_commandBufferAllocator(commandBufferAllocator) {
-        m_commandBufferPool.reserve(maxPoolSize);
+    ConcurrencyCommandBufferPool(uint32_t poolSize, uint32_t maxPoolSize, IAllocator* commandBufferAllocator = nullptr,
+                                 IAllocator* allocator = nullptr)
+    : m_poolSize(0), m_maxPoolSize(maxPoolSize), m_allocator(allocator), m_usingBufferAllocatorWrapper(true) {
+        if(m_allocator == nullptr) {
+            m_allocator = new SimpleAllocator(maxPoolSize);
+            m_usingBuiltInAllocator = true;
+        }
 
+        m_bufferAllocatorFunc = new StaticFunc<IAllocator*>([commandBufferAllocator](){ return commandBufferAllocator; });
+
+        AllocatePool(poolSize);
+    }
+
+    ConcurrencyCommandBufferPool(uint32_t poolSize, uint32_t maxPoolSize, IFunc<IAllocator*>* bufferAllocatorFunc,
+                                 IAllocator* allocator = nullptr)
+            : m_poolSize(0), m_maxPoolSize(maxPoolSize), m_allocator(allocator), m_bufferAllocatorFunc(bufferAllocatorFunc),
+            m_usingBufferAllocatorWrapper(false) {
         if(m_allocator == nullptr) {
             m_allocator = new SimpleAllocator(maxPoolSize);
             m_usingBuiltInAllocator = true;
@@ -36,11 +51,22 @@ public:
     }
 
     ~ConcurrencyCommandBufferPool() override {
-        if(!m_usingBuiltInAllocator)
-            return;
+        if(m_usingBufferAllocatorWrapper) {
+            delete m_bufferAllocatorFunc;
+        }
+        else {
+            while(!m_commandBufferPool.empty()) {
+                ConcurrencyCommandBuffer<TCommand>*& commandBuffer = m_commandBufferPool.front();
+                commandBuffer->GetAllocator()->FreeMemory();
+                delete commandBuffer->GetAllocator();
+                m_commandBufferPool.pop();
+            }
+        }
 
-        m_allocator->FreeMemory();
-        delete m_allocator;
+        if(m_usingBuiltInAllocator) {
+            m_allocator->FreeMemory();
+            delete m_allocator;
+        }
     }
 
 private:
@@ -49,22 +75,24 @@ private:
     std::queue<ConcurrencyCommandBuffer<TCommand>*> m_commandBufferPool;
 
     IAllocator* m_allocator;
-    IAllocator* m_commandBufferAllocator;
+    IFunc<IAllocator*>* m_bufferAllocatorFunc = nullptr;
+
     bool m_usingBuiltInAllocator;
+    bool m_usingBufferAllocatorWrapper;
 
     bool TryExtendPool() {
         if(m_poolSize >= m_maxPoolSize)
             return false;
 
         void* allocatedMemory = m_allocator->AllocateMemory(sizeof(ConcurrencyCommandBuffer<TCommand>));
-        ConcurrencyCommandBuffer<TCommand>* commandBuffer = new (allocatedMemory) ConcurrencyCommandBuffer<TCommand>(m_commandBufferAllocator);
+        ConcurrencyCommandBuffer<TCommand>* commandBuffer = new (allocatedMemory) ConcurrencyCommandBuffer<TCommand>(m_bufferAllocatorFunc->Invoke());
         m_commandBufferPool.push(commandBuffer);
         ++m_poolSize;
         return true;
     }
 
     void AllocatePool(uint32_t poolSize) {
-        for(int i = 0; i < poolSize; i++) {
+        for(uint32_t i = 0; i < poolSize; i++) {
             TryExtendPool();
         }
     }

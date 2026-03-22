@@ -37,6 +37,7 @@ bool ClientThreadBase::IsValid() {
 
 ClientThreadBase::~ClientThreadBase() {
     delete m_workDelegate;
+    m_threadContext.DestroyContext();
 }
 
 bool ClientThreadBase::IsRunning() {
@@ -50,7 +51,7 @@ void ClientThreadBase::Terminate(bool forced) {
     assert(IsValid());
     OnRelease();
     m_platformThread->Terminate(forced);
-    m_threadContext.MarkContextBeingDestroyed();
+    m_threadContext.DestroyContext();
 }
 
 void ClientThreadBase::SubmitRuntimeFlags(ThreadRuntimeFlags flags) {
@@ -63,4 +64,8 @@ ThreadRuntimeFlags ClientThreadBase::RetrieveRuntimeFlags() {
 
 void ClientThreadBase::InitializeContext() {
 
+}
+
+const ThreadContext &ClientThreadBase::GetThreadContext() const {
+    return m_threadContext;
 }

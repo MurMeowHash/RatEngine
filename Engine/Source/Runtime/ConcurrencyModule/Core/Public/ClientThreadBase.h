@@ -18,6 +18,9 @@ public:
 public:
     explicit ClientThreadBase(IConcurrencyFactory* concurrencyFactory);
     void Create(size_t stackSize, ThreadCreationFlags threadCreationFlags) override;
+    const ThreadContext &GetThreadContext() const override;
+
+public:
     void SubmitRuntimeFlags(ThreadRuntimeFlags flags) override;
     [[nodiscard]] ThreadRuntimeFlags RetrieveRuntimeFlags();
 

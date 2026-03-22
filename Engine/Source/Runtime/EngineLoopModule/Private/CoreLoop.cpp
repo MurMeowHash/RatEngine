@@ -11,6 +11,10 @@
 #include "RenderProviderAccessor.h"
 #include "BuildSettings/IBuildSettingsInitializer.h"
 #include "Application/IApplicationInitializer.h"
+#include "WorldThreadWrapper.h"
+#include "RenderableThreadContext.h"
+#include "IConcurrencyCommandBufferPool.h"
+#include "StaticDelegate.h"
 
 CoreLoop::CoreLoop() {
     m_engineDependencyContext = new EngineDependencyContext(nullptr);
@@ -29,6 +33,8 @@ Rat::Core::ErrorSeverity CoreLoop::Initialize() {
     m_projectSettingsInitializer->Initialize();
     m_buildSettingsInitializer->Initialize();
     m_applicationInitializer->Initialize();
+
+    m_worldThreadWrapper->Initialize();
 
     Rat::Core::ErrorSeverity errorSeverity = Rat::Core::ErrorSeverity::Success;
 
@@ -49,6 +55,11 @@ Rat::Core::ErrorSeverity CoreLoop::Tick() {
     Rat::Core::ErrorSeverity errorSeverity = Rat::Core::ErrorSeverity::Success;
 
     m_windowProvider->Tick();
+
+    RenderableThreadContext* renderableThreadContext;
+    m_worldThreadWrapper->GetThreadContext()->TryRetrieveContextUnit<RenderableThreadContext>(renderableThreadContext);
+    ConcurrencyCommandBuffer<RenderCommand>* renderCommandBuffer = renderableThreadContext->m_commandBufferPool->PopBuffer();
+    renderCommandBuffer->EqueueCommand(StaticDelegate([](){}));
 
     return errorSeverity;
 }
@@ -72,6 +83,7 @@ void CoreLoop::AcquireNeededDependencies() {
     m_renderProviderAccessor = diContainer->Resolve<RenderProviderAccessor>();
     m_buildSettingsInitializer = diContainer->Resolve<IBuildSettingsInitializer>();
     m_applicationInitializer = diContainer->Resolve<IApplicationInitializer>();
+    m_worldThreadWrapper = diContainer->Resolve<WorldThreadWrapper>();
 }
 
 Rat::Core::ErrorSeverity CoreLoop::CreateMainWindow() {

@@ -5,14 +5,7 @@ InfiniteThread::InfiniteThread(IConcurrencyFactory *concurrencyFactory)
 
 void InfiniteThread::InitializeContext() {
     ClientThreadBase::InitializeContext();
-    InfiniteThreadContext* infiniteThreadContext = new InfiniteThreadContext;
-    m_cachedInfiniteThreadContext.StoreValue(infiniteThreadContext);
-    m_threadContext.AddContextUnit(infiniteThreadContext);
-}
-
-void InfiniteThread::Terminate(bool forced) {
-    ClientThreadBase::Terminate(forced);
-    delete m_cachedInfiniteThreadContext.RetrieveValue();
+    m_threadContext.AddContextUnit(new InfiniteThreadContext);
 }
 
 void InfiniteThread::SubmitWork() {

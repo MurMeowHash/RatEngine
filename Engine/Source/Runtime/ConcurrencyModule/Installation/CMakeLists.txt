@@ -18,6 +18,8 @@ target_link_libraries(ConcurrencyModule.Installation
         PRIVATE
         ConcurrencyModule.Core
         InjectionModule.Core
+        ConcurrencyModule.WorldAbstraction
+        CoreModule.Common
 )
 
 if(WIN32)

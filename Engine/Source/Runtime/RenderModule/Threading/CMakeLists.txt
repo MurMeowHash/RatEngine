@@ -8,6 +8,7 @@ target_sources(RenderModule.Threading
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderableThreadContext.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/RenderThread.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/RenderableThreadContext.cpp
 )
 
 target_include_directories(RenderModule.Threading

@@ -2,6 +2,7 @@
 
 #include "InfiniteThread.h"
 #include "RenderThreadContext.h"
+#include "RenderableThreadContext.h"
 
 class RenderThread : public InfiniteThread {
 public:

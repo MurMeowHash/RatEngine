@@ -8,3 +8,7 @@ void WindowsPlatformInteractor::RequestQuit(bool forcedQuit) {
     else
         Rat::Core::g_isEngineQuitRequested = true;
 }
+
+uint32_t WindowsPlatformInteractor::GetRunningThreadId() {
+    return GetCurrentThreadId();
+}

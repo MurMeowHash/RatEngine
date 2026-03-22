@@ -13,6 +13,8 @@ target_sources(ConcurrencyModule.Core
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/ThreadContext.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/InfiniteThread.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/InfiniteThreadContext.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IThreadWrapper.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IThreadContextUnit.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ClientThreadBase.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/InfiniteThread.cpp

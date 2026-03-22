@@ -12,6 +12,7 @@ class IRenderProviderInitializer;
 class RenderProviderAccessor;
 class IBuildSettingsInitializer;
 class IApplicationInitializer;
+class WorldThreadWrapper;
 
 class CoreLoop : IEngineLoop {
 public:
@@ -32,6 +33,7 @@ private:
     RenderProviderAccessor* m_renderProviderAccessor = nullptr;
     IBuildSettingsInitializer* m_buildSettingsInitializer = nullptr;
     IApplicationInitializer* m_applicationInitializer = nullptr;
+    WorldThreadWrapper* m_worldThreadWrapper = nullptr;
 
     void AcquireNeededDependencies();
     Rat::Core::ErrorSeverity CreateMainWindow();

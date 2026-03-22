@@ -13,7 +13,7 @@ struct ConcurrencyCommand {
     ConcurrencyCommand(const ConcurrencyCommand<TCommandDelegate>& src)
     : m_command(src.m_command), m_next(src.m_next) { }
 
-    TCommandDelegate m_command;
+    const TCommandDelegate& m_command;
     ConcurrencyCommand<TCommandDelegate>* m_next;
 };
 
@@ -29,6 +29,7 @@ public:
     }
 
     ConcurrencyCommand<TCommand>* GetRoot() const { return m_root; }
+    [[nodiscard]] IAllocator* GetAllocator() const { return m_allocator; }
 
     void EqueueCommand(const TCommand& command) {
         void* memory = m_allocator->AllocateMemory(sizeof(ConcurrencyCommand<TCommand>));

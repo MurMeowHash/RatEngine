@@ -3,10 +3,11 @@
 #include <unordered_map>
 #include <typeindex>
 #include "SynchronizationCommon.h"
+#include "IThreadContextUnit.h"
 
 class ThreadContext {
 public:
-    template<class TThreadContext>
+    template<class TThreadContext> requires(std::is_base_of_v<IThreadContextUnit, TThreadContext>)
     void AddContextUnit(TThreadContext* contextUnit) {
         if(IsContextAssembled())
             return;
@@ -15,7 +16,7 @@ public:
     }
 
     template<class TThreadContext>
-    bool TryRetrieveContextUnit(ThreadContext*& outContext)  {
+    bool TryRetrieveContextUnit(TThreadContext*& outContext)  {
         if(!IsContextAssembled())
             return false;
 
@@ -39,12 +40,25 @@ public:
         m_isContextBeingDestroyed.StoreValue(true);
     }
 
+    void DestroyContext() {
+        if(IsContextBeingDestroyed())
+            return;
+
+        MarkContextBeingDestroyed();
+
+        for(const auto& contextUnit : m_contextUnits) {
+            delete contextUnit.second;
+        }
+
+        m_contextUnits.clear();
+    }
+
     bool IsContextBeingDestroyed() {
         return m_isContextBeingDestroyed.RetrieveValue();
     }
 
 private:
-    std::unordered_map<std::type_index, void*> m_contextUnits;
+    std::unordered_map<std::type_index, IThreadContextUnit*> m_contextUnits;
     AtomicSynchronizer<bool> m_isContextAssembled = AtomicSynchronizer<bool>(false);
     AtomicSynchronizer<bool> m_isContextBeingDestroyed = AtomicSynchronizer<bool>(false);
 };

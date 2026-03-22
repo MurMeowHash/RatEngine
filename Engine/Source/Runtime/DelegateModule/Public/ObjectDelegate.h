@@ -1,25 +1,22 @@
 #pragma once
 
 #include "IDelegate.h"
-#include <functional>
+#include "ObjectFunc.h"
+#include <utility>
 
 template<typename TObject, typename... Args>
-class ObjectDelegate : public IDelegate<Args...> {
+class ObjectDelegate : private ObjectFunc<TObject, void, Args...>, public IDelegate<Args...> {
 public:
-    using MemberFunctionHandler = void(TObject::*)(Args...);
+    using Internal = ObjectFunc<TObject, void, Args...>;
 
-    ObjectDelegate(TObject *object, MemberFunctionHandler memberFunctionHandler)
-    : m_object(object), m_MemberFunc(memberFunctionHandler) {}
+    ObjectDelegate(TObject *object, Internal::MemberFunctionHandler memberFunctionHandler)
+    : ObjectFunc<TObject, void, Args...>(object, memberFunctionHandler) {}
 
     void Invoke(Args... args) override {
-        (m_object->*m_MemberFunc)(std::forward<Args>(args)...);
+        Internal::Invoke(std::forward<Args>(args)...);
     }
 
     void operator()(Args... args) override {
-        Invoke(std::forward<Args>(args)...);
+        Internal::operator()(std::forward<Args>(args)...);
     }
-
-private:
-    TObject *m_object;
-    MemberFunctionHandler m_MemberFunc;
 };
