@@ -22,6 +22,8 @@ private:
 
     size_t m_uniformChunkSize;
 
+    static size_t AlignForward(size_t ptr, size_t alignment);
+
     friend class LinearToLinearAllocatorAdopter;
     friend class LinearToSimpleAllocatorAdopter;
     friend class SimpleToLinearAllocatorAdopter;

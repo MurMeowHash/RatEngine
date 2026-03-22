@@ -11,17 +11,23 @@ void *LinearAllocator::AllocateMemory(size_t memorySize) {
         *m_tailChunk = new MemoryChunk(m_uniformChunkSize, nullptr);
     }
 
-    if((*m_tailChunk)->m_size + memorySize > (*m_tailChunk)->m_capacity) {
-        (*m_tailChunk)->m_next = new MemoryChunk(m_uniformChunkSize, *m_tailChunk);
+    MemoryChunk* processedChunk = *m_tailChunk;
+    size_t alignment = alignof(std::max_align_t);
+    size_t alignedOffset = AlignForward(processedChunk->m_size, alignment);
+
+    if(alignedOffset + memorySize > processedChunk->m_capacity) {
+        processedChunk->m_next = new MemoryChunk(m_uniformChunkSize, *m_tailChunk);
         m_tailChunk = &(*m_tailChunk)->m_next;
+        processedChunk = *m_tailChunk;
+
+        alignedOffset = AlignForward(0, alignment);
     }
 
-    MemoryChunk* processedChunk = *m_tailChunk;
     if(!processedChunk->IsChunkValid())
         return nullptr;
 
-    void* allocatedMemory = processedChunk->m_memory + processedChunk->m_size;
-    processedChunk->m_size += memorySize;
+    void* allocatedMemory = processedChunk->m_memory + alignedOffset;
+    processedChunk->m_size = alignedOffset + memorySize;
     return allocatedMemory;
 }
 
@@ -40,4 +46,8 @@ void LinearAllocator::FreeMemory() {
 void LinearAllocator::InvalidateAllocator() {
     m_rootChunk = nullptr;
     m_tailChunk = &m_rootChunk;
+}
+
+size_t LinearAllocator::AlignForward(size_t ptr, size_t alignment) {
+    return (ptr + (alignment - 1)) & ~(alignment - 1);
 }
