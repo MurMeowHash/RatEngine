@@ -2,11 +2,11 @@
 
 void MockMutex::Create(bool initiallyLocked) { }
 
-void MockMutex::Lock() { }
+void MockMutex::Lock() const { }
 
-void MockMutex::Unlock() { }
+void MockMutex::Unlock() const { }
 
-bool MockMutex::IsValid() {
+bool MockMutex::IsValid() const {
     return false;
 }
 

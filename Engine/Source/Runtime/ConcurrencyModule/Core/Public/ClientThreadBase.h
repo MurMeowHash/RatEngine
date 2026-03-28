@@ -8,6 +8,8 @@
 class ClientThreadBase : IClientThread {
 public:
     void Execute() override;
+
+public:
     uint32_t GetThreadId() override;
     bool IsValid() override;
     bool IsRunning() override;

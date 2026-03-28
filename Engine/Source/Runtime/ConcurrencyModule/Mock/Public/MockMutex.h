@@ -5,8 +5,8 @@
 class MockMutex : public IMutex {
 public:
     void Create(bool initiallyLocked) override;
-    void Lock() override;
-    void Unlock() override;
-    bool IsValid() override;
+    void Lock() const override;
+    void Unlock() const override;
+    bool IsValid() const override;
     void Terminate() override;
 };

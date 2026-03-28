@@ -1,13 +1,12 @@
 #pragma once
 
-#include <cstdint>
 #include "ThreadContext.h"
+#include "IThread.h"
 
-class IThreadWrapper {
+class IClientThreadWrapper : public IThread {
 public:
     virtual void Initialize() = 0;
+    virtual void Initialize(uint32_t existingThreadId) = 0;
     virtual void Dispose() = 0;
-    virtual uint32_t GetThreadId() = 0;
     [[nodiscard]] virtual ThreadContext* GetThreadContext() const = 0;
-    virtual ~IThreadWrapper() = default;
 };

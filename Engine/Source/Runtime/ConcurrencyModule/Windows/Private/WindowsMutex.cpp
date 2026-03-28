@@ -5,17 +5,17 @@ void WindowsMutex::Create(bool initiallyLocked) {
     m_mutexHandle = CreateMutexA(nullptr, initiallyLocked, nullptr);
 }
 
-void WindowsMutex::Lock() {
+void WindowsMutex::Lock() const {
     assert(IsValid());
     WaitForSingleObject(m_mutexHandle, INFINITE);
 }
 
-void WindowsMutex::Unlock() {
+void WindowsMutex::Unlock() const {
     assert(IsValid());
     ReleaseMutex(m_mutexHandle);
 }
 
-bool WindowsMutex::IsValid() {
+bool WindowsMutex::IsValid() const {
     return m_mutexHandle != nullptr;
 }
 

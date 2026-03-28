@@ -4,8 +4,6 @@
 #include "InfiniteThreadContext.h"
 #include "RenderableThreadContext.h"
 #include "ProjectSettings/ProjectSettings.h"
-#include "LinearAllocator.h"
-#include "StaticFunc.h"
 
 WorldThreadWrapper::WorldThreadWrapper(IPlatformInteractor *platformInteractor, ProjectSettings* projectSettings)
 : m_platformInteractor(platformInteractor), m_projectSettings(projectSettings) { }
@@ -16,8 +14,26 @@ void WorldThreadWrapper::Initialize() {
     m_threadContext->SetContextAssembled(true);
 }
 
+void WorldThreadWrapper::Initialize(uint32_t existingThreadId) {
+    m_threadId = existingThreadId;
+    InitializeContext();
+    m_threadContext->SetContextAssembled(true);
+}
+
 uint32_t WorldThreadWrapper::GetThreadId() {
     return m_threadId;
+}
+
+bool WorldThreadWrapper::IsValid() {
+    return m_threadId != 0;
+}
+
+bool WorldThreadWrapper::IsRunning() {
+    return IsValid();
+}
+
+void WorldThreadWrapper::Terminate(bool forced) {
+    m_platformInteractor->RequestQuit(forced);
 }
 
 void WorldThreadWrapper::Dispose() {

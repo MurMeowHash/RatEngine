@@ -1,5 +1,6 @@
 #include "../Public/ConcurrencyModuleInstaller.h"
 #include "IConcurrencyFactory.h"
+#include "ThreadStorage.h"
 #include "WorldThreadWrapper.h"
 #include "PlatformInteractors/IPlatformInteractor.h"
 #include "ProjectSettings/ProjectSettings.h"
@@ -20,4 +21,8 @@ void ConcurrencyModuleInstaller::InstallBindings(DiContainer *diContainer) const
     diContainer->Bind<WorldThreadWrapper>(ClientBinding([diContainer](){
         return new WorldThreadWrapper(diContainer->Resolve<IPlatformInteractor>(), diContainer->Resolve<ProjectSettings>());
     }, std::vector<std::type_index>{typeid(IPlatformInteractor), typeid(ProjectSettings)}));
+
+    diContainer->Bind<ThreadStorage>(ClientBinding([diContainer](){
+        return new ThreadStorage(diContainer->Resolve<IConcurrencyFactory>());
+    }, std::vector<std::type_index>{typeid(IConcurrencyFactory)}));
 }
