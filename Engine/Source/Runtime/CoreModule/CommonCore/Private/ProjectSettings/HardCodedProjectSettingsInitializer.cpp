@@ -10,7 +10,7 @@ void HardCodedProjectSettingsInitializer::Initialize() {
     VulkanRenderingSettings vulkanRenderingSettings = VulkanRenderingSettings();
     vulkanRenderingSettings.m_validationLayersNames = std::vector<const char*>{"VK_LAYER_KHRONOS_validation"};
     RenderingSettings renderingSettings = RenderingSettings(vulkanRenderingSettings, 2);
-    MemoryAllocationSettings memoryAllocationSettings = MemoryAllocationSettings(4096);
+    MemoryAllocationSettings memoryAllocationSettings = MemoryAllocationSettings(4 * 1024, 16 * 1024);
     m_projectSettings->SetGeneralSettings(generalSettings);
     m_projectSettings->SetWindowSettings(windowSettings);
     m_projectSettings->SetRenderingSettings(renderingSettings);

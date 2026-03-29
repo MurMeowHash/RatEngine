@@ -3,12 +3,9 @@ add_library(RenderModule.Threading STATIC)
 target_sources(RenderModule.Threading
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderThread.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderThreadContext.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderThreadGlobals.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderableThreadContext.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/RenderThread.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/Private/RenderableThreadContext.cpp
 )
 
 target_include_directories(RenderModule.Threading
@@ -19,12 +16,14 @@ target_include_directories(RenderModule.Threading
 )
 
 target_link_libraries(RenderModule.Threading
+        PUBLIC
+        ConcurrencyModule.SynchronizationCommon
         PRIVATE
         ConcurrencyModule.Core
         ConcurrencyModule.CommandBuffers
         MemoryModule
         CoreModule.Common
-        DelegateModule
+        ConcurrencyModule.ControlSystems
 )
 
 if(MSVC)

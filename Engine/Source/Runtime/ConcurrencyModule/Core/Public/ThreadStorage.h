@@ -2,36 +2,44 @@
 
 #include <unordered_map>
 #include <typeindex>
-#include "IThread.h"
+#include "IClientThread.h"
 #include "IConcurrencyFactory.h"
-#include "IMutex.h"
-#include "ThreadGuard.h"
+#include "SynchronizationPrimitives/IMutex.h"
+#include "SynchronizationPrimitives/SharedThreadGuard.h"
+#include "SynchronizationPrimitives/ExclusiveThreadGuard.h"
 
 class ThreadStorage {
 public:
-    explicit ThreadStorage(IConcurrencyFactory* concurrencyFactory) {
-        m_concurrencyFactory = concurrencyFactory;
+    explicit ThreadStorage(IConcurrencyFactory* concurrencyFactory)
+    : m_concurrencyFactory(concurrencyFactory) {
+        m_mutex = m_concurrencyFactory->CreatePlatformMutex();
     }
 
-    void Initialize() {
-        m_mutex = m_concurrencyFactory->CreatePlatformMutex(false);
+    ~ThreadStorage() {
+        m_mutex->Terminate();
+        delete m_mutex;
     }
 
-    template<typename TThread> requires(std::is_base_of_v<IThread, TThread>)
-    void Store(const TThread* thread) {
-        ThreadGuard guard(m_mutex);
+    template<typename TThread> requires(std::is_base_of_v<IClientThread, TThread>)
+    void Store(TThread* thread) {
+        ExclusiveThreadGuard guard(m_mutex);
         m_threadMap[typeid(TThread)] = thread;
     }
 
-    template<typename TThread> requires(std::is_base_of_v<IThread, TThread>)
+    template<typename TThread> requires(std::is_base_of_v<IClientThread, TThread>)
     void DeleteFromStorage() {
-        ThreadGuard guard(m_mutex);
+        ExclusiveThreadGuard guard(m_mutex);
         m_threadMap.erase(typeid(TThread));
     }
 
-    template<typename TThread> requires(std::is_base_of_v<IThread, TThread>)
+    void DeleteFromStorage(IClientThread* thread) {
+        ExclusiveThreadGuard guard(m_mutex);
+        m_threadMap.erase(typeid(*thread));
+    }
+
+    template<typename TThread> requires(std::is_base_of_v<IClientThread, TThread>)
     bool TryRetrieve(TThread*& outThread) {
-        ThreadGuard guard(m_mutex);
+        SharedThreadGuard guard(m_mutex);
         auto threadIterator = m_threadMap.find(typeid(TThread));
         if (threadIterator == m_threadMap.end())
             return false;
@@ -40,11 +48,11 @@ public:
         return true;
     }
 
-    bool TryRetrieve(uint32_t threadId, IThread*& outThread) const {
-        ThreadGuard guard(m_mutex);
-        for (const std::pair<const std::type_index, IThread *> &thread: m_threadMap) {
-            if (thread.second->GetThreadId() == threadId) {
-                outThread = thread.second;
+    bool TryRetrieve(uint32_t threadId, IClientThread*& outThread) const {
+        SharedThreadGuard guard(m_mutex);
+        for (const std::pair<const std::type_index, IClientThread*> &clientThread: m_threadMap) {
+            if (clientThread.second->GetThreadId() == threadId) {
+                outThread = clientThread.second;
                 return true;
             }
         }
@@ -53,7 +61,7 @@ public:
     }
 
 private:
-    std::unordered_map<std::type_index, IThread*> m_threadMap;
+    std::unordered_map<std::type_index, IClientThread*> m_threadMap;
     IConcurrencyFactory* m_concurrencyFactory;
     IMutex* m_mutex = nullptr;
 };

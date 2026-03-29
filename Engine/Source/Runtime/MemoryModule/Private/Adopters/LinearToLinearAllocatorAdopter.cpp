@@ -1,6 +1,5 @@
 #include "Adopters/LinearToLinearAllocatorAdopter.h"
 
-//TODO: sussy
 void LinearToLinearAllocatorAdopter::Adopt(IAllocator* dest, IAllocator* src) {
     if(dest == src || dest == nullptr || src == nullptr)
         return;
@@ -30,6 +29,7 @@ void LinearToLinearAllocatorAdopter::Adopt(IAllocator* dest, IAllocator* src) {
         return;
     }
 
+    //TODO: maybe optimize to abandon chunk and not iterate over tail
     MemoryChunk* inspectedChunk = originalAllocatorChunkTail;
     while(inspectedChunk->m_next != nullptr) {
         inspectedChunk = inspectedChunk->m_next;

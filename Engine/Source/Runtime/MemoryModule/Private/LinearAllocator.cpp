@@ -48,6 +48,18 @@ void LinearAllocator::InvalidateAllocator() {
     m_tailChunk = &m_rootChunk;
 }
 
+size_t LinearAllocator::GetAllocatedMemorySize() const {
+    size_t totalMemorySize = 0;
+
+    MemoryChunk* currentChunk = m_rootChunk;
+    while (currentChunk != nullptr) {
+        totalMemorySize += currentChunk->m_size;
+        currentChunk = currentChunk->m_next;
+    }
+
+    return totalMemorySize;
+}
+
 size_t LinearAllocator::AlignForward(size_t ptr, size_t alignment) {
     return (ptr + (alignment - 1)) & ~(alignment - 1);
 }

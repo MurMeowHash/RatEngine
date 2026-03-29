@@ -2,22 +2,35 @@
 #include "PlatformInteractors/IPlatformInteractor.h"
 #include "ThreadContext.h"
 #include "InfiniteThreadContext.h"
-#include "RenderableThreadContext.h"
 #include "ProjectSettings/ProjectSettings.h"
+#include "ThreadStorage.h"
+#include "CommandProducerThreadContext.h"
+#include "RenderThreadGlobals.h"
+#include "LinearAllocator.h"
 
-WorldThreadWrapper::WorldThreadWrapper(IPlatformInteractor *platformInteractor, ProjectSettings* projectSettings)
-: m_platformInteractor(platformInteractor), m_projectSettings(projectSettings) { }
+WorldThreadWrapper::WorldThreadWrapper(IPlatformInteractor *platformInteractor, ProjectSettings* projectSettings, ThreadStorage* threadStorage)
+: m_platformInteractor(platformInteractor), m_projectSettings(projectSettings), m_threadStorage(threadStorage) { }
 
 void WorldThreadWrapper::Initialize() {
-    m_threadId = m_platformInteractor->GetRunningThreadId();
-    InitializeContext();
-    m_threadContext->SetContextAssembled(true);
+    Initialize(m_platformInteractor->GetRunningThreadId());
 }
 
 void WorldThreadWrapper::Initialize(uint32_t existingThreadId) {
+    m_threadStorage->Store(this);
     m_threadId = existingThreadId;
     InitializeContext();
     m_threadContext->SetContextAssembled(true);
+    m_isRunning = true;
+    m_commandBufferAllocator = new LinearAllocator(m_projectSettings->GetMemoryAllocationSettings().m_commandBufferChunkSize);
+}
+
+void WorldThreadWrapper::SubmitRuntimeFlags(ThreadRuntimeFlags flags) {
+    if (Rat::Core::Flags::IsFlagSet(flags, ThreadRuntimeFlags::StopRequested))
+        m_isRunning = false;
+}
+
+ThreadContext* WorldThreadWrapper::GetThreadContext() const {
+    return m_threadContext;
 }
 
 uint32_t WorldThreadWrapper::GetThreadId() {
@@ -29,28 +42,21 @@ bool WorldThreadWrapper::IsValid() {
 }
 
 bool WorldThreadWrapper::IsRunning() {
-    return IsValid();
+    return m_isRunning;
 }
 
-void WorldThreadWrapper::Terminate(bool forced) {
-    m_platformInteractor->RequestQuit(forced);
-}
-
-void WorldThreadWrapper::Dispose() {
+void WorldThreadWrapper::Terminate([[maybe_unused]] bool forced) {
     m_threadContext->DestroyContext();
     delete m_threadContext;
+    m_commandBufferAllocator->FreeMemory();
+    delete m_commandBufferAllocator;
+    m_threadStorage->DeleteFromStorage(this);
+    m_isRunning = false;
 }
 
 void WorldThreadWrapper::InitializeContext() {
-    m_threadContext = new ThreadContext;
+    m_threadContext = new ThreadContext();
 
     m_threadContext->AddContextUnit(new InfiniteThreadContext);
-    int maxFramesInFlight = m_projectSettings->GetRenderingSettings().m_maxFramesInFlight;
-    m_threadContext->AddContextUnit(new RenderableThreadContext(maxFramesInFlight,
-                                                                maxFramesInFlight + 1,
-                                                                RENDER_COMMAND_BUFFER_CHUNK_SIZE));
-}
-
-ThreadContext *WorldThreadWrapper::GetThreadContext() const {
-    return m_threadContext;
+    m_threadContext->AddContextUnit(new CommandProducerThreadContext<RenderCommand>(m_commandBufferAllocator));
 }

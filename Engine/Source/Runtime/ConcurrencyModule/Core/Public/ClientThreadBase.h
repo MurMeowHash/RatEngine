@@ -1,11 +1,12 @@
 #pragma once
 
-#include "IClientThread.h"
+#include "IRunnableClientThread.h"
 #include "IConcurrencyFactory.h"
 #include "SynchronizationCommon.h"
 #include "ThreadContext.h"
+#include "ThreadStorage.h"
 
-class ClientThreadBase : IClientThread {
+class ClientThreadBase : public IRunnableClientThread {
 public:
     void Execute() override;
 
@@ -18,16 +19,17 @@ public:
 
     ~ClientThreadBase() override;
 public:
-    explicit ClientThreadBase(IConcurrencyFactory* concurrencyFactory);
+    ClientThreadBase(IConcurrencyFactory* concurrencyFactory, ThreadStorage* threadStorage);
     void Create(size_t stackSize, ThreadCreationFlags threadCreationFlags) override;
-    const ThreadContext &GetThreadContext() const override;
+    ThreadContext* GetThreadContext() const override;
 
 public:
     void SubmitRuntimeFlags(ThreadRuntimeFlags flags) override;
     [[nodiscard]] ThreadRuntimeFlags RetrieveRuntimeFlags();
 
 protected:
-    ThreadContext m_threadContext;
+    ThreadContext* m_threadContext;
+    IConcurrencyFactory* m_concurrencyFactory;
 
     virtual void SubmitWork() = 0;
     virtual void OnRelease() { };
@@ -35,8 +37,8 @@ protected:
 
 private:
     AtomicSynchronizer<ThreadRuntimeFlags> m_threadRuntimeFlags = AtomicSynchronizer<ThreadRuntimeFlags>(ThreadRuntimeFlags::None);
-    IConcurrencyFactory* m_concurrencyFactory;
     IPlatformThread* m_platformThread = nullptr;
+    ThreadStorage* m_threadStorage;
 
     IDelegate<>* m_workDelegate;
 };

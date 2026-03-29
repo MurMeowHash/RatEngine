@@ -5,14 +5,15 @@
 
 using Rat::Core::Flags::operator&;
 
-ClientThreadBase::ClientThreadBase(IConcurrencyFactory *concurrencyFactory)
-: m_concurrencyFactory(concurrencyFactory) {
+ClientThreadBase::ClientThreadBase(IConcurrencyFactory *concurrencyFactory, ThreadStorage* threadStorage)
+: m_concurrencyFactory(concurrencyFactory), m_threadStorage(threadStorage) {
     m_workDelegate = new ObjectDelegate(this, &ClientThreadBase::SubmitWork);
 }
 
 void ClientThreadBase::Create(size_t stackSize, ThreadCreationFlags threadCreationFlags) {
+    m_threadStorage->Store(this);
     InitializeContext();
-    m_threadContext.SetContextAssembled(true);
+    m_threadContext->SetContextAssembled(true);
     m_platformThread = m_concurrencyFactory->CreatePlatformThread(m_workDelegate, stackSize, threadCreationFlags);
 }
 
@@ -37,7 +38,6 @@ bool ClientThreadBase::IsValid() {
 
 ClientThreadBase::~ClientThreadBase() {
     delete m_workDelegate;
-    m_threadContext.DestroyContext();
 }
 
 bool ClientThreadBase::IsRunning() {
@@ -51,7 +51,10 @@ void ClientThreadBase::Terminate(bool forced) {
     assert(IsValid());
     OnRelease();
     m_platformThread->Terminate(forced);
-    m_threadContext.DestroyContext();
+    m_threadContext->DestroyContext();
+    m_threadStorage->DeleteFromStorage(this);
+
+    delete m_threadContext;
 }
 
 void ClientThreadBase::SubmitRuntimeFlags(ThreadRuntimeFlags flags) {
@@ -63,9 +66,9 @@ ThreadRuntimeFlags ClientThreadBase::RetrieveRuntimeFlags() {
 }
 
 void ClientThreadBase::InitializeContext() {
-
+    m_threadContext = new ThreadContext();
 }
 
-const ThreadContext &ClientThreadBase::GetThreadContext() const {
+ThreadContext* ClientThreadBase::GetThreadContext() const {
     return m_threadContext;
 }

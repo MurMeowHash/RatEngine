@@ -19,8 +19,9 @@ void ConcurrencyModuleInstaller::InstallBindings(DiContainer *diContainer) const
 #endif
 
     diContainer->Bind<WorldThreadWrapper>(ClientBinding([diContainer](){
-        return new WorldThreadWrapper(diContainer->Resolve<IPlatformInteractor>(), diContainer->Resolve<ProjectSettings>());
-    }, std::vector<std::type_index>{typeid(IPlatformInteractor), typeid(ProjectSettings)}));
+        return new WorldThreadWrapper(diContainer->Resolve<IPlatformInteractor>(), diContainer->Resolve<ProjectSettings>(),
+            diContainer->Resolve<ThreadStorage>());
+    }, std::vector<std::type_index>{typeid(IPlatformInteractor), typeid(ProjectSettings), typeid(ThreadStorage)}));
 
     diContainer->Bind<ThreadStorage>(ClientBinding([diContainer](){
         return new ThreadStorage(diContainer->Resolve<IConcurrencyFactory>());

@@ -15,6 +15,9 @@
 #include "RenderableThreadContext.h"
 #include "IConcurrencyCommandBufferPool.h"
 #include "StaticDelegate.h"
+#include "ThreadStorage.h"
+#include "RenderThread.h"
+#include "IConcurrencyFactory.h"
 
 CoreLoop::CoreLoop() {
     m_engineDependencyContext = new EngineDependencyContext(nullptr);
@@ -35,6 +38,9 @@ Rat::Core::ErrorSeverity CoreLoop::Initialize() {
     m_applicationInitializer->Initialize();
 
     m_worldThreadWrapper->Initialize();
+
+    RenderThread* renderThread = new RenderThread(m_concurrencyFactory, m_threadStorage, m_projectSettings);
+    renderThread->Create(0, ThreadCreationFlags::Deferred);
 
     Rat::Core::ErrorSeverity errorSeverity = Rat::Core::ErrorSeverity::Success;
 
@@ -69,6 +75,7 @@ Rat::Core::ErrorSeverity CoreLoop::Exit() {
     m_renderProviderAccessor->m_renderProvider->Shutdown();
     m_windowProvider->Shutdown();
     m_engineDependencyContext->CloseContext();
+    m_worldThreadWrapper->Dispose();
     return errorSeverity;
 }
 
@@ -84,6 +91,8 @@ void CoreLoop::AcquireNeededDependencies() {
     m_buildSettingsInitializer = diContainer->Resolve<IBuildSettingsInitializer>();
     m_applicationInitializer = diContainer->Resolve<IApplicationInitializer>();
     m_worldThreadWrapper = diContainer->Resolve<WorldThreadWrapper>();
+    m_threadStorage = diContainer->Resolve<ThreadStorage>();
+    m_concurrencyFactory = diContainer->Resolve<IConcurrencyFactory>();
 }
 
 Rat::Core::ErrorSeverity CoreLoop::CreateMainWindow() {
@@ -129,4 +138,8 @@ Rat::Core::ErrorSeverity CoreLoop::InitializeRenderProvider() {
     }
 
     return Rat::Core::ErrorSeverity::Success;
+}
+
+void CoreLoop::CloseRunningThreads() {
+
 }

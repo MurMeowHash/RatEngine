@@ -4,40 +4,36 @@
 
 class IPlatformInteractor;
 class ThreadContext;
-class InfiniteThreadContext;
-class RenderableThreadContext;
 class ProjectSettings;
-template<typename TReturn, typename... Args>
-class IFunc;
+class ThreadStorage;
 class IAllocator;
 
 class WorldThreadWrapper : public IClientThreadWrapper {
 public:
+    void SubmitRuntimeFlags(ThreadRuntimeFlags flags) override;
+    [[nodiscard]] ThreadContext* GetThreadContext() const override;
+public:
     [[nodiscard]] uint32_t GetThreadId() override;
     [[nodiscard]] bool IsValid() override;
     [[nodiscard]] bool IsRunning() override;
-    void Terminate(bool forced) override;
+    void Terminate([[maybe_unused]] bool forced) override;
 
 public:
-    WorldThreadWrapper(IPlatformInteractor* platformInteractor, ProjectSettings* projectSettings);
+    WorldThreadWrapper(IPlatformInteractor* platformInteractor, ProjectSettings* projectSettings, ThreadStorage* threadStorage);
 
     void Initialize() override;
     void Initialize(uint32_t existingThreadId) override;
-    void Dispose() override;
-    [[nodiscard]] ThreadContext* GetThreadContext() const override;
 
 private:
-    static constexpr size_t RENDER_COMMAND_BUFFER_CHUNK_SIZE = 4096;
-
     IPlatformInteractor* m_platformInteractor;
     ProjectSettings* m_projectSettings;
+    ThreadStorage* m_threadStorage;
 
     uint32_t m_threadId = 0;
+    bool m_isRunning = false;
+    IAllocator* m_commandBufferAllocator = nullptr;
 
     ThreadContext* m_threadContext = nullptr;
-    InfiniteThreadContext* m_cachedInfiniteThreadContext = nullptr;
-    RenderableThreadContext* m_cachedRenderableThreadContext = nullptr;
-    IFunc<IAllocator*>* m_renderCommandBufferAllocFunc = nullptr;
 
     void InitializeContext();
 };

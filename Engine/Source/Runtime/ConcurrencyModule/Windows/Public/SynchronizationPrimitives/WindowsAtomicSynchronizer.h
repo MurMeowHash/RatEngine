@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IAtomicSynchronizer.h"
+#include "../../../Core/Public/SynchronizationPrimitives/IAtomicSynchronizer.h"
 #include <windows.h>
 #include <cstdint>
 #include <type_traits>

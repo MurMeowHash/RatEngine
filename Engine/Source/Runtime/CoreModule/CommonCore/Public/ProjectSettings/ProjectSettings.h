@@ -25,8 +25,13 @@ struct RenderingSettings {
     int m_maxFramesInFlight;
 };
 
+struct ConcurrencySettings {
+    uint64_t m_maxAllowedMemoryPerCommandBuffer;
+};
+
 struct MemoryAllocationSettings {
-    uint64_t m_defaultChunkSize;
+    uint64_t m_commandBufferChunkSize;
+    uint64_t m_maxAllowedMemoryPerCommandBuffer;
 };
 
 class ProjectSettings {

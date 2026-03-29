@@ -1,6 +1,6 @@
 #include "../Public/WindowsConcurrencyFactory.h"
 #include "WindowsPlatformThread.h"
-#include "WindowsMutex.h"
+#include "../Public/SynchronizationPrimitives/WindowsMutex.h"
 
 IPlatformThread* WindowsConcurrencyFactory::CreatePlatformThread(IDelegate<> *executeAction, size_t stackSize,
                                                                  ThreadCreationFlags flags) {
@@ -9,8 +9,8 @@ IPlatformThread* WindowsConcurrencyFactory::CreatePlatformThread(IDelegate<> *ex
     return windowsPlatformThread;
 }
 
-IMutex *WindowsConcurrencyFactory::CreatePlatformMutex(bool initiallyLocked) {
+IMutex *WindowsConcurrencyFactory::CreatePlatformMutex() {
     WindowsMutex* windowsMutex = new WindowsMutex();
-    windowsMutex->Create(initiallyLocked);
+    windowsMutex->Create();
     return windowsMutex;
 }

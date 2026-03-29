@@ -1,12 +1,22 @@
 #pragma once
 
 #include "InfiniteThread.h"
-#include "RenderThreadContext.h"
-#include "RenderableThreadContext.h"
+
+class ProjectSettings;
+class IPlatformInteractor;
 
 class RenderThread : public InfiniteThread {
+protected:
+    void InitializeContext() override;
 public:
-    explicit RenderThread(IConcurrencyFactory* platformThreadFactory);
+    RenderThread(IConcurrencyFactory* platformThreadFactory, ThreadStorage* threadStorage,
+        ProjectSettings* projectSettings, IPlatformInteractor* platformInteractor);
 protected:
     void SubmitInfiniteWork() override;
+
+private:
+    ProjectSettings* m_projectSettings;
+    IPlatformInteractor* m_platformInteractor;
+
+    void InitializeCommandTreadContext();
 };
