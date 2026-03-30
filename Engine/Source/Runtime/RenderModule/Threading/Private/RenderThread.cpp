@@ -11,8 +11,8 @@ void RenderThread::InitializeContext() {
 }
 
 RenderThread::RenderThread(IConcurrencyFactory *platformThreadFactory, ThreadStorage* threadStorage,
-    ProjectSettings* projectSettings, IPlatformInteractor* platformInteractor)
-: InfiniteThread(platformThreadFactory, threadStorage), m_projectSettings(projectSettings), m_platformInteractor(platformInteractor) { }
+    IPlatformInteractor* platformInteractor, ProjectSettings* projectSettings)
+: InfiniteThread(platformThreadFactory, threadStorage, platformInteractor), m_projectSettings(projectSettings) { }
 
 void RenderThread::SubmitInfiniteWork() {
 

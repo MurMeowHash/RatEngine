@@ -7,11 +7,14 @@ class ThreadContext;
 class ProjectSettings;
 class ThreadStorage;
 class IAllocator;
+class IConcurrencyFactory;
 
 class WorldThreadWrapper : public IClientThreadWrapper {
 public:
     void SubmitRuntimeFlags(ThreadRuntimeFlags flags) override;
     [[nodiscard]] ThreadContext* GetThreadContext() const override;
+    [[nodiscard]] uint32_t GetThreadAuthority() override;
+    [[nodiscard]] bool HasThreadAuthority() override;
 public:
     [[nodiscard]] uint32_t GetThreadId() override;
     [[nodiscard]] bool IsValid() override;
@@ -19,7 +22,8 @@ public:
     void Terminate([[maybe_unused]] bool forced) override;
 
 public:
-    WorldThreadWrapper(IPlatformInteractor* platformInteractor, ProjectSettings* projectSettings, ThreadStorage* threadStorage);
+    WorldThreadWrapper(IPlatformInteractor* platformInteractor, ProjectSettings* projectSettings,
+        ThreadStorage* threadStorage, IConcurrencyFactory* concurrencyFactory);
 
     void Initialize() override;
     void Initialize(uint32_t existingThreadId) override;
@@ -28,6 +32,7 @@ private:
     IPlatformInteractor* m_platformInteractor;
     ProjectSettings* m_projectSettings;
     ThreadStorage* m_threadStorage;
+    IConcurrencyFactory* m_concurrencyFactory;
 
     uint32_t m_threadId = 0;
     bool m_isRunning = false;

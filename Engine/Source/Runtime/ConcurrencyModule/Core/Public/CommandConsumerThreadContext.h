@@ -12,14 +12,12 @@
 #include "LinearAllocator.h"
 #include <stdexcept>
 #include <queue>
-#include "SynchronizationCommon.h"
-#include "PlatformInteractors/IPlatformInteractor.h"
 
 template<typename TCommand>
 class CommandConsumerThreadContext : public IThreadContextUnit {
 public:
-    explicit CommandConsumerThreadContext(IConcurrencyFactory* concurrencyFactor, IPlatformInteractor* platformInteractor)
-    : m_concurrencyFactory(concurrencyFactor), m_platformInteractor(platformInteractor) { }
+    explicit CommandConsumerThreadContext(IConcurrencyFactory* concurrencyFactor)
+    : m_concurrencyFactory(concurrencyFactor) { }
 
     ~CommandConsumerThreadContext() override {
         if (m_frameSlotsMutex != nullptr)
@@ -60,9 +58,6 @@ public:
     }
 
     void MarkFrameCompleted(uint64_t frameIndex) {
-        if (!HasThreadAuthority())
-            return;
-
         ExclusiveThreadGuard frameSlotsGuard(m_frameSlotsMutex);
         auto commandBufferIterator = m_bufferFrameSlots.find(frameIndex);
         if (commandBufferIterator == m_bufferFrameSlots.end())
@@ -93,23 +88,13 @@ public:
         m_commandBufferPool->ReturnBufferToPool(commandBuffer);
     }
 
-    void AssignThreadAuthority(uint32_t authorityThreadId) {
-        m_authorityThreadId.StoreValue(authorityThreadId);
-    }
-
-    [[nodiscard]] bool HasThreadAuthority() {
-        return m_platformInteractor->GetRunningThreadId() == m_authorityThreadId.RetrieveValue();
-    }
-
 private:
     std::map<uint64_t, ConcurrencyCommandBuffer<TCommand>*> m_bufferFrameSlots;
     std::queue<ConcurrencyCommandBuffer<TCommand>*> m_readyToExecuteBuffersQueue;
     ConcurrencyCommandBufferPool<TCommand>* m_commandBufferPool = nullptr;
     IConcurrencyFactory* m_concurrencyFactory;
-    IPlatformInteractor* m_platformInteractor;
     IMutex* m_frameSlotsMutex = nullptr;
     IFunc<IAllocator*>* m_bufferAllocatorFunc = nullptr;
 
     size_t m_maxAllowedMemoryPerBuffer = 0;
-    AtomicSynchronizer<uint32_t> m_authorityThreadId = AtomicSynchronizer<uint32_t>(0);
 };

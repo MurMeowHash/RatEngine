@@ -2,9 +2,10 @@
 
 #include "IRunnableClientThread.h"
 #include "IConcurrencyFactory.h"
-#include "SynchronizationCommon.h"
 #include "ThreadContext.h"
 #include "ThreadStorage.h"
+
+class IPlatformInteractor;
 
 class ClientThreadBase : public IRunnableClientThread {
 public:
@@ -19,17 +20,21 @@ public:
 
     ~ClientThreadBase() override;
 public:
-    ClientThreadBase(IConcurrencyFactory* concurrencyFactory, ThreadStorage* threadStorage);
+    ClientThreadBase(IConcurrencyFactory* concurrencyFactory, ThreadStorage* threadStorage, IPlatformInteractor* platformInteractor);
     void Create(size_t stackSize, ThreadCreationFlags threadCreationFlags) override;
     ThreadContext* GetThreadContext() const override;
 
 public:
     void SubmitRuntimeFlags(ThreadRuntimeFlags flags) override;
     [[nodiscard]] ThreadRuntimeFlags RetrieveRuntimeFlags();
+    [[nodiscard]] uint32_t GetThreadAuthority() override;
+    [[nodiscard]] bool HasThreadAuthority() override;
 
 protected:
-    ThreadContext* m_threadContext;
+    ThreadContext* m_threadContext = nullptr;
     IConcurrencyFactory* m_concurrencyFactory;
+    IPlatformInteractor* m_platformInteractor;
+    IClientThread* m_authorityThread = nullptr;
 
     virtual void SubmitWork() = 0;
     virtual void OnRelease() { };
@@ -41,4 +46,7 @@ private:
     ThreadStorage* m_threadStorage;
 
     IDelegate<>* m_workDelegate;
+    uint32_t m_threadAuthorityId = 0;
+
+    void AssignThreadAuthority(uint32_t threadAuthorityId);
 };

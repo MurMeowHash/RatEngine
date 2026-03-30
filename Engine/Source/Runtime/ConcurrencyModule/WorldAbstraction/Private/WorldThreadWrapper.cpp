@@ -7,9 +7,13 @@
 #include "CommandProducerThreadContext.h"
 #include "RenderThreadGlobals.h"
 #include "LinearAllocator.h"
+#include "SynchronizationPrimitives/Fence.h"
+#include "IConcurrencyFactory.h"
 
-WorldThreadWrapper::WorldThreadWrapper(IPlatformInteractor *platformInteractor, ProjectSettings* projectSettings, ThreadStorage* threadStorage)
-: m_platformInteractor(platformInteractor), m_projectSettings(projectSettings), m_threadStorage(threadStorage) { }
+WorldThreadWrapper::WorldThreadWrapper(IPlatformInteractor *platformInteractor, ProjectSettings* projectSettings,
+    ThreadStorage* threadStorage, IConcurrencyFactory* concurrencyFactory)
+: m_platformInteractor(platformInteractor), m_projectSettings(projectSettings), m_threadStorage(threadStorage),
+m_concurrencyFactory(concurrencyFactory) { }
 
 void WorldThreadWrapper::Initialize() {
     Initialize(m_platformInteractor->GetRunningThreadId());
@@ -22,6 +26,7 @@ void WorldThreadWrapper::Initialize(uint32_t existingThreadId) {
     m_threadContext->SetContextAssembled(true);
     m_isRunning = true;
     m_commandBufferAllocator = new LinearAllocator(m_projectSettings->GetMemoryAllocationSettings().m_commandBufferChunkSize);
+    Fence fence(m_concurrencyFactory);
 }
 
 void WorldThreadWrapper::SubmitRuntimeFlags(ThreadRuntimeFlags flags) {
@@ -31,6 +36,14 @@ void WorldThreadWrapper::SubmitRuntimeFlags(ThreadRuntimeFlags flags) {
 
 ThreadContext* WorldThreadWrapper::GetThreadContext() const {
     return m_threadContext;
+}
+
+uint32_t WorldThreadWrapper::GetThreadAuthority() {
+    return GetThreadId();
+}
+
+bool WorldThreadWrapper::HasThreadAuthority() {
+    return m_platformInteractor->GetRunningThreadId() == GetThreadAuthority();
 }
 
 uint32_t WorldThreadWrapper::GetThreadId() {
@@ -57,6 +70,6 @@ void WorldThreadWrapper::Terminate([[maybe_unused]] bool forced) {
 void WorldThreadWrapper::InitializeContext() {
     m_threadContext = new ThreadContext();
 
-    m_threadContext->AddContextUnit(new InfiniteThreadContext);
+    m_threadContext->AddContextUnit(new InfiniteThreadContext(0));
     m_threadContext->AddContextUnit(new CommandProducerThreadContext<RenderCommand>(m_commandBufferAllocator));
 }

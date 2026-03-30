@@ -2,15 +2,18 @@
 #include "ObjectDelegate.h"
 #include <cassert>
 #include "CoreUtils.h"
+#include "PlatformInteractors/IPlatformInteractor.h"
 
 using Rat::Core::Flags::operator&;
 
-ClientThreadBase::ClientThreadBase(IConcurrencyFactory *concurrencyFactory, ThreadStorage* threadStorage)
-: m_concurrencyFactory(concurrencyFactory), m_threadStorage(threadStorage) {
+ClientThreadBase::ClientThreadBase(IConcurrencyFactory *concurrencyFactory, ThreadStorage* threadStorage, IPlatformInteractor* platformInteractor)
+: m_concurrencyFactory(concurrencyFactory), m_platformInteractor(platformInteractor), m_threadStorage(threadStorage) {
     m_workDelegate = new ObjectDelegate(this, &ClientThreadBase::SubmitWork);
 }
 
 void ClientThreadBase::Create(size_t stackSize, ThreadCreationFlags threadCreationFlags) {
+    AssignThreadAuthority(m_platformInteractor->GetRunningThreadId());
+    m_threadStorage->TryRetrieve(m_threadAuthorityId, m_authorityThread);
     m_threadStorage->Store(this);
     InitializeContext();
     m_threadContext->SetContextAssembled(true);
@@ -65,8 +68,20 @@ ThreadRuntimeFlags ClientThreadBase::RetrieveRuntimeFlags() {
     return m_threadRuntimeFlags.RetrieveValue();
 }
 
+uint32_t ClientThreadBase::GetThreadAuthority() {
+    return m_threadAuthorityId;
+}
+
+bool ClientThreadBase::HasThreadAuthority() {
+    return m_platformInteractor->GetRunningThreadId() == GetThreadAuthority();
+}
+
 void ClientThreadBase::InitializeContext() {
     m_threadContext = new ThreadContext();
+}
+
+void ClientThreadBase::AssignThreadAuthority(uint32_t threadAuthorityId) {
+    m_threadAuthorityId = threadAuthorityId;
 }
 
 ThreadContext* ClientThreadBase::GetThreadContext() const {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CommandProducerThreadContext.h"
+#include "CommandConsumerThreadContext.h"
 #include "EngineCoreEventBus.h"
 #include "ObjectDelegate.h"
 #include "PlatformInteractors/IPlatformInteractor.h"
@@ -42,21 +43,28 @@ private:
 
         IClientThread* localThread;
         IClientThread* consumerThread;
-        bool retrievedAllThreads = TryGetValidatedThread(currentThreadId, localThread) && TryGetValidatedThread<TConsumerThread>(consumerThread);
+        IClientThread* authorityThread;
+        bool retrievedAllThreads =
+            TryGetValidatedThread(currentThreadId, localThread)
+        && TryGetValidatedThread<TConsumerThread>(consumerThread)
+        && TryGetValidatedThread(localThread->GetThreadAuthority(), authorityThread);
         assert(retrievedAllThreads);
 
         InfiniteThreadContext* producerInfiniteThreadContext;
+        InfiniteThreadContext* authorityInfiniteThreadContext;
         CommandProducerThreadContext<TCommand>* commandProducerThreadContext;
         CommandConsumerThreadContext<TCommand>* commandConsumerThreadContext;
         bool retrievedAllContexts =
             localThread->GetThreadContext()->TryRetrieveContextUnit(commandProducerThreadContext)
         && localThread->GetThreadContext()->TryRetrieveContextUnit(producerInfiniteThreadContext)
-        && consumerThread->GetThreadContext()->TryRetrieveContextUnit(commandConsumerThreadContext);
+        && consumerThread->GetThreadContext()->TryRetrieveContextUnit(commandConsumerThreadContext)
+        && authorityThread->GetThreadContext()->TryRetrieveContextUnit(authorityInfiniteThreadContext);
 
         assert(retrievedAllContexts);
-        uint64_t realFrameIndex = producerInfiniteThreadContext->GetRealFrameIndex();
+        uint64_t realFrameIndex = std::max(producerInfiniteThreadContext->GetRealFrameIndex(),
+            authorityInfiniteThreadContext->m_threadFrameIndex.RetrieveValue());
         commandConsumerThreadContext->EnqueueCommandBuffer(realFrameIndex, commandProducerThreadContext->m_commandBuffer);
-        if (commandConsumerThreadContext->HasThreadAuthority())
+        if (consumerThread->HasThreadAuthority())
             commandConsumerThreadContext->MarkFrameCompleted(realFrameIndex);
     }
 

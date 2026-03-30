@@ -22,6 +22,8 @@ target_sources(ConcurrencyModule.Core
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/CommandConsumerThreadContext.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/IRunnableClientThread.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/CommandProducerThreadContext.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/SynchronizationPrimitives/IFence.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/SynchronizationPrimitives/Fence.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ClientThreadBase.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/InfiniteThread.cpp

@@ -1,11 +1,10 @@
 #pragma once
 
 #include "ClientThreadBase.h"
-#include "InfiniteThreadContext.h"
 
 class InfiniteThread : public ClientThreadBase {
 public:
-    InfiniteThread(IConcurrencyFactory* concurrencyFactory, ThreadStorage* threadStorage);
+    InfiniteThread(IConcurrencyFactory* concurrencyFactory, ThreadStorage* threadStorage, IPlatformInteractor* platformInteractor);
 protected:
     void InitializeContext() override;
     void SubmitWork() override;

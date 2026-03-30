@@ -2,6 +2,7 @@
 #include "CoreUtils.h"
 #include "IDelegate.h"
 #include <cassert>
+#include "SynchronizationPrimitives/WindowsFence.h"
 
 void WindowsPlatformThread::Create(IDelegate<>* executeAction, size_t stackSize, ThreadCreationFlags flags) {
     DWORD windowsThreadFlags = 0;
@@ -11,6 +12,7 @@ void WindowsPlatformThread::Create(IDelegate<>* executeAction, size_t stackSize,
                                   (LPDWORD)executeAction, windowsThreadFlags, &m_threadId);
 
     m_isScheduled = (windowsThreadFlags & CREATE_SUSPENDED) == 0 && IsValid();
+    WindowsFence(true);
 }
 
 void WindowsPlatformThread::Execute() {
