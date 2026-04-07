@@ -29,12 +29,12 @@ struct AllocatorAdopterKeyHash {
 
 class AllocatorProcessor : public IAllocatorProcessor {
 public:
-    explicit AllocatorProcessor(const std::type_index& ownerTypeIndex);
+    explicit AllocatorProcessor(std::type_index ownerTypeIndex);
     bool TryResolveAdopter(IAllocator* externalAllocator, IAllocatorAdopter*& allocatorAdopter) override;
     ~AllocatorProcessor() override;
 
 private:
-    const std::type_index& m_ownerTypeIndex;
+    std::type_index m_ownerTypeIndex;
     std::unordered_map<IAllocator*, std::type_index> m_cachedAllocatorTypes;
     std::unordered_map<AllocatorAdopterKey, IAllocatorAdopter*, AllocatorAdopterKeyHash> m_cachedAllocatorAdopters;
 

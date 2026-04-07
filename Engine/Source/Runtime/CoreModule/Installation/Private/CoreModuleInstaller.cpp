@@ -16,22 +16,16 @@
 #endif
 
 void CoreModuleInstaller::InstallBindings(DiContainer* diContainer) const {
-    diContainer->Bind<ProjectSettings>(ClientBinding([](){return new ProjectSettings();}));
-    diContainer->Bind<IProjectSettingsInitializer>(ClientBinding([diContainer]() {
-        return new HardCodedProjectSettingsInitializer(diContainer->Resolve<ProjectSettings>());
-    }, std::vector<std::type_index>{typeid(ProjectSettings)}));
-    diContainer->Bind<Application>(ClientBinding([](){return new Application();}));
-    diContainer->Bind<BuildSettings>(ClientBinding([](){return new BuildSettings();}));
-    diContainer->Bind<IApplicationInitializer>(ClientBinding([diContainer](){
-        return new HardCodedApplicationInitializer(diContainer->Resolve<Application>());
-    }, std::vector<std::type_index> { typeid(Application) }));
-    diContainer->Bind<IBuildSettingsInitializer>(ClientBinding([diContainer](){
-        return new HardCodedBuildSettingsInitializer(diContainer->Resolve<BuildSettings>());
-    }, std::vector<std::type_index> { typeid(BuildSettings) }));
+    diContainer->Bind<ProjectSettings>().To<ProjectSettings>().WithArguments<>();
+    diContainer->Bind<HardCodedProjectSettingsInitializer>().To<IProjectSettingsInitializer>().WithArguments<ProjectSettings>();
+    diContainer->Bind<Application>().To<Application>().WithArguments<>();
+    diContainer->Bind<BuildSettings>().To<BuildSettings>().WithArguments<>();
+    diContainer->Bind<HardCodedApplicationInitializer>().To<IApplicationInitializer>().WithArguments<Application>();
+    diContainer->Bind<HardCodedBuildSettingsInitializer>().To<IBuildSettingsInitializer>().WithArguments<BuildSettings>();
 
 #if defined(__WIN32)
-    diContainer->Bind<IPlatformInteractor>(ClientBinding([](){return new WindowsPlatformInteractor();}));
+    diContainer->Bind<WindowsPlatformInteractor>().To<IPlatformInteractor>().WithArguments<>();
 #else
-    diContainer->Bind<IPlatformInteractor>(ClientBinding([](){return new MockPlatformInteractor();}));
+    diContainer->Bind<MockPlatformInteractor>().To<IPlatformInteractor>().WithArguments<>();
 #endif
 }

@@ -22,7 +22,7 @@ struct VulkanRenderingSettings {
 
 struct RenderingSettings {
     VulkanRenderingSettings m_vulkanRenderingSettings;
-    int m_maxFramesInFlight;
+    int m_maxFrameLag;
 };
 
 struct ConcurrencySettings {

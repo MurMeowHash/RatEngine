@@ -20,7 +20,7 @@ public:
         if(!IsContextAssembled())
             return false;
 
-        auto contextUnitIterator =  m_contextUnits.find(typeid(TThreadContext));
+        auto contextUnitIterator = m_contextUnits.find(typeid(TThreadContext));
         if(contextUnitIterator == m_contextUnits.end())
             return false;
 

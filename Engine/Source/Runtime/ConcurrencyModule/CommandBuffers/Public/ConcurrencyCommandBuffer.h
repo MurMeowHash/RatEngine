@@ -5,16 +5,16 @@
 #include <stdexcept>
 #include "CoreUtils.h"
 
-template<typename TCommandDelegate>
+template<typename TCommand>
 struct ConcurrencyCommand {
-    ConcurrencyCommand(const TCommandDelegate& command, ConcurrencyCommand<TCommandDelegate>* next)
+    ConcurrencyCommand(const TCommand& command, ConcurrencyCommand<TCommand>* next)
     : m_command(command), m_next(next) { }
 
-    ConcurrencyCommand(const ConcurrencyCommand<TCommandDelegate>& src)
+    ConcurrencyCommand(const ConcurrencyCommand<TCommand>& src)
     : m_command(src.m_command), m_next(src.m_next) { }
 
-    const TCommandDelegate& m_command;
-    ConcurrencyCommand<TCommandDelegate>* m_next;
+    const TCommand& m_command;
+    ConcurrencyCommand<TCommand>* m_next;
 };
 
 template<typename TCommand>
@@ -71,7 +71,7 @@ public:
     }
 
 private:
-    ConcurrencyCommand<TCommand>* m_root;
+    ConcurrencyCommand<TCommand>* m_root = nullptr;
     ConcurrencyCommand<TCommand>** m_tail = &m_root;
 
     IAllocator* m_allocator;
@@ -79,10 +79,10 @@ private:
 
     void TransferMemory(const ConcurrencyCommandBuffer<TCommand>& srcCommandBuffer) {
         if(!m_allocator->TryAdopt(srcCommandBuffer.m_allocator))
-            throw std::runtime_error(StringFormatter("Failed to transfer memory on command buffer because no transfer defined between",
-                                                     typeid(m_allocator).name(),
+            throw std::runtime_error(StringFormatter("Failed to transfer memory on command buffer because no transfer defined between ",
+                                                     typeid(*m_allocator).name(),
                                                      " allocator and ",
-                                                     typeid(srcCommandBuffer.m_allocator).name()));
+                                                     typeid(*srcCommandBuffer.m_allocator).name()));
 
         srcCommandBuffer.m_allocator->InvalidateAllocator();
     }

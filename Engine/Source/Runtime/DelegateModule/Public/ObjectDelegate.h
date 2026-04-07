@@ -12,11 +12,11 @@ public:
     ObjectDelegate(TObject *object, Internal::MemberFunctionHandler memberFunctionHandler)
     : ObjectFunc<TObject, void, Args...>(object, memberFunctionHandler) {}
 
-    void Invoke(Args... args) override {
+    void Invoke(Args... args) const override {
         Internal::Invoke(std::forward<Args>(args)...);
     }
 
-    void operator()(Args... args) override {
+    void operator()(Args... args) const override {
         Internal::operator()(std::forward<Args>(args)...);
     }
 };

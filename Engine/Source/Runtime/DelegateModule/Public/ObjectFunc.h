@@ -11,11 +11,11 @@ public:
     ObjectFunc(TObject *object, MemberFunctionHandler memberFunctionHandler)
     : m_object(object), m_MemberFunc(memberFunctionHandler) {}
 
-    TReturn Invoke(Args... args) override {
+    TReturn Invoke(Args... args) const override {
         return (m_object->*m_MemberFunc)(std::forward<Args>(args)...);
     }
 
-    TReturn operator()(Args... args) override {
+    TReturn operator()(Args... args) const override {
         return Invoke(std::forward<Args>(args)...);
     }
 

@@ -7,10 +7,12 @@ target_sources(ConcurrencyModule.Mock
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/SynchronizationPrimitives/MockAtomicSynchronizer.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/SynchronizationPrimitives/MockMutex.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/SynchronizationPrimitives/MockFence.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/SynchronizationPrimitives/MockSemaphore.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/MockConcurrencyFactory.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/MockPlatformThread.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/SynchronizationPrimitives/MockMutex.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/SynchronizationPrimitives/MockSemaphore.cpp
 )
 
 target_include_directories(ConcurrencyModule.Mock

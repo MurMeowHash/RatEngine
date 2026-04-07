@@ -11,11 +11,11 @@ public:
     explicit StaticDelegate(const Internal::FunctionHandler &functionHandler)
     : StaticFunc<void, Args...>(functionHandler) {}
 
-    void Invoke(Args... args) override {
+    void Invoke(Args... args) const override {
         Internal::Invoke(std::forward<Args>(args)...);
     }
 
-    void operator()(Args... args) override {
+    void operator()(Args... args) const override {
         Internal::operator()(std::forward<Args>(args)...);
     }
 };

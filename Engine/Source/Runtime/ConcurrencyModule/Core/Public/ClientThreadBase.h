@@ -4,8 +4,7 @@
 #include "IConcurrencyFactory.h"
 #include "ThreadContext.h"
 #include "ThreadStorage.h"
-
-class IPlatformInteractor;
+#include "ThreadProcessor.h"
 
 class ClientThreadBase : public IRunnableClientThread {
 public:
@@ -20,33 +19,33 @@ public:
 
     ~ClientThreadBase() override;
 public:
-    ClientThreadBase(IConcurrencyFactory* concurrencyFactory, ThreadStorage* threadStorage, IPlatformInteractor* platformInteractor);
+    ClientThreadBase(IConcurrencyFactory* concurrencyFactory, ThreadStorage* threadStorage);
     void Create(size_t stackSize, ThreadCreationFlags threadCreationFlags) override;
     ThreadContext* GetThreadContext() const override;
 
 public:
     void SubmitRuntimeFlags(ThreadRuntimeFlags flags) override;
     [[nodiscard]] ThreadRuntimeFlags RetrieveRuntimeFlags();
-    [[nodiscard]] uint32_t GetThreadAuthority() override;
-    [[nodiscard]] bool HasThreadAuthority() override;
 
 protected:
     ThreadContext* m_threadContext = nullptr;
     IConcurrencyFactory* m_concurrencyFactory;
-    IPlatformInteractor* m_platformInteractor;
-    IClientThread* m_authorityThread = nullptr;
+    ThreadStorage* m_threadStorage;
 
-    virtual void SubmitWork() = 0;
-    virtual void OnRelease() { };
+    ThreadProcessor* m_threadProcessor = nullptr;
+
+    virtual void SubmitThreadWork() = 0;
     virtual void InitializeContext();
+    virtual void OnThreadBegin();
+    virtual void OnThreadEnd();
 
 private:
     AtomicSynchronizer<ThreadRuntimeFlags> m_threadRuntimeFlags = AtomicSynchronizer<ThreadRuntimeFlags>(ThreadRuntimeFlags::None);
     IPlatformThread* m_platformThread = nullptr;
-    ThreadStorage* m_threadStorage;
 
     IDelegate<>* m_workDelegate;
-    uint32_t m_threadAuthorityId = 0;
+    IDelegate<IClientThread*>* m_invokeMemoryBarrierCallback;
 
-    void AssignThreadAuthority(uint32_t threadAuthorityId);
+    void SubmitWork();
+    void InvokeMemoryBarrier(IClientThread* clientThread);
 };

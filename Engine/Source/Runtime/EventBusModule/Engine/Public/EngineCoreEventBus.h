@@ -3,4 +3,8 @@
 #include "EngineCoreEvents.h"
 #include "ConcurrentEventBusBase.h"
 
-class EngineCoreEventBus : public ConcurrentEventBusBase<EngineCoreEvents::EngineCoreEvent> {};
+class EngineCoreEventBus : public ConcurrentEventBusBase<EngineCoreEvents::EngineCoreEvent> {
+public:
+    explicit EngineCoreEventBus(IConcurrencyFactory* concurrencyFactory)
+    : ConcurrentEventBusBase(concurrencyFactory) {}
+};

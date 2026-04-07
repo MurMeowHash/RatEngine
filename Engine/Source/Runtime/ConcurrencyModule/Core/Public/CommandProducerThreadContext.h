@@ -1,14 +1,18 @@
 #pragma once
 
-#include "IThreadContextUnit.h"
 #include "ConcurrencyCommandBuffer.h"
 #include "IAllocator.h"
 #include "SimpleAllocator.h"
+#include "CommandThreadContextBase.h"
 
 template<typename TCommand>
-struct CommandProducerThreadContext : public IThreadContextUnit {
-    CommandProducerThreadContext(IAllocator* commandBufferAllocator = nullptr)
-    : m_commandBufferAllocator(commandBufferAllocator) {
+struct CommandProducerThreadContext : public CommandThreadContextBase<TCommand> {
+    explicit CommandProducerThreadContext(ThreadSearchService* threadSearchService)
+    : CommandThreadContextBase<TCommand>(threadSearchService) {}
+
+    void Initialize(IAllocator* commandBufferAllocator = nullptr) {
+        CommandThreadContextBase<TCommand>::Initialize();
+        m_commandBufferAllocator = commandBufferAllocator;
         if (m_commandBufferAllocator == nullptr) {
             m_usingBuiltInAllocator = true;
             m_commandBufferAllocator = new SimpleAllocator(0);
@@ -25,8 +29,8 @@ struct CommandProducerThreadContext : public IThreadContextUnit {
         }
     }
 
-    ConcurrencyCommandBuffer<TCommand>* m_commandBuffer;
+    ConcurrencyCommandBuffer<TCommand>* m_commandBuffer = nullptr;
 private:
-    IAllocator* m_commandBufferAllocator;
-    bool m_usingBuiltInAllocator;
+    IAllocator* m_commandBufferAllocator = nullptr;
+    bool m_usingBuiltInAllocator = false;
 };

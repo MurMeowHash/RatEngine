@@ -21,6 +21,8 @@ target_link_libraries(ConcurrencyModule.WorldAbstraction
         RenderModule.Threading
         MemoryModule
         DelegateModule
+        ConcurrencyModule.ControlSystems
+        InjectionModule.Core
 )
 
 if(MSVC)

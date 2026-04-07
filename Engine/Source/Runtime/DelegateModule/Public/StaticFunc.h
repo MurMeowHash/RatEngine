@@ -11,11 +11,11 @@ public:
     explicit StaticFunc(const FunctionHandler &functionHandler)
             : m_Func(functionHandler) {}
 
-    TReturn Invoke(Args... args) override {
+    TReturn Invoke(Args... args) const override {
         return m_Func(std::forward<Args>(args)...);
     }
 
-    TReturn operator()(Args... args) override {
+    TReturn operator()(Args... args) const override {
         return Invoke(std::forward<Args>(args)...);
     }
 private:

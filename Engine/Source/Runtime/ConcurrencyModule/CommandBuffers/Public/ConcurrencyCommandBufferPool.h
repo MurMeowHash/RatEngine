@@ -18,6 +18,11 @@ public:
             m_usingBuiltInAllocator = true;
         }
 
+        if (commandBufferAllocator == nullptr) {
+            m_usingBuiltInBufferAllocator = true;
+            commandBufferAllocator = new SimpleAllocator(0);
+        }
+
         m_bufferAllocatorFunc = new StaticFunc<IAllocator*>([commandBufferAllocator](){ return commandBufferAllocator; });
 
         AllocatePool(poolSize);
@@ -52,6 +57,12 @@ public:
 
     ~ConcurrencyCommandBufferPool() override {
         if(m_usingBufferAllocatorWrapper) {
+            if (m_usingBuiltInBufferAllocator) {
+                IAllocator* allocator = m_bufferAllocatorFunc->Invoke();
+                allocator->FreeMemory();
+                delete allocator;
+            }
+
             delete m_bufferAllocatorFunc;
         }
         else {
@@ -79,6 +90,7 @@ private:
 
     bool m_usingBuiltInAllocator;
     bool m_usingBufferAllocatorWrapper;
+    bool m_usingBuiltInBufferAllocator = false;
 
     bool TryExtendPool() {
         if(m_poolSize >= m_maxPoolSize)

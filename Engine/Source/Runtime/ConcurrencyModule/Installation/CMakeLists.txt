@@ -20,6 +20,8 @@ target_link_libraries(ConcurrencyModule.Installation
         InjectionModule.Core
         ConcurrencyModule.WorldAbstraction
         CoreModule.Common
+        EventBusModule.Core
+        EventBusModule.Engine
 )
 
 if(WIN32)

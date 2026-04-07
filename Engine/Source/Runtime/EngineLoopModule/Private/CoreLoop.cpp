@@ -7,17 +7,17 @@
 #include "ProjectSettings/ProjectSettings.h"
 #include "ProjectSettings/IProjectSettingsInitializer.h"
 #include "ILogger.h"
+#include "InfiniteThreadContext.h"
 #include "IRenderProviderInitializer.h"
 #include "RenderProviderAccessor.h"
 #include "BuildSettings/IBuildSettingsInitializer.h"
 #include "Application/IApplicationInitializer.h"
+#include "Runner/ThreadRunner.h"
 #include "WorldThreadWrapper.h"
-#include "RenderableThreadContext.h"
-#include "IConcurrencyCommandBufferPool.h"
-#include "StaticDelegate.h"
-#include "ThreadStorage.h"
+#include "PlatformInteractors/IPlatformInteractor.h"
+#include "RenderCommand.h"
 #include "RenderThread.h"
-#include "IConcurrencyFactory.h"
+#include "ThreadSearchService.h"
 
 CoreLoop::CoreLoop() {
     m_engineDependencyContext = new EngineDependencyContext(nullptr);
@@ -37,12 +37,9 @@ Rat::Core::ErrorSeverity CoreLoop::Initialize() {
     m_buildSettingsInitializer->Initialize();
     m_applicationInitializer->Initialize();
 
-    m_worldThreadWrapper->Initialize();
-
-    RenderThread* renderThread = new RenderThread(m_concurrencyFactory, m_threadStorage, m_projectSettings);
-    renderThread->Create(0, ThreadCreationFlags::Deferred);
-
     Rat::Core::ErrorSeverity errorSeverity = Rat::Core::ErrorSeverity::Success;
+
+    InitializeThreads();
 
     errorSeverity = CreateMainWindow();
     if(errorSeverity == Rat::Core::ErrorSeverity::Fatal)
@@ -60,22 +57,26 @@ Rat::Core::ErrorSeverity CoreLoop::Initialize() {
 Rat::Core::ErrorSeverity CoreLoop::Tick() {
     Rat::Core::ErrorSeverity errorSeverity = Rat::Core::ErrorSeverity::Success;
 
+    uint32_t runningThreadId = m_platformInteractor->GetRunningThreadId();
+    m_engineCoreEventBus->Publish(EngineCoreEvents::EngineBeginFrameEvent(runningThreadId));
+
+    InfiniteThreadContext* infiniteThreadContext;
+    if (m_threadSearchService->TryGetThreadContext(runningThreadId, infiniteThreadContext))
+        m_logger->PrintInfo(StringFormatter("World Thread ", runningThreadId, " Frame ", infiniteThreadContext->m_threadFrameIndex.RetrieveValue(), '\n'));
+
     m_windowProvider->Tick();
 
-    RenderableThreadContext* renderableThreadContext;
-    m_worldThreadWrapper->GetThreadContext()->TryRetrieveContextUnit<RenderableThreadContext>(renderableThreadContext);
-    ConcurrencyCommandBuffer<RenderCommand>* renderCommandBuffer = renderableThreadContext->m_commandBufferPool->PopBuffer();
-    renderCommandBuffer->EqueueCommand(StaticDelegate([](){}));
-
+    m_engineCoreEventBus->Publish(EngineCoreEvents::EngineEndFrameEvent(runningThreadId));
+    m_engineCoreEventBus->Publish(EngineCoreEvents::EnginePostEndFrameEvent(runningThreadId));
     return errorSeverity;
 }
 
 Rat::Core::ErrorSeverity CoreLoop::Exit() {
     Rat::Core::ErrorSeverity errorSeverity = Rat::Core::ErrorSeverity::Success;
+    m_threadRunner->StopThreads();
     m_renderProviderAccessor->m_renderProvider->Shutdown();
     m_windowProvider->Shutdown();
     m_engineDependencyContext->CloseContext();
-    m_worldThreadWrapper->Dispose();
     return errorSeverity;
 }
 
@@ -90,9 +91,9 @@ void CoreLoop::AcquireNeededDependencies() {
     m_renderProviderAccessor = diContainer->Resolve<RenderProviderAccessor>();
     m_buildSettingsInitializer = diContainer->Resolve<IBuildSettingsInitializer>();
     m_applicationInitializer = diContainer->Resolve<IApplicationInitializer>();
-    m_worldThreadWrapper = diContainer->Resolve<WorldThreadWrapper>();
-    m_threadStorage = diContainer->Resolve<ThreadStorage>();
-    m_concurrencyFactory = diContainer->Resolve<IConcurrencyFactory>();
+    m_threadRunner = diContainer->Resolve<ThreadRunner>();
+    m_platformInteractor = diContainer->Resolve<IPlatformInteractor>();
+    m_threadSearchService = diContainer->Resolve<ThreadSearchService>();
 }
 
 Rat::Core::ErrorSeverity CoreLoop::CreateMainWindow() {
@@ -140,6 +141,15 @@ Rat::Core::ErrorSeverity CoreLoop::InitializeRenderProvider() {
     return Rat::Core::ErrorSeverity::Success;
 }
 
-void CoreLoop::CloseRunningThreads() {
+void CoreLoop::InitializeThreads() {
+    m_threadRunner->StartThreadWrapper<WorldThreadWrapper>()
+        .Create<IPlatformInteractor, ProjectSettings, ThreadStorage, IConcurrencyFactory, DiContainer>(m_platformInteractor->GetRunningThreadId())
+        .AssignCommandAuthority<RenderCommand>();
 
+    RenderThread* renderThread = m_threadRunner->StartThread<RenderThread>()
+        .Create<IConcurrencyFactory, ThreadStorage, ProjectSettings, DiContainer, EngineCoreEventBus, ILogger>(0, ThreadCreationFlags::Deferred)
+        .AssignCommandConsumer<RenderCommand>()
+        .RetrieveThread();
+
+    renderThread->Execute();
 }

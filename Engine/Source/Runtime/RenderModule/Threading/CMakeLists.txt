@@ -3,7 +3,7 @@ add_library(RenderModule.Threading STATIC)
 target_sources(RenderModule.Threading
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderThread.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderThreadGlobals.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderCommand.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/RenderThread.cpp
 )
@@ -23,7 +23,11 @@ target_link_libraries(RenderModule.Threading
         ConcurrencyModule.CommandBuffers
         MemoryModule
         CoreModule.Common
+        DelegateModule
+        InjectionModule.Core
         ConcurrencyModule.ControlSystems
+        ConcurrencyModule.WorldAbstraction
+        DebugModule
 )
 
 if(MSVC)

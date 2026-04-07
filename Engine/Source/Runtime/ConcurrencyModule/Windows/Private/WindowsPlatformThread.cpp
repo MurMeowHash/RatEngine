@@ -55,7 +55,9 @@ void WindowsPlatformThread::Terminate(bool forced) {
         return;
     }
 
-    if(!forced)
+    if (forced)
+        TerminateThread(m_threadHandle, 0); // TODO: potential memory leak from thread owned resources
+    else
         WaitForSingleObject(m_threadHandle, INFINITE);
 
     ReleaseThread();

@@ -24,9 +24,22 @@ target_sources(ConcurrencyModule.Core
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/CommandProducerThreadContext.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/SynchronizationPrimitives/IFence.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/SynchronizationPrimitives/Fence.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/CommandThreadStorage.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/ThreadProcessor.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IConcurrencySystem.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/CommandThreadContextBase.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/ThreadSearchService.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/SynchronizationPrimitives/ISemaphore.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/FrameLagContext.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Runner/ThreadRunner.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Runner/ThreadRunnerAssembler.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/ConcurrentEvent.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ClientThreadBase.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/InfiniteThread.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/ThreadProcessor.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Runner/ThreadRunner.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/ThreadStorage.cpp
 )
 
 target_include_directories(ConcurrencyModule.Core
@@ -42,6 +55,7 @@ target_link_libraries(ConcurrencyModule.Core
         ConcurrencyModule.CommandBuffers
         DelegateModule
         MemoryModule
+        InjectionModule.Core
         PRIVATE
         CoreModule.Common
 )

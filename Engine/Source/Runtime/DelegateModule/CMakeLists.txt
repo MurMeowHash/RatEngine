@@ -8,6 +8,7 @@ target_sources(DelegateModule
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/IFunc.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/ObjectFunc.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/StaticFunc.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Event.h
 )
 
 target_include_directories(DelegateModule

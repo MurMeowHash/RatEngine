@@ -1,29 +1,25 @@
 #include "../Public/ConcurrencyModuleInstaller.h"
 #include "IConcurrencyFactory.h"
 #include "ThreadStorage.h"
-#include "WorldThreadWrapper.h"
-#include "PlatformInteractors/IPlatformInteractor.h"
-#include "ProjectSettings/ProjectSettings.h"
+#include "CommandThreadStorage.h"
+#include "ThreadSearchService.h"
+#include "Runner/ThreadRunner.h"
 
 #if defined(__WIN32)
 #include "WindowsConcurrencyFactory.h"
 #else
-#include "MockPlatformThreadFactory.h"
+#include "MockConcurrencyFactory.h"
 #endif
 
 void ConcurrencyModuleInstaller::InstallBindings(DiContainer *diContainer) const {
 #if defined(__WIN32)
-    diContainer->Bind<IConcurrencyFactory>(ClientBinding([](){return new WindowsConcurrencyFactory();}));
+    diContainer->Bind<WindowsConcurrencyFactory>().To<IConcurrencyFactory>().WithArguments();
 #else
-    diContainer->Bind<IPlatformThreadFactory>(ClientBinding([](){return new MockPlatformThreadFactory();}));
+    diContainer->Bind<MockConcurrencyFactory>().To<IConcurrencyFactory>().WithArguments();
 #endif
 
-    diContainer->Bind<WorldThreadWrapper>(ClientBinding([diContainer](){
-        return new WorldThreadWrapper(diContainer->Resolve<IPlatformInteractor>(), diContainer->Resolve<ProjectSettings>(),
-            diContainer->Resolve<ThreadStorage>());
-    }, std::vector<std::type_index>{typeid(IPlatformInteractor), typeid(ProjectSettings), typeid(ThreadStorage)}));
-
-    diContainer->Bind<ThreadStorage>(ClientBinding([diContainer](){
-        return new ThreadStorage(diContainer->Resolve<IConcurrencyFactory>());
-    }, std::vector<std::type_index>{typeid(IConcurrencyFactory)}));
+    diContainer->Bind<ThreadStorage>().To<ThreadStorage>().WithArguments<IConcurrencyFactory>();
+    diContainer->Bind<CommandThreadStorage>().To<CommandThreadStorage>().WithArguments<IConcurrencyFactory>();
+    diContainer->Bind<ThreadSearchService>().To<ThreadSearchService>().WithArguments<ThreadStorage, CommandThreadStorage>();
+    diContainer->Bind<ThreadRunner>().To<ThreadRunner>().WithArguments<DiContainer, CommandThreadStorage, ThreadStorage>();
 }

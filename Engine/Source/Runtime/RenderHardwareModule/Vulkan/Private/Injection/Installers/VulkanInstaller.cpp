@@ -21,25 +21,17 @@
 #endif
 
 void VulkanInstaller::InstallBindings(DiContainer* diContainer) const {
-    diContainer->Bind<IVulkanExtensionsAssembler>(ClientBinding([diContainer](){
-        return new VulkanExtensionsAssembler(diContainer->Resolve<IVulkanPlatformExtensionsProvider>());
-    }, std::vector<std::type_index>{typeid(IVulkanPlatformExtensionsProvider)}));
-    diContainer->Bind<IVulkanLayersValidator>(ClientBinding([](){return new VulkanLayersValidator();}));
-    diContainer->Bind<IVulkanDebugAdapter>(ClientBinding([diContainer](){
-        return new VulkanDebugAdapter(diContainer->Resolve<ILogger>());
-    }, std::vector<std::type_index> { typeid(ILogger) }));
+    diContainer->Bind<VulkanExtensionsAssembler>().To<IVulkanExtensionsAssembler>().WithArguments<IVulkanPlatformExtensionsProvider>();
+    diContainer->Bind<VulkanLayersValidator>().To<IVulkanLayersValidator>().WithArguments<>();
+    diContainer->Bind<VulkanDebugAdapter>().To<IVulkanDebugAdapter>().WithArguments<ILogger>();
 
 #if defined(__WIN64)
-    diContainer->Bind<IVulkanPlatformExtensionsProvider>(ClientBinding([](){return new VulkanWindowsExtensionsProvider();}));
+    diContainer->Bind<VulkanWindowsExtensionsProvider>().To<IVulkanPlatformExtensionsProvider>().WithArguments<>();
 #else
-    diContainer->Bind<IVulkanPlatformExtensionsProvider>(ClientBinding([](){return new VulkanMockExtensionsProvider();}));
+    diContainer->Bind<VulkanMockExtensionsProvider>().To<IVulkanPlatformExtensionsProvider>().WithArguments<>();
 #endif
-    diContainer->Bind<IVulkanDeviceProvider>(ClientBinding([](){return new VulkanDeviceProvider();}));
-    diContainer->Bind<IDeviceFeaturesAssembler>(ClientBinding([](){return new DeviceFeaturesAssembler();}));
+    diContainer->Bind<VulkanDeviceProvider>().To<IVulkanDeviceProvider>().WithArguments<>();
+    diContainer->Bind<DeviceFeaturesAssembler>().To<IDeviceFeaturesAssembler>().WithArguments<>();
 
-    diContainer->Bind<IVulkanDeviceFactory>(ClientBinding([diContainer](){
-        return new VulkanDeviceFactory(diContainer->Resolve<IVulkanExtensionsAssembler>(),
-                diContainer->Resolve<IDeviceFeaturesAssembler>(),
-                        diContainer);
-    }, std::vector<std::type_index>{ typeid(IVulkanExtensionsAssembler), typeid(IDeviceFeaturesAssembler) }));
+    diContainer->Bind<VulkanDeviceFactory>().To<IVulkanDeviceFactory>().WithArguments<IVulkanExtensionsAssembler, IDeviceFeaturesAssembler, DiContainer>();
 }

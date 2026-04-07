@@ -12,9 +12,9 @@ class IRenderProviderInitializer;
 class RenderProviderAccessor;
 class IBuildSettingsInitializer;
 class IApplicationInitializer;
-class WorldThreadWrapper;
-class ThreadStorage;
-class IConcurrencyFactory;
+class ThreadRunner;
+class IPlatformInteractor;
+class ThreadSearchService;
 
 class CoreLoop : IEngineLoop {
 public:
@@ -35,12 +35,12 @@ private:
     RenderProviderAccessor* m_renderProviderAccessor = nullptr;
     IBuildSettingsInitializer* m_buildSettingsInitializer = nullptr;
     IApplicationInitializer* m_applicationInitializer = nullptr;
-    WorldThreadWrapper* m_worldThreadWrapper = nullptr;
-    ThreadStorage* m_threadStorage = nullptr;
-    IConcurrencyFactory* m_concurrencyFactory = nullptr;
+    ThreadRunner* m_threadRunner = nullptr;
+    IPlatformInteractor* m_platformInteractor = nullptr;
+    ThreadSearchService* m_threadSearchService = nullptr;
 
     void AcquireNeededDependencies();
     Rat::Core::ErrorSeverity CreateMainWindow();
     Rat::Core::ErrorSeverity InitializeRenderProvider();
-    void CloseRunningThreads();
+    void InitializeThreads();
 };

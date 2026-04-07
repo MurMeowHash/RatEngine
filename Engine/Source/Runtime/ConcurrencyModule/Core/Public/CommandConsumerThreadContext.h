@@ -1,6 +1,5 @@
 #pragma once
 
-#include "IThreadContextUnit.h"
 #include <cstdint>
 #include <map>
 #include "IConcurrencyFactory.h"
@@ -12,12 +11,13 @@
 #include "LinearAllocator.h"
 #include <stdexcept>
 #include <queue>
+#include "CommandThreadContextBase.h"
 
 template<typename TCommand>
-class CommandConsumerThreadContext : public IThreadContextUnit {
+class CommandConsumerThreadContext : public CommandThreadContextBase<TCommand> {
 public:
-    explicit CommandConsumerThreadContext(IConcurrencyFactory* concurrencyFactor)
-    : m_concurrencyFactory(concurrencyFactor) { }
+    explicit CommandConsumerThreadContext(ThreadSearchService* threadSearchService, IConcurrencyFactory* concurrencyFactor)
+    : CommandThreadContextBase<TCommand>(threadSearchService), m_concurrencyFactory(concurrencyFactor) { }
 
     ~CommandConsumerThreadContext() override {
         if (m_frameSlotsMutex != nullptr)
@@ -30,6 +30,7 @@ public:
 
     void Initialize(uint32_t bufferPoolSize, uint32_t maxBufferPoolSize, size_t commandBufferChunkSize,
         size_t maxAllowedMemoryPerBuffer, IAllocator* poolAllocator = nullptr) {
+        CommandThreadContextBase<TCommand>::Initialize();
         m_maxAllowedMemoryPerBuffer = maxAllowedMemoryPerBuffer;
 
         m_bufferAllocatorFunc = new StaticFunc<IAllocator*>([commandBufferChunkSize](){
@@ -44,6 +45,7 @@ public:
 
     void EnqueueCommandBuffer(uint64_t frameIndex, ConcurrencyCommandBuffer<TCommand>* commandBuffer) {
         ExclusiveThreadGuard frameSlotsGuard(m_frameSlotsMutex);
+        frameIndex = std::max(frameIndex, m_lastCompletedFrameIndex);
         auto cachedCommandBufferIterator = m_bufferFrameSlots.find(frameIndex);
         if (cachedCommandBufferIterator == m_bufferFrameSlots.end()) {
             ConcurrencyCommandBuffer<TCommand>* pooledBuffer = m_commandBufferPool->PopBuffer();
@@ -65,6 +67,7 @@ public:
 
         m_readyToExecuteBuffersQueue.emplace(commandBufferIterator->second);
         m_bufferFrameSlots.erase(commandBufferIterator);
+        m_lastCompletedFrameIndex = frameIndex;
     }
 
     bool TryGetReadyToExecuteBuffer(ConcurrencyCommandBuffer<TCommand>*& outBuffer) {
@@ -97,4 +100,5 @@ private:
     IFunc<IAllocator*>* m_bufferAllocatorFunc = nullptr;
 
     size_t m_maxAllowedMemoryPerBuffer = 0;
+    uint64_t m_lastCompletedFrameIndex = 0;
 };

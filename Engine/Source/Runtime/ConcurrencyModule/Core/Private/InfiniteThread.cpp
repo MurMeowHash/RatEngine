@@ -1,26 +1,16 @@
 #include "InfiniteThread.h"
 #include "InfiniteThreadContext.h"
 
-InfiniteThread::InfiniteThread(IConcurrencyFactory *concurrencyFactory, ThreadStorage* threadStorage, IPlatformInteractor* platformInteractor)
-: ClientThreadBase(concurrencyFactory, threadStorage, platformInteractor) { }
+InfiniteThread::InfiniteThread(IConcurrencyFactory *concurrencyFactory, ThreadStorage* threadStorage)
+: ClientThreadBase(concurrencyFactory, threadStorage) { }
 
 void InfiniteThread::InitializeContext() {
     ClientThreadBase::InitializeContext();
-    uint64_t authorityFrameIndex = 0;
-    if (m_authorityThread != nullptr) {
-        InfiniteThreadContext* authorityInfiniteThreadContext;
-        if (m_authorityThread->GetThreadContext()->TryRetrieveContextUnit(authorityInfiniteThreadContext))
-            authorityFrameIndex = authorityInfiniteThreadContext->m_threadFrameIndex.RetrieveValue();
-
-    }
-    m_threadContext->AddContextUnit(new InfiniteThreadContext(authorityFrameIndex));
+    m_threadContext->AddContextUnit(new InfiniteThreadContext());
 }
 
-void InfiniteThread::SubmitWork() {
-    OnBeforeWork();
+void InfiniteThread::SubmitThreadWork() {
     while(!Rat::Core::Flags::IsFlagSet(RetrieveRuntimeFlags(), ThreadRuntimeFlags::StopRequested)) {
         SubmitInfiniteWork();
     }
-
-    OnAfterWork();
 }
