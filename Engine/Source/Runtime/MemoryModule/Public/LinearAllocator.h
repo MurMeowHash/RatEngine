@@ -19,7 +19,7 @@ public:
 
 private:
     MemoryChunk* m_rootChunk = nullptr;
-    MemoryChunk** m_tailChunk = &m_rootChunk;
+    MemoryChunk* m_tailChunk = nullptr;
 
     size_t m_uniformChunkSize;
 

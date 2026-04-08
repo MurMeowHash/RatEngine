@@ -23,16 +23,16 @@ public:
 
         ConcurrencyCommand<TCommand>* processedCommand = commandBufferToExecute->GetRoot();
         while(processedCommand != nullptr) {
-            processedCommand->m_command();
+            ExecuteCommand(processedCommand);
             processedCommand = processedCommand->m_next;
         }
 
         m_consumerThreadContext->MarkBufferExecuted(commandBufferToExecute);
     }
 
-    void Terminate() override {
+    void Terminate() override { }
 
-    }
+    virtual void ExecuteCommand(ConcurrencyCommand<TCommand>* processedCommand) = 0;
 
 private:
     ThreadSearchService* m_threadSearchService;

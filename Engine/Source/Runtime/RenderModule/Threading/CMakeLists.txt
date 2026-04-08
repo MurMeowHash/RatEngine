@@ -4,6 +4,7 @@ target_sources(RenderModule.Threading
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderThread.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderCommand.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderCommandProcessSystem.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/RenderThread.cpp
 )
@@ -27,6 +28,7 @@ target_link_libraries(RenderModule.Threading
         InjectionModule.Core
         ConcurrencyModule.ControlSystems
         ConcurrencyModule.WorldAbstraction
+        DebugModule
 )
 
 if(MSVC)

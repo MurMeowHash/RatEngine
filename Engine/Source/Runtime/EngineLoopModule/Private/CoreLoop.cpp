@@ -7,7 +7,6 @@
 #include "ProjectSettings/ProjectSettings.h"
 #include "ProjectSettings/IProjectSettingsInitializer.h"
 #include "ILogger.h"
-#include "InfiniteThreadContext.h"
 #include "IRenderProviderInitializer.h"
 #include "RenderProviderAccessor.h"
 #include "BuildSettings/IBuildSettingsInitializer.h"
@@ -18,6 +17,7 @@
 #include "RenderCommand.h"
 #include "RenderThread.h"
 #include "CommandWriter.h"
+#include "ILogger.h"
 
 CoreLoop::CoreLoop() {
     m_engineDependencyContext = new EngineDependencyContext(nullptr);
@@ -62,8 +62,8 @@ Rat::Core::ErrorSeverity CoreLoop::Tick() {
 
     m_windowProvider->Tick();
 
-    m_commandWriter->EnqueueCommand(RenderCommand([runningThreadId]() {
-        uint32_t a = runningThreadId + 4;
+    m_commandWriter->EnqueueCommand(RenderCommand([runningThreadId](ILogger* logger, IPlatformInteractor* platformInteractor) {
+        logger->PrintInfo(StringFormatter("Thread ", runningThreadId, " Command Executed On ", platformInteractor->GetRunningThreadId(), '\n'));
     }));
 
     m_engineCoreEventBus->Publish(EngineCoreEvents::EngineEndFrameEvent(runningThreadId));
@@ -148,7 +148,7 @@ void CoreLoop::InitializeThreads() {
         .AssignCommandAuthority<RenderCommand>();
 
     RenderThread* renderThread = m_threadRunner->StartThread<RenderThread>()
-        .Create<IConcurrencyFactory, ThreadStorage, ProjectSettings, DiContainer, EngineCoreEventBus>(0, ThreadCreationFlags::Deferred)
+        .Create<IConcurrencyFactory, ThreadStorage, ProjectSettings, DiContainer, EngineCoreEventBus, CommandWriter>(0, ThreadCreationFlags::Deferred)
         .AssignCommandConsumer<RenderCommand>()
         .RetrieveThread();
 
