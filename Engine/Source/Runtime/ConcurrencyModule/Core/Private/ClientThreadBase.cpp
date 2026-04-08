@@ -3,11 +3,12 @@
 #include <cassert>
 #include "CoreUtils.h"
 #include "SynchronizationPrimitives/Fence.h"
+#include "EngineCoreEventBus.h"
 
 using Rat::Core::Flags::operator&;
 
-ClientThreadBase::ClientThreadBase(IConcurrencyFactory *concurrencyFactory, ThreadStorage* threadStorage)
-: m_concurrencyFactory(concurrencyFactory), m_threadStorage(threadStorage) {
+ClientThreadBase::ClientThreadBase(IConcurrencyFactory *concurrencyFactory, ThreadStorage* threadStorage, EngineCoreEventBus* engineCoreEventBus)
+: m_concurrencyFactory(concurrencyFactory), m_threadStorage(threadStorage), m_engineCoreEventBus(engineCoreEventBus) {
     m_workDelegate = new ObjectDelegate(this, &ClientThreadBase::SubmitWork);
     m_invokeMemoryBarrierCallback = new ObjectDelegate<ClientThreadBase, IClientThread*>(this, &ClientThreadBase::InvokeMemoryBarrier);
 }
@@ -80,7 +81,6 @@ void ClientThreadBase::OnThreadBegin() {
 
 void ClientThreadBase::OnThreadEnd() {
     m_threadStorage->m_onThreadAdded->UnSubscribe(m_invokeMemoryBarrierCallback);
-
     m_threadProcessor->TerminateProcessor();
     delete m_threadProcessor;
 }

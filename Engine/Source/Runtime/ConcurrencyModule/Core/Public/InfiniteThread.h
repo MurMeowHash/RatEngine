@@ -4,7 +4,7 @@
 
 class InfiniteThread : public ClientThreadBase {
 public:
-    InfiniteThread(IConcurrencyFactory* concurrencyFactory, ThreadStorage* threadStorage);
+    InfiniteThread(IConcurrencyFactory* concurrencyFactory, ThreadStorage* threadStorage, EngineCoreEventBus* engineCoreEventBus);
 protected:
     void InitializeContext() override;
     void SubmitThreadWork() override;

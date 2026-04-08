@@ -30,6 +30,8 @@ public:
 
     void Terminate() override {
         m_engineCoreEventBus->UnSubscribe<EngineCoreEvents::EnginePostEndFrameEvent>(m_enginePostEndFrameDelegate);
+
+        TryReleaseConstraintThread();
     }
 
 private:
@@ -44,11 +46,15 @@ private:
         if (postEndFrameEventData.m_threadId != m_localThreadId)
             return;
 
-        FrameLagContext<TLocalThread>* constraintFrameLagContext;
-        if (m_threadSearchService->TryGetThreadContext<TConstraintThread>(constraintFrameLagContext))
-            constraintFrameLagContext->m_frameLagSemaphore->Release();
+        TryReleaseConstraintThread();
 
         if (m_localFrameLagContext != nullptr)
             m_localFrameLagContext->m_frameLagSemaphore->Acquire();
+    }
+
+    void TryReleaseConstraintThread() {
+        FrameLagContext<TLocalThread>* constraintFrameLagContext;
+        if (m_threadSearchService->TryGetThreadContext<TConstraintThread>(constraintFrameLagContext))
+            constraintFrameLagContext->m_frameLagSemaphore->Release();
     }
 };

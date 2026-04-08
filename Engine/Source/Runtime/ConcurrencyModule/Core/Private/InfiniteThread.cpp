@@ -1,8 +1,8 @@
 #include "InfiniteThread.h"
 #include "InfiniteThreadContext.h"
 
-InfiniteThread::InfiniteThread(IConcurrencyFactory *concurrencyFactory, ThreadStorage* threadStorage)
-: ClientThreadBase(concurrencyFactory, threadStorage) { }
+InfiniteThread::InfiniteThread(IConcurrencyFactory *concurrencyFactory, ThreadStorage* threadStorage, EngineCoreEventBus* engineCoreEventBus)
+: ClientThreadBase(concurrencyFactory, threadStorage, engineCoreEventBus) { }
 
 void InfiniteThread::InitializeContext() {
     ClientThreadBase::InitializeContext();

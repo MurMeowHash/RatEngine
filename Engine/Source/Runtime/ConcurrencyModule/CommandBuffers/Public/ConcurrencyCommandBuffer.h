@@ -7,13 +7,13 @@
 
 template<typename TCommand>
 struct ConcurrencyCommand {
-    ConcurrencyCommand(const TCommand& command, ConcurrencyCommand<TCommand>* next)
-    : m_command(command), m_next(next) { }
+    ConcurrencyCommand(TCommand&& command, ConcurrencyCommand<TCommand>* next)
+    : m_command(std::move(command)), m_next(next) { }
 
     ConcurrencyCommand(const ConcurrencyCommand<TCommand>& src)
     : m_command(src.m_command), m_next(src.m_next) { }
 
-    const TCommand& m_command;
+    TCommand m_command;
     ConcurrencyCommand<TCommand>* m_next;
 };
 
@@ -31,9 +31,9 @@ public:
     ConcurrencyCommand<TCommand>* GetRoot() const { return m_root; }
     [[nodiscard]] IAllocator* GetAllocator() const { return m_allocator; }
 
-    void EqueueCommand(const TCommand& command) {
+    void EqueueCommand(TCommand&& command) {
         void* memory = m_allocator->AllocateMemory(sizeof(ConcurrencyCommand<TCommand>));
-        ConcurrencyCommand<TCommand> *commandNode = new(memory) ConcurrencyCommand<TCommand>(command, nullptr);
+        ConcurrencyCommand<TCommand> *commandNode = new(memory) ConcurrencyCommand<TCommand>(std::move(command), nullptr);
         *m_tail = commandNode;
         m_tail = &commandNode->m_next;
     }

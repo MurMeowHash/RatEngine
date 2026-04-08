@@ -2,9 +2,9 @@ add_library(ConcurrencyModule.WorldAbstraction STATIC)
 
 target_sources(ConcurrencyModule.WorldAbstraction
         PUBLIC
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/WorldThreadWrapper.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/WorldThread.h
         PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/Private/WorldThreadWrapper.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/WorldThread.cpp
 )
 
 target_include_directories(ConcurrencyModule.WorldAbstraction

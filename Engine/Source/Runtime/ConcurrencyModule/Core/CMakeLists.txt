@@ -34,12 +34,15 @@ target_sources(ConcurrencyModule.Core
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Runner/ThreadRunner.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Runner/ThreadRunnerAssembler.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/ConcurrentEvent.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/CommandWriter.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/ClientThreadWrapperBase.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ClientThreadBase.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/InfiniteThread.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ThreadProcessor.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Runner/ThreadRunner.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ThreadStorage.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/ClientThreadWrapperBase.cpp
 )
 
 target_include_directories(ConcurrencyModule.Core
@@ -56,8 +59,10 @@ target_link_libraries(ConcurrencyModule.Core
         DelegateModule
         MemoryModule
         InjectionModule.Core
-        PRIVATE
         CoreModule.Common
+        PRIVATE
+        EventBusModule.Core
+        EventBusModule.Engine
 )
 
 if(MSVC)

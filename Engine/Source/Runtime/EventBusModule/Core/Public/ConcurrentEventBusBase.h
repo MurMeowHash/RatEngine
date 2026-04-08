@@ -23,8 +23,15 @@ public:
 
     template<typename TEvent> requires(std::is_base_of_v<TEventBase, TEvent>)
     void Publish(const TEvent& event) const {
-        SharedThreadGuard guard(m_mutex);
-        m_internalEventBus->Publish(event);
+        std::vector<StaticDelegate<const TEventBase&>> snapshot;
+        {
+            SharedThreadGuard guard(m_mutex);
+            snapshot = m_internalEventBus->template GetListenersSnapshot<TEvent>();
+        }
+
+        for (const StaticDelegate<const TEventBase&>& eventHandler : snapshot) {
+            eventHandler(event);
+        }
     }
 
     template<typename TEvent> requires(std::is_base_of_v<TEventBase, TEvent>)

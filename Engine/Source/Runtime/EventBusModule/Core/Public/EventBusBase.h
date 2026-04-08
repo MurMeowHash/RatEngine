@@ -57,6 +57,20 @@ public:
         m_cachedDelegates.erase(delegateHash);
     }
 
+    template<typename TEvent> requires(std::is_base_of_v<TEventBase, TEvent>)
+    [[nodiscard]] std::vector<StaticDelegate<const TEventBase&>> GetListenersSnapshot() const {
+        std::vector<StaticDelegate<const TEventBase&>> snapshot;
+        auto eventHandlers = m_listeners.find(typeid(TEvent));
+        if (eventHandlers == m_listeners.end())
+            return snapshot;
+
+        snapshot.reserve(eventHandlers->second.size());
+        for (const std::unique_ptr<StaticDelegate<const TEventBase&>> &handler : eventHandlers->second) {
+            snapshot.emplace_back(*handler);
+        }
+        return snapshot;
+    }
+
 private:
     std::unordered_map<std::type_index, std::vector<std::unique_ptr<StaticDelegate<const TEventBase&>>>> m_listeners;
     std::unordered_map<std::size_t, StaticDelegate<const TEventBase&>*> m_cachedDelegates;

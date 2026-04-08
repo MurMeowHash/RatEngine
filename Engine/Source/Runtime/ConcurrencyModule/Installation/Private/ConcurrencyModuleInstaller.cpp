@@ -4,6 +4,7 @@
 #include "CommandThreadStorage.h"
 #include "ThreadSearchService.h"
 #include "Runner/ThreadRunner.h"
+#include "CommandWriter.h"
 
 #if defined(__WIN32)
 #include "WindowsConcurrencyFactory.h"
@@ -22,4 +23,5 @@ void ConcurrencyModuleInstaller::InstallBindings(DiContainer *diContainer) const
     diContainer->Bind<CommandThreadStorage>().To<CommandThreadStorage>().WithArguments<IConcurrencyFactory>();
     diContainer->Bind<ThreadSearchService>().To<ThreadSearchService>().WithArguments<ThreadStorage, CommandThreadStorage>();
     diContainer->Bind<ThreadRunner>().To<ThreadRunner>().WithArguments<DiContainer, CommandThreadStorage, ThreadStorage>();
+    diContainer->Bind<CommandWriter>().To<CommandWriter>().WithArguments<ThreadSearchService, IPlatformInteractor>();
 }

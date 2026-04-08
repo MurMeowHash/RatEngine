@@ -28,4 +28,6 @@ namespace EngineCoreEvents {
 
         uint32_t m_threadId;
     };
+
+    class EngineExitRequestedEvent : public EngineCoreEvent {};
 }

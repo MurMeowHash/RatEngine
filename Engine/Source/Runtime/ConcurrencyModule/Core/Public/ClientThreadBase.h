@@ -6,6 +6,8 @@
 #include "ThreadStorage.h"
 #include "ThreadProcessor.h"
 
+class EngineCoreEventBus;
+
 class ClientThreadBase : public IRunnableClientThread {
 public:
     void Execute() override;
@@ -19,9 +21,9 @@ public:
 
     ~ClientThreadBase() override;
 public:
-    ClientThreadBase(IConcurrencyFactory* concurrencyFactory, ThreadStorage* threadStorage);
+    ClientThreadBase(IConcurrencyFactory* concurrencyFactory, ThreadStorage* threadStorage, EngineCoreEventBus* engineCoreEventBus);
     void Create(size_t stackSize, ThreadCreationFlags threadCreationFlags) override;
-    ThreadContext* GetThreadContext() const override;
+    [[nodiscard]] ThreadContext* GetThreadContext() const override;
 
 public:
     void SubmitRuntimeFlags(ThreadRuntimeFlags flags) override;
@@ -31,6 +33,7 @@ protected:
     ThreadContext* m_threadContext = nullptr;
     IConcurrencyFactory* m_concurrencyFactory;
     ThreadStorage* m_threadStorage;
+    EngineCoreEventBus* m_engineCoreEventBus;
 
     ThreadProcessor* m_threadProcessor = nullptr;
 

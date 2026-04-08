@@ -27,7 +27,6 @@ target_link_libraries(RenderModule.Threading
         InjectionModule.Core
         ConcurrencyModule.ControlSystems
         ConcurrencyModule.WorldAbstraction
-        DebugModule
 )
 
 if(MSVC)
