@@ -20,8 +20,8 @@
 
 void RenderThread::OnThreadBegin() {
     InfiniteThread::OnThreadBegin();
-    m_threadProcessor->AddSystem<RenderCommandProcessSystem>(m_diContainer->Resolve<ThreadSearchService>(), m_diContainer->Resolve<ILogger>(),
-        m_diContainer->Resolve<IPlatformInteractor>());
+    m_threadProcessor->AddSystem<RenderCommandProcessSystem>(m_diContainer->Resolve<ThreadSearchService>(), m_diContainer->Resolve<ImmediateCommandExecuteRequest>(),
+        m_diContainer->Resolve<ILogger>(), m_diContainer->Resolve<IPlatformInteractor>());
 
     m_threadProcessor->AddSystem<FrameLagConstraintSystem<RenderThread, WorldThread>>(m_diContainer->Resolve<ThreadSearchService>(),
         m_diContainer->Resolve<EngineCoreEventBus>());
@@ -45,9 +45,9 @@ void RenderThread::InitializeContext() {
 }
 
 RenderThread::RenderThread(IConcurrencyFactory *concurrencyFactory, ThreadStorage* threadStorage, ProjectSettings* projectSettings,
-    DiContainer* diContainer, EngineCoreEventBus* engineCoreEventBus, CommandWriter* commandWriter)
+    DiContainer* diContainer, EngineCoreEventBus* engineCoreEventBus, CommandWriter* commandWriter, ThreadSearchService* threadSearchService)
 : InfiniteThread(concurrencyFactory, threadStorage, engineCoreEventBus), m_projectSettings(projectSettings), m_diContainer(diContainer),
-m_commandWriter(commandWriter) { }
+m_commandWriter(commandWriter), m_threadSearchService(threadSearchService) { }
 
 void RenderThread::SubmitInfiniteWork() {
     m_engineCoreEventBus->Publish(EngineCoreEvents::EngineBeginFrameEvent(GetThreadId()));
@@ -55,9 +55,15 @@ void RenderThread::SubmitInfiniteWork() {
     m_threadProcessor->Tick();
 
     uint32_t runningThreadId = GetThreadId();
-    m_commandWriter->EnqueueCommand(RenderCommand([runningThreadId](ILogger* logger, IPlatformInteractor* platformInteractor) {
-        logger->PrintInfo(StringFormatter("Thread ", runningThreadId, " Command Executed On ", platformInteractor->GetRunningThreadId(), '\n'));
-    }));
+    uint64_t currentFrameIndex = 0;
+    InfiniteThreadContext* infiniteThreadContext;
+    if (m_threadSearchService->TryGetThreadContext(runningThreadId, infiniteThreadContext))
+        currentFrameIndex = infiniteThreadContext->m_threadFrameIndex.RetrieveValue();
+
+    m_commandWriter->EnqueueCommand(RenderCommand([runningThreadId, currentFrameIndex](ILogger* logger, IPlatformInteractor* platformInteractor) {
+        logger->PrintInfo(StringFormatter("Thread ", runningThreadId, " Command Executed On ",
+            platformInteractor->GetRunningThreadId(), " enqueue frame ", currentFrameIndex, '\n'));
+    }), CommandWriteFlags::None);
 
     m_engineCoreEventBus->Publish(EngineCoreEvents::EngineEndFrameEvent(GetThreadId()));
     m_engineCoreEventBus->Publish(EngineCoreEvents::EnginePostEndFrameEvent(GetThreadId()));

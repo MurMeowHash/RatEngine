@@ -36,6 +36,8 @@ target_sources(ConcurrencyModule.Core
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/ConcurrentEvent.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/CommandWriter.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/ClientThreadWrapperBase.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Events/ImmediateCommandExecuteRequestUnit.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Events/ImmediateCommandExecuteRequest.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ClientThreadBase.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/InfiniteThread.cpp

@@ -18,6 +18,7 @@
 #include "RenderThread.h"
 #include "CommandWriter.h"
 #include "ILogger.h"
+#include "ThreadSearchService.h"
 
 CoreLoop::CoreLoop() {
     m_engineDependencyContext = new EngineDependencyContext(nullptr);
@@ -62,8 +63,14 @@ Rat::Core::ErrorSeverity CoreLoop::Tick() {
 
     m_windowProvider->Tick();
 
-    m_commandWriter->EnqueueCommand(RenderCommand([runningThreadId](ILogger* logger, IPlatformInteractor* platformInteractor) {
-        logger->PrintInfo(StringFormatter("Thread ", runningThreadId, " Command Executed On ", platformInteractor->GetRunningThreadId(), '\n'));
+    uint64_t currentFrameIndex = 0;
+    InfiniteThreadContext* infiniteThreadContext;
+    if (m_threadSearchService->TryGetThreadContext(runningThreadId, infiniteThreadContext))
+        currentFrameIndex = infiniteThreadContext->m_threadFrameIndex.RetrieveValue();
+
+    m_commandWriter->EnqueueCommand(RenderCommand([runningThreadId, currentFrameIndex](ILogger* logger, IPlatformInteractor* platformInteractor) {
+        logger->PrintInfo(StringFormatter("Thread ", runningThreadId, " Command Executed On ",
+            platformInteractor->GetRunningThreadId(), " enqueue frame ", currentFrameIndex, '\n'));
     }));
 
     m_engineCoreEventBus->Publish(EngineCoreEvents::EngineEndFrameEvent(runningThreadId));
@@ -95,6 +102,7 @@ void CoreLoop::AcquireNeededDependencies() {
     m_threadRunner = diContainer->Resolve<ThreadRunner>();
     m_platformInteractor = diContainer->Resolve<IPlatformInteractor>();
     m_commandWriter = diContainer->Resolve<CommandWriter>();
+    m_threadSearchService = diContainer->Resolve<ThreadSearchService>();
 }
 
 Rat::Core::ErrorSeverity CoreLoop::CreateMainWindow() {
@@ -148,7 +156,7 @@ void CoreLoop::InitializeThreads() {
         .AssignCommandAuthority<RenderCommand>();
 
     RenderThread* renderThread = m_threadRunner->StartThread<RenderThread>()
-        .Create<IConcurrencyFactory, ThreadStorage, ProjectSettings, DiContainer, EngineCoreEventBus, CommandWriter>(0, ThreadCreationFlags::Deferred)
+        .Create<IConcurrencyFactory, ThreadStorage, ProjectSettings, DiContainer, EngineCoreEventBus, CommandWriter, ThreadSearchService>(0, ThreadCreationFlags::Deferred)
         .AssignCommandConsumer<RenderCommand>()
         .RetrieveThread();
 
