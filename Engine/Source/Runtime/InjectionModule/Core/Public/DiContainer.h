@@ -8,9 +8,46 @@
 #include <exception>
 #include "CoreUtils.h"
 
+class DiContainer;
+
 struct ClientBinding {
-    std::function<void*()> m_instantiateFunc;
+    std::function<void*(DiContainer*)> m_instantiateFunc;
     std::vector<std::type_index> m_dependencies;
+};
+
+template<typename TInstance, typename TTarget>
+struct BindingAssembler {
+    BindingAssembler(DiContainer* diContainer)
+    : m_diContainer(diContainer) { }
+
+    template<typename TTargetOverride>
+    BindingAssembler<TInstance, TTargetOverride> To() {
+        BindingAssembler<TInstance, TTargetOverride> overriddenBinding = BindingAssembler<TInstance, TTargetOverride>(m_diContainer);
+        m_isOverridden = true;
+        return overriddenBinding;
+    }
+
+    template<typename...Args>
+    void WithArguments();
+
+    ~BindingAssembler();
+
+private:
+    DiContainer* m_diContainer;
+    ClientBinding m_assembledBinding;
+
+    bool m_isOverridden = false;
+};
+
+template<typename TInstance>
+struct InstanceAssembler {
+    explicit InstanceAssembler(const DiContainer* diContainer)
+    : m_diContainer(diContainer) { }
+
+    template<typename...Args>
+    TInstance* WithArguments() const;
+private:
+    const DiContainer* m_diContainer;
 };
 
 class DiContainer {
@@ -26,6 +63,11 @@ public:
         m_clientBindings[typeid(TTarget)] = ClientBindingWithInstance(std::move(clientBinding), std::move(bindingInstance));
     }
 
+    template<typename TInstance>
+    BindingAssembler<TInstance, TInstance> Bind() {
+        return BindingAssembler<TInstance, TInstance>(this);
+    }
+
     template<typename TType>
     TType* Resolve() const {
         auto dependencyIterator = m_dependencies.find(typeid(TType));
@@ -36,6 +78,11 @@ public:
             return m_parentContainer->Resolve<TType>();
 
         throw std::runtime_error(StringFormatter("Unable to resolve dependency ", typeid(TType).name()));
+    }
+
+    template<typename TInstance>
+    InstanceAssembler<TInstance> Instantiate() const {
+        return InstanceAssembler<TInstance>(this);
     }
 
     bool ContainsDependency(const std::type_index& depType) const;
@@ -76,3 +123,27 @@ private:
 
     std::vector<PendingBinding> TopoSort(const std::unordered_map<std::type_index, ClientBindingWithInstance>& bindings);
 };
+
+template<typename TInstance, typename TTarget>
+template<typename ... Args>
+void BindingAssembler<TInstance, TTarget>::WithArguments() {
+    m_assembledBinding.m_instantiateFunc = [](DiContainer* diContainer) {
+        return new TInstance(diContainer->Resolve<Args>()...);
+    };
+
+    m_assembledBinding.m_dependencies = std::vector<std::type_index>{ typeid(Args)... };
+}
+
+template<typename TInstance, typename TTarget>
+BindingAssembler<TInstance, TTarget>::~BindingAssembler() {
+    if (m_isOverridden)
+        return;
+
+    m_diContainer->Bind<TTarget>(std::move(m_assembledBinding));
+}
+
+template<typename TInstance>
+template<typename ... Args>
+TInstance* InstanceAssembler<TInstance>::WithArguments() const {
+    return new TInstance(m_diContainer->Resolve<Args>()...);
+}

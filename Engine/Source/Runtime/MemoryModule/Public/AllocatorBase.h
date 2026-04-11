@@ -6,7 +6,7 @@
 
 class AllocatorBase : public IAllocator {
 public:
-    explicit AllocatorBase(const std::type_index& overrideTypeIndex);
+    explicit AllocatorBase(std::type_index overrideTypeIndex);
     bool TryAdopt(IAllocator *externalAllocator) override;
     ~AllocatorBase() override;
 protected:

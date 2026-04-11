@@ -14,20 +14,14 @@
 #endif
 
 void RenderProviderModuleInstaller::InstallBindings(DiContainer* diContainer) const {
-    diContainer->Bind<RenderProviderAccessor>(ClientBinding([](){return new RenderProviderAccessor();}));
+    diContainer->Bind<RenderProviderAccessor>().To<RenderProviderAccessor>().WithArguments<>();
 #if defined(__WIN32)
-    diContainer->Bind<IRenderProviderFactory>(ClientBinding([diContainer](){
-        return new WindowsRenderProviderFactory(diContainer);
-    }, std::vector<std::type_index>{ }));
-
-    diContainer->Bind<IRenderPriorityQueue>(ClientBinding([](){return new WindowsRenderPriorityQueue();}));
+    diContainer->Bind<WindowsRenderProviderFactory>().To<IRenderProviderFactory>().WithArguments<DiContainer>();
+    diContainer->Bind<WindowsRenderPriorityQueue>().To<IRenderPriorityQueue>().WithArguments<>();
 #else
-    diContainer->Bind<IRenderProviderFactory>(ClientBinding([](){return new MockRenderProviderFactory();}));
-    diContainer->Bind<IRenderPriorityQueue>(ClientBinding([](){return new MockRenderPriorityQueue();}));
+    diContainer->Bind<MockRenderProviderFactory>().To<IRenderProviderFactory>().WithArguments<>();
+    diContainer->Bind<MockRenderPriorityQueue>().To<IRenderPriorityQueue>().WithArguments<>();
 #endif
 
-    diContainer->Bind<IRenderProviderInitializer>(ClientBinding([diContainer](){
-        return new RenderProviderInitializer(diContainer->Resolve<IRenderProviderFactory>(),
-                diContainer->Resolve<RenderProviderAccessor>(), diContainer->Resolve<IRenderPriorityQueue>());
-    }, std::vector<std::type_index>{ typeid(IRenderProviderFactory), typeid(RenderProviderAccessor), typeid(IRenderPriorityQueue) }));
+    diContainer->Bind<RenderProviderInitializer>().To<IRenderProviderInitializer>().WithArguments<IRenderProviderFactory, RenderProviderAccessor, IRenderPriorityQueue>();
 }

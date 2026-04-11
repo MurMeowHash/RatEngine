@@ -22,3 +22,12 @@ void SimpleAllocator::FreeMemory() {
 void SimpleAllocator::InvalidateAllocator() {
     m_allocatedMemoryCells.clear();
 }
+
+size_t SimpleAllocator::GetAllocatedMemorySize() const {
+    size_t totalMemorySize = 0;
+    for(const MemoryCell& memoryCell : m_allocatedMemoryCells) {
+        totalMemorySize += memoryCell.m_memorySize;
+    }
+
+    return totalMemorySize;
+}

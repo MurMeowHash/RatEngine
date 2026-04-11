@@ -1,21 +1,21 @@
 #pragma once
 #include "IDelegate.h"
-#include <functional>
+#include "StaticFunc.h"
+#include <utility>
 
 template<typename... Args>
-class StaticDelegate : public IDelegate<Args...> {
+class StaticDelegate : private StaticFunc<void, Args...>, public IDelegate<Args...> {
 public:
-    using FunctionHandler = std::function<void(Args...)>;
-    explicit StaticDelegate(const FunctionHandler &functionHandler)
-    : m_Func(functionHandler) {}
+    using Internal = StaticFunc<void, Args...>;
 
-    void Invoke(Args... args) override {
-        m_Func(std::forward<Args>(args)...);
+    explicit StaticDelegate(const Internal::FunctionHandler &functionHandler)
+    : StaticFunc<void, Args...>(functionHandler) {}
+
+    void Invoke(Args... args) const override {
+        Internal::Invoke(std::forward<Args>(args)...);
     }
 
-    void operator()(Args... args) override {
-        Invoke(std::forward<Args>(args)...);
+    void operator()(Args... args) const override {
+        Internal::operator()(std::forward<Args>(args)...);
     }
-private:
-    FunctionHandler m_Func;
 };

@@ -5,19 +5,19 @@
 #include <stdexcept>
 #include "CoreUtils.h"
 
-template<typename TCommandDelegate>
+template<typename TCommand>
 struct ConcurrencyCommand {
-    ConcurrencyCommand(const TCommandDelegate& command, ConcurrencyCommand<TCommandDelegate>* next)
-    : m_command(command), m_next(next) { }
+    ConcurrencyCommand(TCommand&& command, ConcurrencyCommand<TCommand>* next)
+    : m_command(std::move(command)), m_next(next) { }
 
-    ConcurrencyCommand(const ConcurrencyCommand<TCommandDelegate>& src)
+    ConcurrencyCommand(const ConcurrencyCommand<TCommand>& src)
     : m_command(src.m_command), m_next(src.m_next) { }
 
-    TCommandDelegate m_command;
-    ConcurrencyCommand<TCommandDelegate>* m_next;
+    TCommand m_command;
+    ConcurrencyCommand<TCommand>* m_next;
 };
 
-template<typename TCommandDelegate>
+template<typename TCommand>
 class ConcurrencyCommandBuffer {
 public:
     explicit ConcurrencyCommandBuffer(IAllocator* allocator = nullptr)
@@ -28,24 +28,29 @@ public:
         }
     }
 
-    ConcurrencyCommand<TCommandDelegate>* GetRoot() const { return m_root; }
+    ConcurrencyCommand<TCommand>* GetRoot() const { return m_root; }
+    [[nodiscard]] IAllocator* GetAllocator() const { return m_allocator; }
 
-    void EqueueCommand(const TCommandDelegate& command) {
-        ConcurrencyCommand<TCommandDelegate>* commandNode;
-        void* memory = m_allocator->AllocateMemory(sizeof(ConcurrencyCommand<TCommandDelegate>));
-        commandNode = new (memory) ConcurrencyCommand<TCommandDelegate>(command, nullptr);
-        *m_tail = commandNode;
-        m_tail = &commandNode->m_next;
+    void EqueueCommand(TCommand&& command) {
+        void* memory = m_allocator->AllocateMemory(sizeof(ConcurrencyCommand<TCommand>));
+        ConcurrencyCommand<TCommand> *commandNode = new(memory) ConcurrencyCommand<TCommand>(std::move(command), nullptr);
+        if (m_root == nullptr) {
+            m_root = commandNode;
+            m_tail = m_root;
+        } else {
+            m_tail->m_next = commandNode;
+            m_tail = m_tail->m_next;
+        }
     }
 
-    void TransferCommandBuffer(ConcurrencyCommandBuffer<TCommandDelegate>& srcCommandBuffer, bool invalidateSrcBuffer = true) {
+    void TransferCommandBuffer(ConcurrencyCommandBuffer<TCommand>& srcCommandBuffer, bool invalidateSrcBuffer = true) {
         if(m_root == nullptr) {
             m_root = srcCommandBuffer.m_root;
-            m_tail = &m_root;
+            m_tail = srcCommandBuffer.m_tail;
         }
         else {
-            (*m_tail)->m_next = srcCommandBuffer.m_root;
-            m_tail = srcCommandBuffer.m_tail;
+            m_tail->m_next = srcCommandBuffer.m_root;
+            m_tail = m_tail->m_next;
         }
 
         TransferMemory(srcCommandBuffer);
@@ -56,15 +61,13 @@ public:
 
     void Clear() {
         m_root = nullptr;
-        m_tail = &m_root;
+        m_tail = nullptr;
 
         if(m_usedBuiltInAllocator)
             m_allocator->FreeMemory();
     }
 
-    virtual void Submit() = 0;
-
-    ~ConcurrencyCommandBuffer() {
+    virtual ~ConcurrencyCommandBuffer() {
         if(!m_usedBuiltInAllocator)
             return;
 
@@ -73,18 +76,18 @@ public:
     }
 
 private:
-    ConcurrencyCommand<TCommandDelegate>* m_root;
-    ConcurrencyCommand<TCommandDelegate>** m_tail = &m_root;
+    ConcurrencyCommand<TCommand>* m_root = nullptr;
+    ConcurrencyCommand<TCommand>* m_tail = nullptr;
 
     IAllocator* m_allocator;
     bool m_usedBuiltInAllocator = false;
 
-    void TransferMemory(const ConcurrencyCommandBuffer<TCommandDelegate>& srcCommandBuffer) {
+    void TransferMemory(const ConcurrencyCommandBuffer<TCommand>& srcCommandBuffer) {
         if(!m_allocator->TryAdopt(srcCommandBuffer.m_allocator))
-            throw std::runtime_error(StringFormatter("Failed to transfer memory on command buffer because no transfer defined between",
-                                                     typeid(m_allocator).name(),
+            throw std::runtime_error(StringFormatter("Failed to transfer memory on command buffer because no transfer defined between ",
+                                                     typeid(*m_allocator).name(),
                                                      " allocator and ",
-                                                     typeid(srcCommandBuffer.m_allocator).name()));
+                                                     typeid(*srcCommandBuffer.m_allocator).name()));
 
         srcCommandBuffer.m_allocator->InvalidateAllocator();
     }

@@ -15,12 +15,15 @@ public:
     void* AllocateMemory(size_t memorySize) override;
     void FreeMemory() override;
     void InvalidateAllocator() override;
+    [[nodiscard]] size_t GetAllocatedMemorySize() const override;
 
 private:
     MemoryChunk* m_rootChunk = nullptr;
-    MemoryChunk** m_tailChunk = &m_rootChunk;
+    MemoryChunk* m_tailChunk = nullptr;
 
     size_t m_uniformChunkSize;
+
+    static size_t AlignForward(size_t ptr, size_t alignment);
 
     friend class LinearToLinearAllocatorAdopter;
     friend class LinearToSimpleAllocatorAdopter;

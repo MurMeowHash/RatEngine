@@ -6,10 +6,13 @@ DiContainer::DiContainer(const DiContainer *parentContainer)
 void DiContainer::ResolveDependencies() {
     m_dependencies.clear();
 
+    BindingInstance containerBindingInstance(this, nullptr);
+    m_dependencies.emplace(typeid(DiContainer), containerBindingInstance);
+
     std::vector<PendingBinding> sortedPendingBindings = TopoSort(m_clientBindings);
     for(const PendingBinding &binding : sortedPendingBindings) {
         m_dependencies[binding.m_bindingType] =
-                BindingInstance(binding.m_clientBindingWithInstance->m_clientBinding.m_instantiateFunc(),
+                BindingInstance(binding.m_clientBindingWithInstance->m_clientBinding.m_instantiateFunc(this),
                                 binding.m_clientBindingWithInstance->m_bindingInstance.m_deleter);
     }
 }
@@ -56,7 +59,8 @@ void DiContainer::Destroy() {
     m_clientBindings.clear();
 
     for(const std::pair<const std::type_index, BindingInstance>& dependency : m_dependencies) {
-        dependency.second.m_deleter(dependency.second.m_instance);
+        if (dependency.second.m_deleter != nullptr)
+            dependency.second.m_deleter(dependency.second.m_instance);
     }
 
     m_dependencies.clear();

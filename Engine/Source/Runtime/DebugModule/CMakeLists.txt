@@ -3,10 +3,10 @@ add_library(DebugModule STATIC)
 target_sources(DebugModule
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/ILogger.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/EngineLogger.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/SynchronousLogger.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Installers/DebugModuleInstaller.h
         PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/Private/EngineLogger.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/SynchronousLogger.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Installers/DebugModuleInstaller.cpp
 )
 
@@ -20,6 +20,7 @@ target_include_directories(DebugModule
 target_link_libraries(DebugModule
         PRIVATE
         InjectionModule.Core
+        ConcurrencyModule.Core
 )
 
 if(MSVC)

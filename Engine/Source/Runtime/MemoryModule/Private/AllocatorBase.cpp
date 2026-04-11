@@ -1,7 +1,7 @@
 #include "AllocatorBase.h"
 #include "AllocatorProcessor.h"
 
-AllocatorBase::AllocatorBase(const std::type_index &overrideTypeIndex) {
+AllocatorBase::AllocatorBase(std::type_index overrideTypeIndex) {
     m_allocatorProcessor = new AllocatorProcessor(overrideTypeIndex);
 }
 

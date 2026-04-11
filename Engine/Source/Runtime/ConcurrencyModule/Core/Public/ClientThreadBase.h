@@ -1,12 +1,18 @@
 #pragma once
 
-#include "IClientThread.h"
+#include "IRunnableClientThread.h"
 #include "IConcurrencyFactory.h"
-#include "SynchronizationCommon.h"
+#include "ThreadContext.h"
+#include "ThreadStorage.h"
+#include "ThreadProcessor.h"
 
-class ClientThreadBase : IClientThread {
+class EngineCoreEventBus;
+
+class ClientThreadBase : public IRunnableClientThread {
 public:
     void Execute() override;
+
+public:
     uint32_t GetThreadId() override;
     bool IsValid() override;
     bool IsRunning() override;
@@ -15,19 +21,34 @@ public:
 
     ~ClientThreadBase() override;
 public:
-    explicit ClientThreadBase(IConcurrencyFactory* concurrencyFactory);
+    ClientThreadBase(IConcurrencyFactory* concurrencyFactory, ThreadStorage* threadStorage, EngineCoreEventBus* engineCoreEventBus);
     void Create(size_t stackSize, ThreadCreationFlags threadCreationFlags) override;
+    [[nodiscard]] ThreadContext* GetThreadContext() const override;
+
+public:
     void SubmitRuntimeFlags(ThreadRuntimeFlags flags) override;
     [[nodiscard]] ThreadRuntimeFlags RetrieveRuntimeFlags();
 
 protected:
-    virtual void SubmitWork() = 0;
-    virtual void OnRelease() { };
+    ThreadContext* m_threadContext = nullptr;
+    IConcurrencyFactory* m_concurrencyFactory;
+    ThreadStorage* m_threadStorage;
+    EngineCoreEventBus* m_engineCoreEventBus;
+
+    ThreadProcessor* m_threadProcessor = nullptr;
+
+    virtual void SubmitThreadWork() = 0;
+    virtual void InitializeContext();
+    virtual void OnThreadBegin();
+    virtual void OnThreadEnd();
 
 private:
     AtomicSynchronizer<ThreadRuntimeFlags> m_threadRuntimeFlags = AtomicSynchronizer<ThreadRuntimeFlags>(ThreadRuntimeFlags::None);
-    IConcurrencyFactory* m_concurrencyFactory;
     IPlatformThread* m_platformThread = nullptr;
 
     IDelegate<>* m_workDelegate;
+    IDelegate<IClientThread*>* m_invokeMemoryBarrierCallback;
+
+    void SubmitWork();
+    void InvokeMemoryBarrier(IClientThread* clientThread);
 };
