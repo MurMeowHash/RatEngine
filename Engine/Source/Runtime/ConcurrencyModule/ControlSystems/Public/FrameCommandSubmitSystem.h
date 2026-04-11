@@ -60,9 +60,9 @@ private:
             || !m_threadSearchService->TryGetThreadContext(m_localThreadId, producerInfiniteThreadContext))
             return;
 
-        uint64_t commandFrameIndex = producerInfiniteThreadContext->m_threadFrameIndex.RetrieveValue() + commandProducerThreadContext->GetAuthorityFrameOffset();
-        commandConsumerThreadContext->EnqueueCommandBuffer(commandFrameIndex, commandProducerThreadContext->m_commandBuffer);
+        uint64_t globalFrameIndex = producerInfiniteThreadContext->m_threadFrameIndex.RetrieveValue() + commandProducerThreadContext->GetAuthorityFrameOffset();
+        commandConsumerThreadContext->EnqueueCommandBuffer(globalFrameIndex, commandProducerThreadContext->m_commandBuffer);
         if (m_commandThreadStorage->HasCommandAuthority<TCommand>(m_localThreadId))
-            commandConsumerThreadContext->MarkFrameCompleted(commandFrameIndex);
+            commandConsumerThreadContext->MarkFrameCompleted(globalFrameIndex);
     }
 };

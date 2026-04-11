@@ -34,18 +34,23 @@ public:
     void EqueueCommand(TCommand&& command) {
         void* memory = m_allocator->AllocateMemory(sizeof(ConcurrencyCommand<TCommand>));
         ConcurrencyCommand<TCommand> *commandNode = new(memory) ConcurrencyCommand<TCommand>(std::move(command), nullptr);
-        *m_tail = commandNode;
-        m_tail = &commandNode->m_next;
+        if (m_root == nullptr) {
+            m_root = commandNode;
+            m_tail = m_root;
+        } else {
+            m_tail->m_next = commandNode;
+            m_tail = m_tail->m_next;
+        }
     }
 
     void TransferCommandBuffer(ConcurrencyCommandBuffer<TCommand>& srcCommandBuffer, bool invalidateSrcBuffer = true) {
         if(m_root == nullptr) {
             m_root = srcCommandBuffer.m_root;
-            m_tail = &m_root;
+            m_tail = srcCommandBuffer.m_tail;
         }
         else {
-            (*m_tail)->m_next = srcCommandBuffer.m_root;
-            m_tail = srcCommandBuffer.m_tail;
+            m_tail->m_next = srcCommandBuffer.m_root;
+            m_tail = m_tail->m_next;
         }
 
         TransferMemory(srcCommandBuffer);
@@ -56,7 +61,7 @@ public:
 
     void Clear() {
         m_root = nullptr;
-        m_tail = &m_root;
+        m_tail = nullptr;
 
         if(m_usedBuiltInAllocator)
             m_allocator->FreeMemory();
@@ -72,7 +77,7 @@ public:
 
 private:
     ConcurrencyCommand<TCommand>* m_root = nullptr;
-    ConcurrencyCommand<TCommand>** m_tail = &m_root;
+    ConcurrencyCommand<TCommand>* m_tail = nullptr;
 
     IAllocator* m_allocator;
     bool m_usedBuiltInAllocator = false;

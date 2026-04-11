@@ -1,4 +1,7 @@
 #include "../Public/SynchronousLogger.h"
+
+#include <ostream>
+
 #include "IConcurrencyFactory.h"
 #include "SynchronizationPrimitives/ExclusiveThreadGuard.h"
 
@@ -28,6 +31,7 @@ void SynchronousLogger::PrintWarning(const std::string &msg) const {
 void SynchronousLogger::PrintMsg(const std::string &msg) const {
     ExclusiveThreadGuard guard(m_mutex);
     *m_outputStream << msg;
+    std::flush(*m_outputStream);
 }
 
 void SynchronousLogger::PrintInfo(const std::string &msg) const {

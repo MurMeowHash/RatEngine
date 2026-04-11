@@ -43,9 +43,9 @@ public:
         m_frameSlotsMutex = m_concurrencyFactory->CreatePlatformMutex();
     }
 
-    void EnqueueCommandBuffer(uint64_t frameIndex, ConcurrencyCommandBuffer<TCommand>* commandBuffer) {
+    void EnqueueCommandBuffer(uint64_t globalFrameIndex, ConcurrencyCommandBuffer<TCommand>* commandBuffer) {
         ExclusiveThreadGuard frameSlotsGuard(m_frameSlotsMutex);
-        frameIndex = std::max(frameIndex, m_lastCompletedFrameIndex);
+        uint64_t frameIndex = std::max(globalFrameIndex, m_lastCompletedFrameIndex + 1);
         auto cachedCommandBufferIterator = m_bufferFrameSlots.find(frameIndex);
         if (cachedCommandBufferIterator == m_bufferFrameSlots.end()) {
             ConcurrencyCommandBuffer<TCommand>* pooledBuffer = m_commandBufferPool->PopBuffer();
