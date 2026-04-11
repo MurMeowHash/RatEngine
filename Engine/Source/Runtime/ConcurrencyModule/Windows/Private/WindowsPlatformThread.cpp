@@ -2,6 +2,7 @@
 #include "CoreUtils.h"
 #include "IDelegate.h"
 #include <cassert>
+#include "SynchronizationPrimitives/WindowsFence.h"
 
 void WindowsPlatformThread::Create(IDelegate<>* executeAction, size_t stackSize, ThreadCreationFlags flags) {
     DWORD windowsThreadFlags = 0;
@@ -11,6 +12,7 @@ void WindowsPlatformThread::Create(IDelegate<>* executeAction, size_t stackSize,
                                   (LPDWORD)executeAction, windowsThreadFlags, &m_threadId);
 
     m_isScheduled = (windowsThreadFlags & CREATE_SUSPENDED) == 0 && IsValid();
+    WindowsFence(true);
 }
 
 void WindowsPlatformThread::Execute() {
@@ -53,7 +55,9 @@ void WindowsPlatformThread::Terminate(bool forced) {
         return;
     }
 
-    if(!forced)
+    if (forced)
+        TerminateThread(m_threadHandle, 0); // TODO: potential memory leak from thread owned resources
+    else
         WaitForSingleObject(m_threadHandle, INFINITE);
 
     ReleaseThread();

@@ -6,7 +6,7 @@
 #include "Adopters/SimpleToLinearAllocatorAdopter.h"
 #include "Adopters/LinearToSimpleAllocatorAdopter.h"
 
-AllocatorProcessor::AllocatorProcessor(const std::type_index &ownerTypeIndex)
+AllocatorProcessor::AllocatorProcessor(std::type_index ownerTypeIndex)
 : m_ownerTypeIndex(ownerTypeIndex) {
     FillCachedAllocatorAdopters();
 }

@@ -9,14 +9,13 @@ void SimpleToLinearAllocatorAdopter::Adopt(IAllocator *dest, IAllocator *src) {
     LinearAllocator* destLinear = static_cast<LinearAllocator*>(dest);
     SimpleAllocator* srcSimple = static_cast<SimpleAllocator*>(src);
 
-    MemoryChunk* currentMemoryChunk = *destLinear->m_tailChunk;
     for(const MemoryCell& simpleAllocatorCell : srcSimple->m_allocatedMemoryCells) {
-        if(*destLinear->m_tailChunk == nullptr) {
-            *destLinear->m_tailChunk = new MemoryChunk(simpleAllocatorCell.m_memory, simpleAllocatorCell.m_memorySize, nullptr);
-            currentMemoryChunk = *destLinear->m_tailChunk;
+        if(destLinear->m_rootChunk == nullptr) {
+            destLinear->m_rootChunk = new MemoryChunk(simpleAllocatorCell.m_memory, simpleAllocatorCell.m_memorySize);
+            destLinear->m_tailChunk = destLinear->m_rootChunk;
         } else {
-            currentMemoryChunk->m_next = new MemoryChunk(simpleAllocatorCell.m_memory, simpleAllocatorCell.m_memorySize, currentMemoryChunk);
-            currentMemoryChunk = currentMemoryChunk->m_next;
+            destLinear->m_tailChunk->m_next = new MemoryChunk(simpleAllocatorCell.m_memory, simpleAllocatorCell.m_memorySize);
+            destLinear->m_tailChunk = destLinear->m_tailChunk->m_next;
         }
     }
 }

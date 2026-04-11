@@ -2,14 +2,17 @@ add_library(ConcurrencyModule.Mock STATIC)
 
 target_sources(ConcurrencyModule.Mock
         PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/Public/MockConcurrencyFactory.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/MockConcurrencyFactory.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/MockPlatformThread.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/MockAtomicSynchronizer.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/MockMutex.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/SynchronizationPrimitives/MockAtomicSynchronizer.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/SynchronizationPrimitives/MockMutex.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/SynchronizationPrimitives/MockFence.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/SynchronizationPrimitives/MockSemaphore.h
         PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/Private/MockConcurrencyFactory.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/MockConcurrencyFactory.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/MockPlatformThread.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/Private/MockMutex.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/SynchronizationPrimitives/MockMutex.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/SynchronizationPrimitives/MockSemaphore.cpp
 )
 
 target_include_directories(ConcurrencyModule.Mock

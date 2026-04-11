@@ -3,6 +3,7 @@ add_library(EventBusModule.Core INTERFACE)
 target_sources(EventBusModule.Core
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/EventBusBase.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/ConcurrentEventBusBase.h
 )
 
 target_include_directories(EventBusModule.Core
@@ -13,6 +14,7 @@ target_include_directories(EventBusModule.Core
 target_link_libraries(EventBusModule.Core
         INTERFACE
         DelegateModule
+        ConcurrencyModule.Core
 )
 
 if(MSVC)

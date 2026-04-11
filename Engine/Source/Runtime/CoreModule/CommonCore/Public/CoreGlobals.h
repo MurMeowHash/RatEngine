@@ -4,7 +4,7 @@
 #include <cstdint>
 
 namespace Rat::Core {
-    inline static const int InvalidIndex = -1;
+    inline static constexpr int InvalidIndex = -1;
 
     enum class ErrorSeverity {
         Success = 0,

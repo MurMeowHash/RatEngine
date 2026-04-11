@@ -1,16 +1,29 @@
 #include "../Public/ConcurrencyModuleInstaller.h"
 #include "IConcurrencyFactory.h"
+#include "ThreadStorage.h"
+#include "CommandThreadStorage.h"
+#include "ThreadSearchService.h"
+#include "Runner/ThreadRunner.h"
+#include "CommandWriter.h"
+#include "Events/ImmediateCommandExecuteRequest.h"
 
 #if defined(__WIN32)
 #include "WindowsConcurrencyFactory.h"
 #else
-#include "MockPlatformThreadFactory.h"
+#include "MockConcurrencyFactory.h"
 #endif
 
 void ConcurrencyModuleInstaller::InstallBindings(DiContainer *diContainer) const {
 #if defined(__WIN32)
-    diContainer->Bind<IConcurrencyFactory>(ClientBinding([](){return new WindowsConcurrencyFactory();}));
+    diContainer->Bind<WindowsConcurrencyFactory>().To<IConcurrencyFactory>().WithArguments();
 #else
-    diContainer->Bind<IPlatformThreadFactory>(ClientBinding([](){return new MockPlatformThreadFactory();}));
+    diContainer->Bind<MockConcurrencyFactory>().To<IConcurrencyFactory>().WithArguments();
 #endif
+
+    diContainer->Bind<ThreadStorage>().To<ThreadStorage>().WithArguments<IConcurrencyFactory>();
+    diContainer->Bind<CommandThreadStorage>().To<CommandThreadStorage>().WithArguments<IConcurrencyFactory>();
+    diContainer->Bind<ThreadSearchService>().To<ThreadSearchService>().WithArguments<ThreadStorage, CommandThreadStorage>();
+    diContainer->Bind<ThreadRunner>().To<ThreadRunner>().WithArguments<DiContainer, CommandThreadStorage, ThreadStorage>();
+    diContainer->Bind<CommandWriter>().To<CommandWriter>().WithArguments<ThreadSearchService, IPlatformInteractor, CommandThreadStorage, ImmediateCommandExecuteRequest>();
+    diContainer->Bind<ImmediateCommandExecuteRequest>().To<ImmediateCommandExecuteRequest>().WithArguments<>();
 }

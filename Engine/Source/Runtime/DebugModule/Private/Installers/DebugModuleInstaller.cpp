@@ -1,7 +1,8 @@
 #include "../../Public/Installers/DebugModuleInstaller.h"
 #include "ILogger.h"
-#include "EngineLogger.h"
+#include "SynchronousLogger.h"
+#include "IConcurrencyFactory.h"
 
 void DebugModuleInstaller::InstallBindings(DiContainer* diContainer) const {
-    diContainer->Bind<ILogger>(ClientBinding([](){return new EngineLogger();}));
+    diContainer->Bind<SynchronousLogger>().To<ILogger>().WithArguments<IConcurrencyFactory>();
 }

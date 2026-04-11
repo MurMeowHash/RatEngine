@@ -12,4 +12,9 @@ namespace Rat::ConcurrencyModule {
         None = 0,
         StopRequested = 1,
     };
+
+    enum class CommandWriteFlags : uint32_t {
+        None = 0,
+        ExecuteImmediate = 1,
+    };
 }
