@@ -22,6 +22,7 @@ target_include_directories(InjectionModule.Core
 target_link_libraries(InjectionModule.Core
         PUBLIC
         CoreModule.Common
+        MemoryModule
 )
 
 if(MSVC)
