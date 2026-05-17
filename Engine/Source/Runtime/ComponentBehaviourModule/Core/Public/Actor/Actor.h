@@ -20,9 +20,11 @@ public:
     void Initialize(IAllocator* componentAllocator);
 
     template<typename TComponent, typename...Args> requires std::is_base_of_v<TConsumedComponent, TComponent>
-    TComponent SpawnComponent() {
-        void* componentMemory = m_componentAllocator->AllocateMemory(sizeof(TComponent));
-        TComponent component = new (componentMemory) TComponent(m_diContainer->Resolve<Args>()...);
+    TComponent* SpawnComponent() {
+        TComponent* component = m_diContainer->Instantiate<TComponent>()
+            .UseAllocator(m_componentAllocator)
+            .template WithArguments<Args...>();
+
         m_components[typeid(TComponent)].emplace_back(component);
         component->Spawned();
         OnComponentSpawned(component);

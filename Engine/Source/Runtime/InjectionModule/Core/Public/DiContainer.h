@@ -5,8 +5,8 @@
 #include <memory>
 #include <typeindex>
 #include <functional>
-#include <exception>
 #include "CoreUtils.h"
+#include "IAllocator.h"
 
 class DiContainer;
 
@@ -44,10 +44,13 @@ struct InstanceAssembler {
     explicit InstanceAssembler(const DiContainer* diContainer)
     : m_diContainer(diContainer) { }
 
+    InstanceAssembler UseAllocator(IAllocator* allocator);
+
     template<typename...Args>
     TInstance* WithArguments() const;
 private:
     const DiContainer* m_diContainer;
+    IAllocator* m_allocator = nullptr;
 };
 
 class DiContainer {
@@ -143,7 +146,18 @@ BindingAssembler<TInstance, TTarget>::~BindingAssembler() {
 }
 
 template<typename TInstance>
+InstanceAssembler<TInstance> InstanceAssembler<TInstance>::UseAllocator(IAllocator *allocator) {
+    m_allocator = allocator;
+    return *this;
+}
+
+template<typename TInstance>
 template<typename ... Args>
 TInstance* InstanceAssembler<TInstance>::WithArguments() const {
+    if (m_allocator != nullptr) {
+        void* instanceMemory = m_allocator->AllocateMemory(sizeof(TInstance));
+        return new (instanceMemory) TInstance(m_diContainer->Resolve<Args>()...);
+    }
+
     return new TInstance(m_diContainer->Resolve<Args>()...);
 }
