@@ -19,6 +19,7 @@
 #include "CommandWriter.h"
 #include "ILogger.h"
 #include "ThreadSearchService.h"
+#include "IRendererFactory.h"
 
 CoreLoop::CoreLoop() {
     m_engineDependencyContext = new EngineDependencyContext(nullptr);
@@ -63,14 +64,11 @@ Rat::Core::ErrorSeverity CoreLoop::Tick() {
 
     m_windowProvider->Tick();
 
-    uint64_t currentFrameIndex = 0;
-    InfiniteThreadContext* infiniteThreadContext;
-    if (m_threadSearchService->TryGetThreadContext(runningThreadId, infiniteThreadContext))
-        currentFrameIndex = infiniteThreadContext->m_threadFrameIndex.RetrieveValue();
-
-    m_commandWriter->EnqueueCommand(RenderCommand([runningThreadId, currentFrameIndex](ILogger* logger, IPlatformInteractor* platformInteractor) {
-        logger->PrintInfo(StringFormatter("Thread ", runningThreadId, " Command Executed On ",
-            platformInteractor->GetRunningThreadId(), " enqueue frame ", currentFrameIndex, '\n'));
+    IRendererFactory* rendererFactory = m_rendererFactory;
+    m_commandWriter->EnqueueCommand(RenderCommand([rendererFactory]() {
+        IRenderer* renderer = rendererFactory->CreateRenderer(RendererType::Forward);
+        renderer->Render();
+        delete renderer;
     }));
 
     m_engineCoreEventBus->Publish(EngineCoreEvents::EngineEndFrameEvent(runningThreadId));
@@ -103,6 +101,7 @@ void CoreLoop::AcquireNeededDependencies() {
     m_platformInteractor = diContainer->Resolve<IPlatformInteractor>();
     m_commandWriter = diContainer->Resolve<CommandWriter>();
     m_threadSearchService = diContainer->Resolve<ThreadSearchService>();
+    m_rendererFactory = diContainer->Resolve<IRendererFactory>();
 }
 
 Rat::Core::ErrorSeverity CoreLoop::CreateMainWindow() {

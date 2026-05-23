@@ -23,6 +23,7 @@ target_link_libraries(InjectionModule.Engine
         WindowProviderModule.Installation
         RenderHardwareModule.Installation
         ConcurrencyModule.Installation
+        RenderModule.Core
 )
 
 if(MSVC)

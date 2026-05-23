@@ -5,6 +5,7 @@
 #include "WindowProviderModuleInstaller.h"
 #include "RenderProviderModuleInstaller.h"
 #include "ConcurrencyModuleInstaller.h"
+#include "Installers/RenderModuleCoreInstaller.h"
 
 EngineDependencyContext::EngineDependencyContext(const DiContainer *parentContainer)
 : DependencyContextBase(parentContainer) { }
@@ -16,4 +17,5 @@ void EngineDependencyContext::ConstructCompositionRoot() {
     WindowProviderModuleInstaller::InstallDependencies(m_diContainer);
     RenderProviderModuleInstaller::InstallDependencies(m_diContainer);
     ConcurrencyModuleInstaller::InstallDependencies(m_diContainer);
+    RenderModuleCoreInstaller::InstallDependencies(m_diContainer);
 }

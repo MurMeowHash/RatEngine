@@ -16,6 +16,7 @@ class ThreadRunner;
 class IPlatformInteractor;
 class CommandWriter;
 class ThreadSearchService;
+class IRendererFactory;
 
 class CoreLoop : IEngineLoop {
 public:
@@ -40,6 +41,7 @@ private:
     IPlatformInteractor* m_platformInteractor = nullptr;
     CommandWriter* m_commandWriter = nullptr;
     ThreadSearchService* m_threadSearchService = nullptr;
+    IRendererFactory* m_rendererFactory = nullptr;
 
     void AcquireNeededDependencies();
     Rat::Core::ErrorSeverity CreateMainWindow();

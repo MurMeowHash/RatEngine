@@ -29,6 +29,7 @@ target_link_libraries(EngineLoopModule
         ConcurrencyModule.CommandBuffers
         RenderModule.Threading
         ConcurrencyModule.WorldAbstraction
+        RenderModule.Core
 )
 
 if(MSVC)

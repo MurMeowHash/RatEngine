@@ -53,6 +53,7 @@ private:
     IAllocator* m_allocator = nullptr;
 };
 
+//TODO: make thread-safe
 class DiContainer {
 public:
     explicit DiContainer(const DiContainer* parentContainer = nullptr);

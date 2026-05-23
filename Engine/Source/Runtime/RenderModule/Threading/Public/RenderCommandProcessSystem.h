@@ -5,15 +5,10 @@
 
 class RenderCommandProcessSystem : public CommandProcessSystem<RenderCommand> {
 public:
-    RenderCommandProcessSystem(ThreadSearchService* threadSearchService, ImmediateCommandExecuteRequest* immediateCommandExecuteRequest,
-                               ILogger* logger, IPlatformInteractor* platformInteractor)
-    : CommandProcessSystem(threadSearchService, immediateCommandExecuteRequest), m_logger(logger), m_platformInteractor(platformInteractor) {}
+    RenderCommandProcessSystem(ThreadSearchService* threadSearchService, ImmediateCommandExecuteRequest* immediateCommandExecuteRequest)
+    : CommandProcessSystem(threadSearchService, immediateCommandExecuteRequest) {}
 
     void ExecuteCommand(const RenderCommand &processedCommand) override {
-        processedCommand(m_logger, m_platformInteractor);
+        processedCommand();
     }
-
-private:
-    ILogger* m_logger;
-    IPlatformInteractor* m_platformInteractor;
 };

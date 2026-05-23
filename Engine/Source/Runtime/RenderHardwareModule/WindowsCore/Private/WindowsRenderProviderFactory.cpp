@@ -14,8 +14,8 @@ std::unique_ptr<IRenderProvider> WindowsRenderProviderFactory::CreateRenderProvi
                     m_diContainer->Resolve<ProjectSettings>(),
                     m_diContainer->Resolve<Application>(),
                     m_diContainer->Resolve<BuildSettings>(),
-                    m_diContainer);
+                    m_diContainer); // TODO: instantiate via diContainer
         default:
-            return nullptr;
+            return nullptr; // TODO: throw exception instead
     }
 }

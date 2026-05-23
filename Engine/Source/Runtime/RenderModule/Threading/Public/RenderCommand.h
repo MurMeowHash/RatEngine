@@ -5,7 +5,7 @@
 class ILogger;
 class IPlatformInteractor;
 
-class RenderCommand : public StaticDelegate<ILogger*, IPlatformInteractor*> {
+class RenderCommand : public StaticDelegate<> {
 public:
     explicit RenderCommand(const Internal::FunctionHandler &functionHandler)
     : StaticDelegate(functionHandler) {}
