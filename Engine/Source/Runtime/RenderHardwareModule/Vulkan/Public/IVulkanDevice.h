@@ -12,5 +12,7 @@ public:
     [[nodiscard]] virtual bool IsExtensionSupported(const char* extensionName) const = 0;
     [[nodiscard]] virtual bool IsExtensionSupported(VulkanExtension::EncodingType extensionEncoding) const = 0;
     [[nodiscard]] virtual uint32_t GetApiVersion() const = 0;
+    [[nodiscard]] virtual vk::PhysicalDeviceMemoryProperties GetDeviceMemoryProperties() const = 0;
+    [[nodiscard]] virtual vk::raii::Device& GetInternalDevice() = 0;
     virtual ~IVulkanDevice() = default;
 };

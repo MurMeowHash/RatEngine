@@ -24,12 +24,11 @@ public:
                     const std::vector<VulkanExtension> &requestedExtensions) override;
 
     std::vector<const char *> GetRequiredOrSupportedExtensionNames() const override;
-
     bool IsExtensionSupported(const char *extensionName) const override;
-
     bool IsExtensionSupported(VulkanExtension::EncodingType extensionEncoding) const override;
-
     uint32_t GetApiVersion() const override;
+    [[nodiscard]] vk::PhysicalDeviceMemoryProperties GetDeviceMemoryProperties() const override;
+    [[nodiscard]] vk::raii::Device& GetInternalDevice() override;
 
 private:
     IDeviceFeaturesAssembler* m_deviceFeaturesAssembler = nullptr;
@@ -43,8 +42,11 @@ private:
 
     uint32_t m_apiVersion = 0;
 
+    vk::PhysicalDeviceMemoryProperties m_deviceMemoryProperties;
+
     std::vector<vk::DeviceQueueCreateInfo> InitializeDeviceQueues(vk::QueueFlags requestedQueues);
     void FilterExtensions(const std::vector<VulkanExtension> &requestedExtensions);
     DeviceFeaturesAssembleData InitializeDeviceFeatures();
     void ObtainQueues();
+    void InitializeMemoryProperties();
 };

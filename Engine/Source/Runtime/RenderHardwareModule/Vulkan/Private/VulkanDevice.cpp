@@ -26,6 +26,7 @@ bool VulkanDevice::Initialize(const vk::raii::PhysicalDevice& physicalDevice, vk
 
     m_device = std::move(deviceWrapper.value);
     ObtainQueues();
+    InitializeMemoryProperties();
     return true;
 }
 
@@ -86,6 +87,14 @@ uint32_t VulkanDevice::GetApiVersion() const {
     return m_apiVersion;
 }
 
+vk::PhysicalDeviceMemoryProperties VulkanDevice::GetDeviceMemoryProperties() const {
+    return m_deviceMemoryProperties;
+}
+
+vk::raii::Device & VulkanDevice::GetInternalDevice() {
+    return m_device;
+}
+
 std::vector<const char *> VulkanDevice::GetRequiredOrSupportedExtensionNames() const {
     std::vector<const char*> mandatoryExtensionNames;
     mandatoryExtensionNames.reserve(m_extensions.size());
@@ -108,4 +117,8 @@ void VulkanDevice::ObtainQueues() {
     for(std::pair<const vk::QueueFlagBits, VulkanQueueData> &deviceQueue : m_deviceQueues) {
         deviceQueue.second.m_queue = m_device.getQueue(deviceQueue.second.m_queueIndex, 0);
     }
+}
+
+void VulkanDevice::InitializeMemoryProperties() {
+    m_deviceMemoryProperties = m_physicalDevice.getMemoryProperties();
 }

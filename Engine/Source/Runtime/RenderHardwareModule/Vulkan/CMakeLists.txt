@@ -24,6 +24,14 @@ target_sources(RenderHardwareModule.Vulkan
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Features/DeviceFeaturesAssembler.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/IVulkanDeviceFactory.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/VulkanDeviceFactory.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/VulkanMemoryCommon.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/VulkanDeviceMemory.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/IVulkanDeviceAllocator.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/DefaultVulkanDeviceAllocator.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/VulkanMemoryPage.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/VulkanAllocationConfiguration.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/IVulkanDedicatedDeviceAllocator.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/DefaultVulkanDedicatedDeviceAllocator.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/VulkanRenderProvider.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Extensions/VulkanExtensionsAssembler.cpp
@@ -37,7 +45,13 @@ target_sources(RenderHardwareModule.Vulkan
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Features/DeviceFeature.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Features/DeviceFeaturesAssembler.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/VulkanDeviceFactory.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Memory/VulkanMemoryCommon.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Memory/VulkanDeviceMemory.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Memory/DefaultVulkanDeviceAllocator.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Memory/VulkanMemoryPage.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Memory/DefaultVulkanDedicatedDeviceAllocator.cpp
 )
+
 
 if(WIN32)
     target_sources(RenderHardwareModule.Vulkan
@@ -68,6 +82,7 @@ target_link_libraries(RenderHardwareModule.Vulkan
         CoreModule.Common
         InjectionModule.Core
         DebugModule
+        MathModule
 )
 
 if(MSVC)
