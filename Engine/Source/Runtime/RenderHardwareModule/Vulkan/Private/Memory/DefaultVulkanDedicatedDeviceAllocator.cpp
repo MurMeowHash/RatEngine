@@ -1,16 +1,16 @@
 #include "../../Public/Memory/DefaultVulkanDedicatedDeviceAllocator.h"
 #include "Memory/VulkanMemoryCommon.h"
 
-DefaultVulkanDedicatedDeviceAllocator::DefaultVulkanDedicatedDeviceAllocator(VulkanDevice *vulkanDevice, uint32_t memoryTypeIndex)
-: m_vulkanDevice(vulkanDevice), m_memoryTypeIndex(memoryTypeIndex) { }
+DefaultVulkanDedicatedDeviceAllocator::DefaultVulkanDedicatedDeviceAllocator(vk::raii::Device& device, uint32_t memoryTypeIndex)
+: m_device(device), m_memoryTypeIndex(memoryTypeIndex) { }
 
 VulkanDeviceMemory DefaultVulkanDedicatedDeviceAllocator::AllocateImageMemory(const vk::raii::Image &image) {
-    VulkanDeviceMemory allocatedMemory = Rat::VulkanMemoryCommon::AllocateDedicatedImageMemory(m_vulkanDevice->GetInternalDevice(), image, m_memoryTypeIndex);
+    VulkanDeviceMemory allocatedMemory = Rat::VulkanMemoryCommon::AllocateDedicatedImageMemory(m_device, image, m_memoryTypeIndex);
     return TryAddPageForMemory(allocatedMemory);
 }
 
 VulkanDeviceMemory DefaultVulkanDedicatedDeviceAllocator::AllocateBufferMemory(const vk::raii::Buffer &buffer) {
-    VulkanDeviceMemory allocatedMemory = Rat::VulkanMemoryCommon::AllocateDedicatedBufferMemory(m_vulkanDevice->GetInternalDevice(), buffer, m_memoryTypeIndex);
+    VulkanDeviceMemory allocatedMemory = Rat::VulkanMemoryCommon::AllocateDedicatedBufferMemory(m_device, buffer, m_memoryTypeIndex);
     return TryAddPageForMemory(allocatedMemory);
 }
 
@@ -19,12 +19,12 @@ void DefaultVulkanDedicatedDeviceAllocator::FreeMemory(const VulkanDeviceMemory 
         return memoryPage.GetPageMemory().GetHandle() == memory.GetHandle();
     });
 
-    Rat::VulkanMemoryCommon::FreeDeviceMemory(m_vulkanDevice->GetInternalDevice(), memory);
+    Rat::VulkanMemoryCommon::FreeDeviceMemory(m_device, memory);
 }
 
 void DefaultVulkanDedicatedDeviceAllocator::FreeAllMemory() {
     for (const VulkanMemoryPage& memoryPage: m_memoryPool) {
-        Rat::VulkanMemoryCommon::FreeDeviceMemory(m_vulkanDevice->GetInternalDevice(), memoryPage.GetPageMemory());
+        Rat::VulkanMemoryCommon::FreeDeviceMemory(m_device, memoryPage.GetPageMemory());
     }
 
     m_memoryPool.clear();

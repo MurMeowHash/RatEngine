@@ -6,7 +6,7 @@
 
 class DefaultVulkanDedicatedDeviceAllocator : public IVulkanDedicatedDeviceAllocator {
 public:
-    DefaultVulkanDedicatedDeviceAllocator(VulkanDevice* vulkanDevice, uint32_t memoryTypeIndex);
+    DefaultVulkanDedicatedDeviceAllocator(vk::raii::Device& device, uint32_t memoryTypeIndex);
 
     VulkanDeviceMemory AllocateImageMemory(const vk::raii::Image& image) override;
     VulkanDeviceMemory AllocateBufferMemory(const vk::raii::Buffer& buffer) override;
@@ -14,7 +14,7 @@ public:
     void FreeAllMemory() override;
 
 private:
-    VulkanDevice* m_vulkanDevice;
+    vk::raii::Device& m_device;
     uint32_t m_memoryTypeIndex;
     std::vector<VulkanMemoryPage> m_memoryPool;
 

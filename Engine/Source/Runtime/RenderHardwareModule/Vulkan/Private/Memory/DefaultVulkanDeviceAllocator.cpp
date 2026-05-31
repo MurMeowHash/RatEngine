@@ -1,10 +1,9 @@
 #include "../../Public/Memory/DefaultVulkanDeviceAllocator.h"
-
 #include "Memory/VulkanMemoryCommon.h"
 
-DefaultVulkanDeviceAllocator::DefaultVulkanDeviceAllocator(VulkanDevice* vulkanDevice,
-                                                           const VulkanAllocationConfiguration& allocationConfiguration, uint32_t memoryTypeIndex)
-: m_vulkanDevice(vulkanDevice), m_memoryTypeIndex(memoryTypeIndex), m_allocationConfiguration(allocationConfiguration) {
+DefaultVulkanDeviceAllocator::DefaultVulkanDeviceAllocator(vk::raii::Device& device, const VulkanAllocationConfiguration& allocationConfiguration,
+    uint32_t memoryTypeIndex)
+: m_device(device), m_memoryTypeIndex(memoryTypeIndex), m_allocationConfiguration(allocationConfiguration) {
     InitializeMemoryTiers();
 }
 
@@ -20,8 +19,8 @@ VulkanDeviceMemory DefaultVulkanDeviceAllocator::AllocateMemory(vk::DeviceSize m
     }
 
     VulkanAllocationTier allocationTier = m_allocationConfiguration.m_allocationTiers[allocationTierIndex];
-    VulkanDeviceMemory allocatedPageMemory = Rat::VulkanMemoryCommon::AllocateDeviceMemory(m_vulkanDevice->GetInternalDevice(),
-        allocationTier.m_pageSize, m_memoryTypeIndex);
+    VulkanDeviceMemory allocatedPageMemory = Rat::VulkanMemoryCommon::AllocateDeviceMemory(m_device, allocationTier.m_pageSize,
+        m_memoryTypeIndex);
 
     if (!allocatedPageMemory.IsValid())
         return allocatedMemory;
@@ -61,7 +60,7 @@ void DefaultVulkanDeviceAllocator::InvalidateAllMemory() {
 void DefaultVulkanDeviceAllocator::FreeAllMemory() {
     for (std::vector<VulkanMemoryPage>& memoryPages : m_memoryPool) {
         for (const VulkanMemoryPage& page: memoryPages) {
-            Rat::VulkanMemoryCommon::FreeDeviceMemory(m_vulkanDevice->GetInternalDevice(), page.GetPageMemory());
+            Rat::VulkanMemoryCommon::FreeDeviceMemory(m_device, page.GetPageMemory());
         }
 
         memoryPages.clear();
