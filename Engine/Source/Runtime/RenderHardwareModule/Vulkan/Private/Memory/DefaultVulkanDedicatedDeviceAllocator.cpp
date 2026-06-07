@@ -6,16 +6,16 @@ DefaultVulkanDedicatedDeviceAllocator::DefaultVulkanDedicatedDeviceAllocator(vk:
 
 VulkanDeviceMemory DefaultVulkanDedicatedDeviceAllocator::AllocateImageMemory(const vk::raii::Image &image) {
     VulkanDeviceMemory allocatedMemory = Rat::VulkanMemoryCommon::AllocateDedicatedImageMemory(m_device, image, m_memoryTypeIndex);
-    return TryAddPageForMemory(allocatedMemory);
+    return TryAddPageForMemory(std::move(allocatedMemory));
 }
 
 VulkanDeviceMemory DefaultVulkanDedicatedDeviceAllocator::AllocateBufferMemory(const vk::raii::Buffer &buffer) {
     VulkanDeviceMemory allocatedMemory = Rat::VulkanMemoryCommon::AllocateDedicatedBufferMemory(m_device, buffer, m_memoryTypeIndex);
-    return TryAddPageForMemory(allocatedMemory);
+    return TryAddPageForMemory(std::move(allocatedMemory));
 }
 
-void DefaultVulkanDedicatedDeviceAllocator::FreeMemory(const VulkanDeviceMemory &memory) {
-    std::erase_if(m_memoryPool, [&memory](const VulkanMemoryPage& memoryPage) {
+void DefaultVulkanDedicatedDeviceAllocator::FreeMemory(VulkanDeviceMemory &memory) {
+    std::erase_if(m_memoryPool, [&memory](VulkanMemoryPage& memoryPage) {
         return memoryPage.GetPageMemory().GetHandle() == memory.GetHandle();
     });
 
@@ -23,17 +23,17 @@ void DefaultVulkanDedicatedDeviceAllocator::FreeMemory(const VulkanDeviceMemory 
 }
 
 void DefaultVulkanDedicatedDeviceAllocator::FreeAllMemory() {
-    for (const VulkanMemoryPage& memoryPage: m_memoryPool) {
+    for (VulkanMemoryPage& memoryPage : m_memoryPool) {
         Rat::VulkanMemoryCommon::FreeDeviceMemory(m_device, memoryPage.GetPageMemory());
     }
 
     m_memoryPool.clear();
 }
 
-VulkanDeviceMemory DefaultVulkanDedicatedDeviceAllocator::TryAddPageForMemory(const VulkanDeviceMemory &memory) {
+VulkanDeviceMemory DefaultVulkanDedicatedDeviceAllocator::TryAddPageForMemory(VulkanDeviceMemory&& memory) {
     if (!memory.IsValid())
         return memory;
 
-    VulkanMemoryPage& dedicatedMemoryPage = m_memoryPool.emplace_back(memory);
+    VulkanMemoryPage& dedicatedMemoryPage = m_memoryPool.emplace_back(std::move(memory));
     return dedicatedMemoryPage.GetPageMemory();
 }

@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <string_view>
 #include "Features/IDeviceFeaturesAssembler.h"
+#include "Memory/IVulkanDeviceMemoryProvider.h"
+#include "Memory/IVulkanDeviceMemoryProviderFactory.h"
 
 struct VulkanQueueData {
     uint32_t m_queueIndex;
@@ -19,19 +21,19 @@ struct QueueFlagBitsHash {
 
 class VulkanDevice : public IVulkanDevice {
 public:
-    explicit VulkanDevice(IDeviceFeaturesAssembler* deviceFeaturesAssembler);
+    VulkanDevice(IDeviceFeaturesAssembler* deviceFeaturesAssembler, IVulkanDeviceMemoryProviderFactory* vulkanDeviceMemoryProviderFactory);
     bool Initialize(const vk::raii::PhysicalDevice& physicalDevice, vk::QueueFlags requestedQueues,
-                    const std::vector<VulkanExtension> &requestedExtensions) override;
+        const std::vector<VulkanExtension> &requestedExtensions, const VulkanAllocationConfiguration& memoryAllocationConfiguration) override;
 
     std::vector<const char *> GetRequiredOrSupportedExtensionNames() const override;
     bool IsExtensionSupported(const char *extensionName) const override;
     bool IsExtensionSupported(VulkanExtension::EncodingType extensionEncoding) const override;
     uint32_t GetApiVersion() const override;
-    [[nodiscard]] vk::PhysicalDeviceMemoryProperties GetDeviceMemoryProperties() const override;
     [[nodiscard]] vk::raii::Device& GetInternalDevice() override;
 
 private:
     IDeviceFeaturesAssembler* m_deviceFeaturesAssembler = nullptr;
+    IVulkanDeviceMemoryProviderFactory* m_vulkanDeviceMemoryProviderFactory = nullptr;
 
     vk::raii::PhysicalDevice m_physicalDevice = nullptr;
     vk::raii::Device m_device = nullptr;
@@ -40,13 +42,13 @@ private:
     std::unordered_map<VulkanExtension::EncodingType, VulkanExtension> m_extensions;
     std::unordered_map<DeviceFeatureType, DeviceFeature> m_features;
 
-    uint32_t m_apiVersion = 0;
+    IVulkanDeviceMemoryProvider* m_memoryProvider = nullptr;
 
-    vk::PhysicalDeviceMemoryProperties m_deviceMemoryProperties;
+    uint32_t m_apiVersion = 0;
 
     std::vector<vk::DeviceQueueCreateInfo> InitializeDeviceQueues(vk::QueueFlags requestedQueues);
     void FilterExtensions(const std::vector<VulkanExtension> &requestedExtensions);
     DeviceFeaturesAssembleData InitializeDeviceFeatures();
     void ObtainQueues();
-    void InitializeMemoryProperties();
+    void InitializeMemoryProvider(const VulkanAllocationConfiguration& memoryAllocationConfiguration);
 };

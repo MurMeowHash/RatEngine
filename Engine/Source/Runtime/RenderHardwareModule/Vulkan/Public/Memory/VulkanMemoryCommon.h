@@ -7,7 +7,7 @@
 namespace Rat::VulkanMemoryCommon {
     VulkanDeviceMemory AllocateDeviceMemory(const vk::raii::Device& device, vk::DeviceSize memSize, uint32_t memoryTypeIndex,
         VkMemoryDedicatedAllocateInfo* dedicatedAllocationInfo = nullptr);
-    void FreeDeviceMemory(const vk::raii::Device& device, const VulkanDeviceMemory& memory);
+    void FreeDeviceMemory(const vk::raii::Device& device, VulkanDeviceMemory& memory);
     VulkanDeviceMemory AllocateDedicatedImageMemory(const vk::raii::Device& device, const vk::raii::Image& image, uint32_t memoryTypeIndex);
     VulkanDeviceMemory AllocateDedicatedBufferMemory(const vk::raii::Device& device, const vk::raii::Buffer& buffer, uint32_t memoryTypeIndex);
 };

@@ -2,9 +2,8 @@
 #include "DiContainer.h"
 #include "VulkanDevice.h"
 
-VulkanDeviceFactory::VulkanDeviceFactory(IVulkanExtensionsAssembler* vulkanExtensionsAssembler, IDeviceFeaturesAssembler* deviceFeaturesAssembler,
-                                         const DiContainer* diContainer)
-: m_vulkanExtensionsAssembler(vulkanExtensionsAssembler), m_deviceFeaturesAssembler(deviceFeaturesAssembler), m_diContainer(diContainer) { }
+VulkanDeviceFactory::VulkanDeviceFactory(IVulkanExtensionsAssembler* vulkanExtensionsAssembler, DiContainer* diContainer)
+: m_vulkanExtensionsAssembler(vulkanExtensionsAssembler), m_diContainer(diContainer) { }
 
 IVulkanDevice *VulkanDeviceFactory::CreateVulkanDevice(const vk::raii::PhysicalDevice &physicalDevice, vk::QueueFlags requestedQueues,
                                                        bool* initializationSucceeded) {

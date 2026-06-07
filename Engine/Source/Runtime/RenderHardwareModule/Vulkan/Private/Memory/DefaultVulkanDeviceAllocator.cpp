@@ -25,12 +25,13 @@ VulkanDeviceMemory DefaultVulkanDeviceAllocator::AllocateMemory(vk::DeviceSize m
     if (!allocatedPageMemory.IsValid())
         return allocatedMemory;
 
-    VulkanMemoryPage& allocatedPage = m_memoryPool[allocationTierIndex].emplace_back(allocatedPageMemory);
-    allocatedPage.TryAllocateFromRange(memorySize, alignment, allocatedPageMemory);
-    return allocatedPageMemory;
+    VulkanMemoryPage& allocatedPage = m_memoryPool[allocationTierIndex].emplace_back(std::move(allocatedPageMemory));
+    VulkanDeviceMemory memoryFromPage;
+    allocatedPage.TryAllocateFromRange(memorySize, alignment, memoryFromPage);
+    return memoryFromPage;
 }
 
-void DefaultVulkanDeviceAllocator::FreeMemory(const VulkanDeviceMemory& memory) {
+void DefaultVulkanDeviceAllocator::FreeMemory(VulkanDeviceMemory& memory) {
     if (memory.GetMemoryTypeIndex() != m_memoryTypeIndex)
         return;
 
@@ -39,7 +40,7 @@ void DefaultVulkanDeviceAllocator::FreeMemory(const VulkanDeviceMemory& memory) 
         return;
 
     auto pageToReturnMemory = std::ranges::find_if(m_memoryPool[allocationTierIndex],
-        [&memory](const VulkanMemoryPage& memoryPage) {
+        [&memory](VulkanMemoryPage& memoryPage) {
             return memoryPage.GetPageMemory().GetHandle() == memory.GetHandle();
     });
 
@@ -49,18 +50,13 @@ void DefaultVulkanDeviceAllocator::FreeMemory(const VulkanDeviceMemory& memory) 
     pageToReturnMemory->ReturnMemory(memory);
 }
 
-void DefaultVulkanDeviceAllocator::InvalidateAllMemory() {
+void DefaultVulkanDeviceAllocator::FreeAllMemory(bool deallocate) {
     for (std::vector<VulkanMemoryPage>& memoryPages : m_memoryPool) {
         for (VulkanMemoryPage& page: memoryPages) {
-            page.InvalidateMemory();
-        }
-    }
-}
-
-void DefaultVulkanDeviceAllocator::FreeAllMemory() {
-    for (std::vector<VulkanMemoryPage>& memoryPages : m_memoryPool) {
-        for (const VulkanMemoryPage& page: memoryPages) {
-            Rat::VulkanMemoryCommon::FreeDeviceMemory(m_device, page.GetPageMemory());
+            if (deallocate)
+                Rat::VulkanMemoryCommon::FreeDeviceMemory(m_device, page.GetPageMemory());
+            else
+                page.InvalidateMemory();
         }
 
         memoryPages.clear();

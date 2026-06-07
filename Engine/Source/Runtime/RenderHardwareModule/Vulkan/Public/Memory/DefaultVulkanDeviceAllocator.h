@@ -11,9 +11,8 @@ public:
     DefaultVulkanDeviceAllocator(vk::raii::Device& device, const VulkanAllocationConfiguration& allocationConfiguration, uint32_t memoryTypeIndex);
 
     VulkanDeviceMemory AllocateMemory(vk::DeviceSize memorySize, vk::DeviceSize alignment) override;
-    void FreeMemory(const VulkanDeviceMemory& memory) override;
-    void InvalidateAllMemory() override;
-    void FreeAllMemory() override;
+    void FreeMemory(VulkanDeviceMemory& memory) override;
+    void FreeAllMemory(bool deallocate) override;
 
 private:
     vk::raii::Device& m_device;

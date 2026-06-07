@@ -1,10 +1,11 @@
 #include "VulkanDevice.h"
+#include "Memory/VulkanDeviceMemoryProvider.h"
 
-VulkanDevice::VulkanDevice(IDeviceFeaturesAssembler *deviceFeaturesAssembler)
-: m_deviceFeaturesAssembler(deviceFeaturesAssembler) { }
+VulkanDevice::VulkanDevice(IDeviceFeaturesAssembler *deviceFeaturesAssembler, IVulkanDeviceMemoryProviderFactory* vulkanDeviceMemoryProviderFactory)
+: m_deviceFeaturesAssembler(deviceFeaturesAssembler), m_vulkanDeviceMemoryProviderFactory(vulkanDeviceMemoryProviderFactory) { }
 
 bool VulkanDevice::Initialize(const vk::raii::PhysicalDevice& physicalDevice, vk::QueueFlags requestedQueues,
-                              const std::vector<VulkanExtension> &requestedExtensions) {
+    const std::vector<VulkanExtension> &requestedExtensions, const VulkanAllocationConfiguration& memoryAllocationConfiguration) {
     m_physicalDevice = physicalDevice;
     m_apiVersion = m_physicalDevice.getProperties2().properties.apiVersion;
 
@@ -26,7 +27,7 @@ bool VulkanDevice::Initialize(const vk::raii::PhysicalDevice& physicalDevice, vk
 
     m_device = std::move(deviceWrapper.value);
     ObtainQueues();
-    InitializeMemoryProperties();
+    InitializeMemoryProvider(memoryAllocationConfiguration);
     return true;
 }
 
@@ -87,10 +88,6 @@ uint32_t VulkanDevice::GetApiVersion() const {
     return m_apiVersion;
 }
 
-vk::PhysicalDeviceMemoryProperties VulkanDevice::GetDeviceMemoryProperties() const {
-    return m_deviceMemoryProperties;
-}
-
 vk::raii::Device & VulkanDevice::GetInternalDevice() {
     return m_device;
 }
@@ -119,6 +116,6 @@ void VulkanDevice::ObtainQueues() {
     }
 }
 
-void VulkanDevice::InitializeMemoryProperties() {
-    m_deviceMemoryProperties = m_physicalDevice.getMemoryProperties();
+void VulkanDevice::InitializeMemoryProvider(const VulkanAllocationConfiguration &memoryAllocationConfiguration) {
+
 }

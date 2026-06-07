@@ -1,8 +1,7 @@
 #include "../../Public/Memory/VulkanDeviceMemory.h"
 
 VulkanDeviceMemory::VulkanDeviceMemory() {
-    VulkanDeviceMemoryInitializer initializer{nullptr, 0, 0, 0, 0};
-    InitializeMemory(initializer);
+    InvalidateMemory();
 }
 
 VulkanDeviceMemory::VulkanDeviceMemory(const VulkanDeviceMemoryInitializer& memoryInitializer) {
@@ -15,6 +14,7 @@ void VulkanDeviceMemory::InitializeMemory(const VulkanDeviceMemoryInitializer& m
     m_alignmentOffset = memoryInitializer.m_alignmentOffset;
     m_size = memoryInitializer.m_size;
     m_memoryTypeIndex = memoryInitializer.m_memoryTypeIndex;
+    m_dedicated = memoryInitializer.m_dedicated;
 }
 
 uint32_t VulkanDeviceMemory::GetSize() const {
@@ -47,4 +47,18 @@ vk::DeviceSize VulkanDeviceMemory::GetMemoryOccupationOffset() const {
 
 bool VulkanDeviceMemory::IsValid() const {
     return m_handle != nullptr;
+}
+
+bool VulkanDeviceMemory::IsDedicated() const {
+    return m_dedicated;
+}
+
+RuntimeAttributes& VulkanDeviceMemory::GetMemoryAttributes() {
+    return m_memoryAttributes;
+}
+
+void VulkanDeviceMemory::InvalidateMemory() {
+    VulkanDeviceMemoryInitializer initializer{nullptr, 0, 0, 0, 0, false};
+    InitializeMemory(initializer);
+    m_memoryAttributes.Invalidate();
 }

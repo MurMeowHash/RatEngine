@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
+#include "RuntimeAttributes.h"
 
 struct VulkanDeviceMemoryInitializer {
     vk::DeviceMemory m_handle;
@@ -8,6 +9,7 @@ struct VulkanDeviceMemoryInitializer {
     vk::DeviceSize m_alignmentOffset;
     uint32_t m_size;
     uint32_t m_memoryTypeIndex;
+    bool m_dedicated;
 };
 
 class VulkanDeviceMemory {
@@ -25,6 +27,9 @@ public:
     [[nodiscard]] vk::DeviceSize GetAlignmentOffset() const;
     [[nodiscard]] vk::DeviceSize GetMemoryOccupationOffset() const;
     [[nodiscard]] bool IsValid() const;
+    [[nodiscard]] bool IsDedicated() const;
+    [[nodiscard]] RuntimeAttributes& GetMemoryAttributes();
+    void InvalidateMemory();
 
 private:
     vk::DeviceMemory m_handle;
@@ -32,4 +37,6 @@ private:
     vk::DeviceSize m_alignmentOffset;
     uint32_t m_size;
     uint32_t m_memoryTypeIndex;
+    bool m_dedicated;
+    RuntimeAttributes m_memoryAttributes;
 };

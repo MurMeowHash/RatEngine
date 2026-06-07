@@ -19,11 +19,14 @@ namespace Rat::VulkanMemoryCommon {
         memoryInitializer.m_alignmentOffset = 0;
         memoryInitializer.m_size = memSize;
         memoryInitializer.m_memoryTypeIndex = memoryTypeIndex;
+        memoryInitializer.m_dedicated = dedicatedAllocationInfo != nullptr
+            && (dedicatedAllocationInfo->image != nullptr || dedicatedAllocationInfo->buffer != nullptr);
         return VulkanDeviceMemory(memoryInitializer);
     }
 
-    void FreeDeviceMemory(const vk::raii::Device& device, const VulkanDeviceMemory &memory) {
+    void FreeDeviceMemory(const vk::raii::Device& device, VulkanDeviceMemory &memory) {
         vkFreeMemory(*device, memory.GetHandle(), nullptr);
+        memory.InvalidateMemory();
     }
 
     VulkanDeviceMemory AllocateDedicatedImageMemory(const vk::raii::Device &device, const vk::raii::Image& image,

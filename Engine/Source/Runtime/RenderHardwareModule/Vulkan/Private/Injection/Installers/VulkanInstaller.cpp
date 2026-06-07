@@ -13,6 +13,7 @@
 #include "Features/DeviceFeaturesAssembler.h"
 #include "IVulkanDeviceFactory.h"
 #include "VulkanDeviceFactory.h"
+#include "Memory/VulkanDeviceMemoryProviderFactory.h"
 
 #if defined(__WIN64)
 #include "Extensions/VulkanWindowsExtensionsProvider.h"
@@ -34,4 +35,5 @@ void VulkanInstaller::InstallBindings(DiContainer* diContainer) const {
     diContainer->Bind<DeviceFeaturesAssembler>().To<IDeviceFeaturesAssembler>().WithArguments<>();
 
     diContainer->Bind<VulkanDeviceFactory>().To<IVulkanDeviceFactory>().WithArguments<IVulkanExtensionsAssembler, IDeviceFeaturesAssembler, DiContainer>();
+    diContainer->Bind<VulkanDeviceMemoryProviderFactory>().To<IVulkanDeviceMemoryProviderFactory>().WithArguments<>();
 }

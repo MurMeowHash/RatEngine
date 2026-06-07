@@ -32,6 +32,13 @@ target_sources(RenderHardwareModule.Vulkan
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/VulkanAllocationConfiguration.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/IVulkanDedicatedDeviceAllocator.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/DefaultVulkanDedicatedDeviceAllocator.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/IVulkanDeviceMemoryProvider.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/VulkanDeviceMemoryProvider.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/VulkanResourceTilingType.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/VulkanDeviceAllocatorBundle.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/VulkanMemoryProviderType.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/IVulkanDeviceMemoryProviderFactory.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Memory/VulkanDeviceMemoryProviderFactory.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/VulkanRenderProvider.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Extensions/VulkanExtensionsAssembler.cpp
@@ -50,6 +57,9 @@ target_sources(RenderHardwareModule.Vulkan
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Memory/DefaultVulkanDeviceAllocator.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Memory/VulkanMemoryPage.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Memory/DefaultVulkanDedicatedDeviceAllocator.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Memory/VulkanDeviceMemoryProvider.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Memory/VulkanDeviceAllocatorBundle.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Memory/VulkanDeviceMemoryProviderFactory.cpp
 )
 
 
@@ -77,9 +87,10 @@ target_include_directories(RenderHardwareModule.Vulkan
 target_link_libraries(RenderHardwareModule.Vulkan
         PUBLIC
         vulkan
+        CoreModule.Common
+        MemoryModule
         PRIVATE
         RenderHardwareModule.Core
-        CoreModule.Common
         InjectionModule.Core
         DebugModule
         MathModule

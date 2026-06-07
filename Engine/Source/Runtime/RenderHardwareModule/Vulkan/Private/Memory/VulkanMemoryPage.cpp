@@ -1,8 +1,15 @@
 #include "../Public/Memory/VulkanMemoryPage.h"
 #include <algorithm>
+#include "MemoryRange.h"
 
-VulkanMemoryPage::VulkanMemoryPage(const VulkanDeviceMemory& memory)
-: m_memory(memory) {
+struct VulkanMemoryRangeComparator {
+    bool operator()(const VulkanMemoryRange& lhs, const VulkanMemoryRange& rhs) const {
+        return lhs.GetBegin() < rhs.GetBegin();
+    }
+};
+
+VulkanMemoryPage::VulkanMemoryPage(VulkanDeviceMemory&& memory)
+: m_memory(std::move(memory)) {
     InvalidateMemory();
 }
 
@@ -31,7 +38,7 @@ bool VulkanMemoryPage::TryAllocateFromRange(vk::DeviceSize requiredMemorySize, v
     return true;
 }
 
-void VulkanMemoryPage::ReturnMemory(const VulkanDeviceMemory &memory) {
+void VulkanMemoryPage::ReturnMemory(VulkanDeviceMemory &memory) {
     vk::DeviceSize occupationOffset = memory.GetMemoryOccupationOffset();
     VulkanMemoryRange returnedRange = VulkanMemoryRange(occupationOffset, occupationOffset + memory.GetAllocationSize());
     auto returnedRangePosInterator = std::ranges::lower_bound(m_freeRanges, returnedRange, VulkanMemoryRangeComparator());
@@ -42,9 +49,11 @@ void VulkanMemoryPage::ReturnMemory(const VulkanDeviceMemory &memory) {
     std::erase_if(m_freeRanges, [](const VulkanMemoryRange& memoryRange) {
         return memoryRange.IsCoalesced();
     });
+
+    memory.InvalidateMemory();
 }
 
-VulkanDeviceMemory VulkanMemoryPage::GetPageMemory() const {
+VulkanDeviceMemory& VulkanMemoryPage::GetPageMemory() {
     return m_memory;
 }
 
