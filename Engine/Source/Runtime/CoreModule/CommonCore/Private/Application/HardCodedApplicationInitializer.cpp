@@ -6,5 +6,4 @@ HardCodedApplicationInitializer::HardCodedApplicationInitializer(Application *ap
 void HardCodedApplicationInitializer::Initialize() {
     m_application->SetEngineName("RatEngine");
     m_application->SetEngineVersion(ApplicationVersion{1, 0, 0});
-    m_application->SetMinSupportedVulkanVersion(VulkanApiVersion(0, 1, 2, 0));
 }

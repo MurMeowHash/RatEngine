@@ -17,6 +17,7 @@ target_sources(CoreModule.Common
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Identification/IIdentifierGenerator.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Identification/DefaultIdentifierGenerator.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/RuntimeAttributes.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/PlatformInteractors/PlatformRuntimeData.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ProjectSettings/ProjectSettings.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ProjectSettings/HardCodedProjectSettingsInitializer.cpp

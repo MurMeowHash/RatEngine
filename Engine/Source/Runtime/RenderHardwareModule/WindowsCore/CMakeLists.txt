@@ -2,11 +2,11 @@ add_library(RenderHardwareModule.Core.Windows STATIC)
 
 target_sources(RenderHardwareModule.Core.Windows
         PUBLIC
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/WindowsRenderProviderFactory.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/WindowsRenderPriorityQueue.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Public/WindowsRenderHardwareProviderFactory.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/WindowsRenderHardwareDependencyContextFactory.h
         PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/Private/WindowsRenderProviderFactory.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/Private/WindowsRenderPriorityQueue.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Private/WindowsRenderHardwareProviderFactory.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/WindowsRenderHardwareDependencyContextFactory.cpp
 )
 
 target_include_directories(RenderHardwareModule.Core.Windows
@@ -19,9 +19,11 @@ target_include_directories(RenderHardwareModule.Core.Windows
 target_link_libraries(RenderHardwareModule.Core.Windows
         PRIVATE
         RenderHardwareModule.Core
-        RenderHardwareModule.Vulkan
+        RenderHardwareModule.Vulkan.Injection
+        RenderHardwareModule.Vulkan.Core
         InjectionModule.Core
         CoreModule.Common
+        RenderHardwareModule.Installation
 )
 
 if(MSVC)

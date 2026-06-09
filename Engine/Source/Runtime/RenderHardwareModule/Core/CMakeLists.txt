@@ -2,17 +2,15 @@ add_library(RenderHardwareModule.Core STATIC)
 
 target_sources(RenderHardwareModule.Core
         PUBLIC
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IRenderProvider.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderProviderExecResult.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IRenderProviderFactory.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IRenderHardwareProvider.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderHardwareProviderExecResult.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IRenderHardwareProviderFactory.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderingApi.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderProviderAccessor.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IRenderProviderInitializer.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderProviderInitializer.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/IRenderPriorityQueue.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderHardwareRuntimeData.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Configurations/RenderApi/RenderApiPriorityConfiguration.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Configurations/RenderApi/RenderApiConfiguration.h
         PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/Private/RenderProviderInitializer.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/Private/RenderProviderExecResult.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/RenderHardwareProviderExecResult.cpp
 )
 
 target_include_directories(RenderHardwareModule.Core
@@ -23,6 +21,8 @@ target_include_directories(RenderHardwareModule.Core
 )
 
 target_link_libraries(RenderHardwareModule.Core
+        PUBLIC
+        CoreModule.Common
 )
 
 if(MSVC)

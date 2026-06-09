@@ -1,5 +1,7 @@
 #pragma once
 
+class DiContainer;
+
 class IDependencyContext {
 public:
     virtual void OpenContext() = 0;

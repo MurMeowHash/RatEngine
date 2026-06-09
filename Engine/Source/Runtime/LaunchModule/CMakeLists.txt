@@ -4,7 +4,8 @@ add_executable(LaunchModule
 
 target_link_libraries(LaunchModule
         PRIVATE
-        EngineLoopModule
+        EngineLoopModule.Core
+        EngineLoopModule.Engine
         CoreModule.Common
 )
 

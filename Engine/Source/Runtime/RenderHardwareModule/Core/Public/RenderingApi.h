@@ -2,5 +2,5 @@
 
 enum class RenderingApi {
     None = 0,
-    Vulkan = 1
+    Vulkan = 1,
 };

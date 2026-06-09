@@ -2,9 +2,14 @@ add_library(RenderHardwareModule.Installation STATIC)
 
 target_sources(RenderHardwareModule.Installation
         PUBLIC
-            ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderProviderModuleInstaller.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderHardwareEngineModuleInstaller.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderHardwareModuleInstaller.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Public/RenderHardwareDependencyContext.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Public/IRenderHardwareDependencyContextFactory.h
         PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/Private/RenderProviderModuleInstaller.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Private/RenderHardwareEngineModuleInstaller.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Private/RenderHardwareModuleInstaller.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Private/RenderHardwareDependencyContext.cpp
 )
 
 target_include_directories(RenderHardwareModule.Installation

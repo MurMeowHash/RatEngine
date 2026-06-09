@@ -16,12 +16,7 @@ struct GeneralSettings {
     int m_versionPatch;
 };
 
-struct VulkanRenderingSettings {
-    std::vector<const char*> m_validationLayersNames;
-};
-
 struct RenderingSettings {
-    VulkanRenderingSettings m_vulkanRenderingSettings;
     int m_maxFrameLag;
 };
 
