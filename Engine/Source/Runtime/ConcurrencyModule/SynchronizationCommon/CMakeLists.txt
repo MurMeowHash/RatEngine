@@ -20,7 +20,7 @@ if(WIN32)
             ConcurrencyModule.Windows
     )
 else()
-    target_link_libraries(RenderHardwareModule.SynchronizationCommon
+    target_link_libraries(RHLModule.SynchronizationCommon
             INTERFACE
             ConcurrencyModule.Mock
     )

@@ -21,7 +21,7 @@ target_link_libraries(InjectionModule.Engine
         EventBusModule.Engine
         CoreModule.Installation
         WindowProviderModule.Installation
-        RenderHardwareModule.Installation
+        RHLModule.Installation
         ConcurrencyModule.Installation
         RenderModule.Core
 )

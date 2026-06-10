@@ -26,14 +26,14 @@ target_link_libraries(EngineLoopModule.Engine
         DebugModule
         CoreModule.Common
         WindowProviderModule.Core
-        RenderHardwareModule.Core
+        RHLModule.Core
         ConcurrencyModule.Core
         ConcurrencyModule.CommandBuffers
         RenderModule.Threading
         ConcurrencyModule.WorldAbstraction
         RenderModule.Core
-        RenderHardwareModule.Lifecycle
-        RenderHardwareModule.Installation
+        RHLModule.Lifecycle
+        RHLModule.Installation
 )
 
 if(MSVC)

@@ -18,13 +18,13 @@
 #include "ThreadSearchService.h"
 #include "IRendererFactory.h"
 #include "EngineLoopGlobals.h"
-#include "RenderHardwareLoop.h"
+#include "RHLLoop.h"
 #include "Configurations/RenderApi/RenderApiConfiguration.h"
-#include "IRenderHardwareProviderFactory.h"
-#include "IRenderHardwareDependencyContextFactory.h"
-#include "RenderHardwareRuntimeData.h"
+#include "IRHLProviderFactory.h"
+#include "IRHLDependencyContextFactory.h"
+#include "RHLRuntimeData.h"
 
-using Rat::EngineLoops::g_renderHardwareLoop;
+using Rat::EngineLoops::g_rhlLoop;
 
 CoreLoop::CoreLoop() {
     m_engineDependencyContext = new EngineDependencyContext(nullptr);
@@ -50,8 +50,8 @@ Rat::Core::ErrorSeverity CoreLoop::Initialize() {
     if(errorSeverity == Rat::Core::ErrorSeverity::Fatal)
         return errorSeverity;
 
-    CreateRenderHardwareLoop();
-    errorSeverity = g_renderHardwareLoop->Initialize();
+    CreateRHLLoop();
+    errorSeverity = g_rhlLoop->Initialize();
     if(errorSeverity == Rat::Core::ErrorSeverity::Fatal)
         return errorSeverity;
 
@@ -69,7 +69,7 @@ Rat::Core::ErrorSeverity CoreLoop::Tick() {
     m_engineCoreEventBus->Publish(EngineCoreEvents::EngineBeginFrameEvent(runningThreadId));
 
     m_windowProvider->Tick();
-    errorSeverity = g_renderHardwareLoop->Tick();
+    errorSeverity = g_rhlLoop->Tick();
     if(errorSeverity == Rat::Core::ErrorSeverity::Fatal)
         return errorSeverity;
 
@@ -88,7 +88,7 @@ Rat::Core::ErrorSeverity CoreLoop::Tick() {
 Rat::Core::ErrorSeverity CoreLoop::Exit() {
     Rat::Core::ErrorSeverity errorSeverity = Rat::Core::ErrorSeverity::Success;
 
-    errorSeverity = g_renderHardwareLoop->Exit();
+    errorSeverity = g_rhlLoop->Exit();
     m_threadRunner->StopThreads();
     m_windowProvider->Shutdown();
     m_engineDependencyContext->CloseContext();
@@ -148,10 +148,10 @@ void CoreLoop::InitializeThreads() {
     renderThread->Execute();
 }
 
-void CoreLoop::CreateRenderHardwareLoop() {
-    IEngineLoop* renderHardwareLoop = m_engineDependencyContext->GetContainer()->Instantiate<RenderHardwareLoop>()
-    .WithArguments<DiContainer, IRenderHardwareDependencyContextFactory, ILogger, RenderHardwareRuntimeData, RenderApiConfiguration,
+void CoreLoop::CreateRHLLoop() {
+    IEngineLoop* rhlLoop = m_engineDependencyContext->GetContainer()->Instantiate<RHLLoop>()
+    .WithArguments<DiContainer, IRHLDependencyContextFactory, ILogger, RHLRuntimeData, RenderApiConfiguration,
         IPlatformInteractor>();
 
-    g_renderHardwareLoop = std::shared_ptr<IEngineLoop>(renderHardwareLoop);
+    g_rhlLoop = std::shared_ptr<IEngineLoop>(rhlLoop);
 }

@@ -42,5 +42,5 @@ private:
     void AcquireNeededDependencies();
     Rat::Core::ErrorSeverity CreateMainWindow();
     void InitializeThreads();
-    void CreateRenderHardwareLoop();
+    void CreateRHLLoop();
 };

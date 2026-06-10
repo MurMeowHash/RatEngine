@@ -30,7 +30,7 @@ if(WIN32)
             ConcurrencyModule.Windows
     )
 else()
-    target_link_libraries(RenderHardwareModule.Installation
+    target_link_libraries(RHLModule.Installation
             PRIVATE
             ConcurrencyModule.Mock
     )
