@@ -1,4 +1,4 @@
-# RatEngine
+# Rat Engine
 A modern, high-performance render engine, focused on optimized realtime rendering and extensible engine architecture. Current implementation targets Vulkan 1.2+ and Windows.
 
 ## Features
