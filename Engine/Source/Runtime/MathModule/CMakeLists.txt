@@ -4,6 +4,8 @@ target_sources(MathModule
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Transform.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Range.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Vectors/Vector2D.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Vectors/Vector3D.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Transform.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Range.cpp
@@ -17,7 +19,7 @@ target_include_directories(MathModule
 )
 
 target_link_libraries(MathModule
-        PRIVATE
+        PUBLIC
         glm
 )
 

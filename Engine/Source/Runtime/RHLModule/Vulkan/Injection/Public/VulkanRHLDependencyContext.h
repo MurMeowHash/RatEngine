@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../Installation/Public/RHLDependencyContext.h"
+#include "RHLDependencyContext.h"
 
 class VulkanRHLDependencyContext : public RHLDependencyContext {
 public:

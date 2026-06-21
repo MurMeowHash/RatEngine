@@ -14,6 +14,8 @@
 #include "Extensions/IVulkanExtensionsValidator.h"
 #include "Extensions/VulkanExtensionsValidator.h"
 #include "Instance/VulkanInstanceFactory.h"
+#include "Mapping/RatVulkanMapper.h"
+#include "Mapping/RatVulkanMapperInitializer.h"
 #include "PlatformInteractors/IPlatformInteractor.h"
 
 void VulkanHardwareInstaller::InstallBindings(DiContainer* diContainer) const {
@@ -25,4 +27,6 @@ void VulkanHardwareInstaller::InstallBindings(DiContainer* diContainer) const {
     diContainer->Bind<VulkanDeviceMemoryProviderFactory>().To<IVulkanDeviceMemoryProviderFactory>().WithArguments<VulkanAllocationConfiguration, IPlatformInteractor>();
     diContainer->Bind<VulkanExtensionsValidator>().To<IVulkanExtensionsValidator>().WithArguments<>();
     diContainer->Bind<VulkanInstanceFactory>().To<IVulkanInstanceFactory>().WithArguments<DiContainer, VulkanInstanceConfiguration,VulkanExtensionsConfiguration>();
+    diContainer->Bind<RatVulkanMapper>().To<RatVulkanMapper>().WithArguments<>();
+    diContainer->Bind<RatVulkanMapperInitializer>().To<RatVulkanMapperInitializer>().WithArguments<RatVulkanMapper>();
 }

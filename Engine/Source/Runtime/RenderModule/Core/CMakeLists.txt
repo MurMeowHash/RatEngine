@@ -26,6 +26,7 @@ target_link_libraries(RenderModule.Core
         CoreModule.Common
         InjectionModule.Core
         DebugModule
+        RHLModule.Core
 )
 
 if(MSVC)

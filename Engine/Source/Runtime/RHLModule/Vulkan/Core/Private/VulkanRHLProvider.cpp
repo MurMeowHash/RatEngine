@@ -2,15 +2,18 @@
 #include "BuildSettings/BuildSettings.h"
 #include "CoreUtils.h"
 #include "VulkanDevice.h"
+#include "Resources/VulkanRHLTexture.h"
 
 using Rat::Core::Flags::operator|=;
 
 VulkanRHLProvider::VulkanRHLProvider(IVulkanInstanceFactory* vulkanInstanceFactory, IVulkanDeviceFactory* vulkanDeviceFactory,
-    IVulkanDeviceProvider* vulkanDeviceProvider, BuildSettings *buildSettings)
+    IVulkanDeviceProvider* vulkanDeviceProvider, BuildSettings *buildSettings, RatVulkanMapperInitializer* ratVulkanMapperInitializer)
 : m_vulkanInstanceFactory(vulkanInstanceFactory), m_vulkanDeviceFactory(vulkanDeviceFactory), m_vulkanDeviceProvider(vulkanDeviceProvider),
-m_buildSettings(buildSettings) { }
+m_buildSettings(buildSettings), m_ratVulkanMapperInitializer(ratVulkanMapperInitializer) { }
 
 bool VulkanRHLProvider::Initialize() {
+    m_ratVulkanMapperInitializer->CreateMapping();
+
     bool instanceInitialized = CreateVulkanInstance();
     if (!instanceInitialized)
         return false;
@@ -20,8 +23,13 @@ bool VulkanRHLProvider::Initialize() {
 }
 
 void VulkanRHLProvider::Shutdown() {
+    m_ratVulkanMapperInitializer->DestroyMapping();
     delete m_vulkanDevice;
     delete m_vulkanInstance;
+}
+
+IRHLTexture* VulkanRHLProvider::CreateTexture(const RHLTextureCreateInfo &createInfo) {
+
 }
 
 bool VulkanRHLProvider::CreateVulkanInstance() {

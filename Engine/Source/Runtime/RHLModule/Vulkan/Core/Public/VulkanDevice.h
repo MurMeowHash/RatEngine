@@ -7,11 +7,6 @@
 #include "Memory/IVulkanDeviceMemoryProvider.h"
 #include "Memory/IVulkanDeviceMemoryProviderFactory.h"
 
-struct VulkanQueueData {
-    uint32_t m_queueIndex;
-    vk::raii::Queue m_queue = nullptr;
-};
-
 struct QueueFlagBitsHash {
     std::size_t operator()(vk::QueueFlagBits bit) const noexcept {
         using Underlying = std::underlying_type_t<vk::QueueFlagBits>;
@@ -28,8 +23,10 @@ public:
     ~VulkanDevice() override;
     [[nodiscard]] bool Initialize(const VulkanDeviceInitializationInfo& initializationInfo) override;
 
-    [[nodiscard]] vk::raii::Device& GetInternalDevice() override;
+    [[nodiscard]] vk::raii::Device& GetHandle() override;
     [[nodiscard]] IVulkanDeviceMemoryProvider* GetMemoryProvider() override;
+    [[nodiscard]] std::vector<VulkanQueueData> GetOperatingQueues() const override;
+    [[nodiscard]] bool TryGetQueue(vk::QueueFlagBits queueFlagBits, VulkanQueueData& outQueueData) const override;
 
 private:
     IVulkanDeviceFeaturesAssembler* m_vulkanDeviceFeaturesAssembler;

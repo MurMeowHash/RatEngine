@@ -2,8 +2,6 @@
 
 #include "DependencyContextBase.h"
 
-enum class RenderingApi;
-
 class RHLDependencyContext : public DependencyContextBase {
 public:
     explicit RHLDependencyContext(const DiContainer* parentContainer = nullptr);

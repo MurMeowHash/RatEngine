@@ -74,12 +74,31 @@ std::vector<vk::DeviceQueueCreateInfo> VulkanDevice::InitializeDeviceQueues(vk::
     return queueCreateInfos;
 }
 
-vk::raii::Device & VulkanDevice::GetInternalDevice() {
+vk::raii::Device & VulkanDevice::GetHandle() {
     return m_device;
 }
 
 IVulkanDeviceMemoryProvider* VulkanDevice::GetMemoryProvider() {
     return m_memoryProvider;
+}
+
+std::vector<VulkanQueueData> VulkanDevice::GetOperatingQueues() const {
+    std::vector<VulkanQueueData> queues;
+    queues.reserve(m_deviceQueues.size());
+    for (const std::pair<const vk::QueueFlagBits, VulkanQueueData>& queue : m_deviceQueues) {
+        queues.emplace_back(queue.second);
+    }
+
+    return queues;
+}
+
+bool VulkanDevice::TryGetQueue(vk::QueueFlagBits queueFlagBits, VulkanQueueData &outQueueData) const {
+    auto queueIterator = m_deviceQueues.find(queueFlagBits);
+    if (queueIterator == m_deviceQueues.end())
+        return false;
+
+    outQueueData = queueIterator->second;
+    return true;
 }
 
 void VulkanDevice::ObtainQueues() {

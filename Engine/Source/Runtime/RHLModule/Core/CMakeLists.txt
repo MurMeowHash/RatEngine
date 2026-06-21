@@ -9,6 +9,8 @@ target_sources(RHLModule.Core
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/RHLRuntimeData.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Configurations/RenderApi/RenderApiPriorityConfiguration.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Configurations/RenderApi/RenderApiConfiguration.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Resources/IRHLTexture.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Resources/RHLTextureGlobals.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/RHLProviderExecResult.cpp
 )
@@ -23,6 +25,7 @@ target_include_directories(RHLModule.Core
 target_link_libraries(RHLModule.Core
         PUBLIC
         CoreModule.Common
+        MathModule
 )
 
 if(MSVC)

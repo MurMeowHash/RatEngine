@@ -41,6 +41,7 @@ target_sources(RHLModule.Vulkan.Core
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Configurations/Device/VulkanAllocationPreset.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Configurations/Device/VulkanAllocationConfiguration.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Configurations/Device/VulkanDeviceConfiguration.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Configurations/Resources/VulkanResourcesConfiguration.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Instance/IVulkanInstance.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Instance/VulkanInstance.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Instance/IVulkanInstanceFactory.h
@@ -48,6 +49,12 @@ target_sources(RHLModule.Vulkan.Core
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Entity/IVulkanVersionable.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Entity/VulkanEntity.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Entity/IVulkanEntity.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Resources/IVulkanRHLTexture.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Resources/VulkanRHLTexture.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Resources/VulkanResourceType.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Mapping/RatVulkanMapper.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Mapping/RatVulkanMapperInitializer.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Mapping/ResourceMapping.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/VulkanRHLProvider.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ValidationLayers/VulkanLayersValidator.cpp
@@ -71,6 +78,8 @@ target_sources(RHLModule.Vulkan.Core
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Instance/VulkanInstance.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Instance/VulkanInstanceFactory.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Entity/VulkanEntity.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Resources/VulkanRHLTexture.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Mapping/RatVulkanMapperInitializer.cpp
 )
 
 target_include_directories(RHLModule.Vulkan.Core

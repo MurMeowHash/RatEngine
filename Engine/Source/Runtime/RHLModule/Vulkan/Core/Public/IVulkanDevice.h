@@ -8,6 +8,11 @@
 #include "Configurations/Device/VulkanAllocationPreset.h"
 #include "Memory/VulkanMemoryProviderType.h"
 
+struct VulkanQueueData {
+    uint32_t m_queueIndex;
+    vk::raii::Queue m_queue = nullptr;
+};
+
 struct VulkanDeviceInitializationInfo {
     vk::raii::PhysicalDevice& m_physicalDevice;
     vk::QueueFlags m_requestedQueues;
@@ -19,7 +24,9 @@ struct VulkanDeviceInitializationInfo {
 class IVulkanDevice {
 public:
     [[nodiscard]] virtual bool Initialize(const VulkanDeviceInitializationInfo& initializationInfo) = 0;
-    [[nodiscard]] virtual vk::raii::Device& GetInternalDevice() = 0;
+    [[nodiscard]] virtual vk::raii::Device& GetHandle() = 0;
     [[nodiscard]] virtual IVulkanDeviceMemoryProvider* GetMemoryProvider() = 0;
+    [[nodiscard]] virtual std::vector<VulkanQueueData> GetOperatingQueues() const = 0;
+    [[nodiscard]] virtual bool TryGetQueue(vk::QueueFlagBits queueFlagBits, VulkanQueueData& outQueueData) const = 0;
     virtual ~IVulkanDevice() = default;
 };

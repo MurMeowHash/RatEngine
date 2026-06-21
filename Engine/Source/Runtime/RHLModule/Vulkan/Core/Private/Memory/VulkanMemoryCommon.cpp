@@ -46,4 +46,20 @@ namespace Rat::VulkanMemoryCommon {
         vk::MemoryRequirements bufferMemoryRequirements = buffer.getMemoryRequirements();
         return AllocateDeviceMemory(device, bufferMemoryRequirements.size, memoryTypeIndex, &dedicatedMemoryAllocateInfo);
     }
+
+    vk::Result BindImageMemory(const vk::raii::Device &device, const VulkanDeviceMemory &memory, const vk::raii::Image &image) {
+        vk::BindImageMemoryInfo bindImageMemoryInfo;
+        bindImageMemoryInfo.image = *image;
+        bindImageMemoryInfo.memory = memory.GetHandle();
+        bindImageMemoryInfo.memoryOffset = memory.GetOffset();
+        return device.bindImageMemory2(bindImageMemoryInfo);
+    }
+
+    vk::Result BindBufferMemory(const vk::raii::Device &device, const VulkanDeviceMemory &memory, const vk::raii::Buffer &buffer) {
+        vk::BindBufferMemoryInfo bindBufferMemoryInfo;
+        bindBufferMemoryInfo.buffer = *buffer;
+        bindBufferMemoryInfo.memory = memory.GetHandle();
+        bindBufferMemoryInfo.memoryOffset = memory.GetOffset();
+        return device.bindBufferMemory2(bindBufferMemoryInfo);
+    }
 }

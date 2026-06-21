@@ -22,6 +22,7 @@ target_link_libraries(RHLModule.Vulkan.Injection
         PRIVATE
         RHLModule.Lifecycle
         RHLModule.Vulkan.Core
+        RHLModule.Installation
         InjectionModule.Core
         DebugModule
 )

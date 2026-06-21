@@ -11,7 +11,7 @@ IRHLProvider* WindowsRHLProviderFactory::CreateRHLProvider(RenderingApi renderin
         case RenderingApi::Vulkan:
             {
                 IRHLProvider* rhlProvider = m_diContainer->Instantiate<VulkanRHLProvider>()
-                    .WithArguments<IVulkanInstanceFactory, IVulkanDeviceFactory, IVulkanDeviceProvider, BuildSettings>();
+                    .WithArguments<IVulkanInstanceFactory, IVulkanDeviceFactory, IVulkanDeviceProvider, BuildSettings, RatVulkanMapperInitializer>();
 
                 bool initialized = rhlProvider->Initialize();
                 if (initializationSucceeded)
