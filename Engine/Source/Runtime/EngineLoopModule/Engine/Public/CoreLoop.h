@@ -1,0 +1,46 @@
+#pragma once
+
+#include "IEngineLoop.h"
+
+class IWindowProvider;
+class EngineCoreEventBus;
+class ProjectSettings;
+class IProjectSettingsInitializer;
+class ILogger;
+class EngineDependencyContext;
+class IBuildSettingsInitializer;
+class IApplicationInitializer;
+class ThreadRunner;
+class IPlatformInteractor;
+class CommandWriter;
+class ThreadSearchService;
+class IRendererFactory;
+
+class CoreLoop : public IEngineLoop {
+public:
+    explicit CoreLoop();
+    ~CoreLoop() override;
+
+    Rat::Core::ErrorSeverity Initialize() override;
+    Rat::Core::ErrorSeverity Tick() override;
+    Rat::Core::ErrorSeverity Exit() override;
+private:
+    IWindowProvider* m_windowProvider = nullptr;
+    EngineCoreEventBus* m_engineCoreEventBus = nullptr;
+    ProjectSettings* m_projectSettings = nullptr;
+    IProjectSettingsInitializer* m_projectSettingsInitializer = nullptr;
+    ILogger* m_logger = nullptr;
+    EngineDependencyContext* m_engineDependencyContext = nullptr;
+    IBuildSettingsInitializer* m_buildSettingsInitializer = nullptr;
+    IApplicationInitializer* m_applicationInitializer = nullptr;
+    ThreadRunner* m_threadRunner = nullptr;
+    IPlatformInteractor* m_platformInteractor = nullptr;
+    CommandWriter* m_commandWriter = nullptr;
+    ThreadSearchService* m_threadSearchService = nullptr;
+    IRendererFactory* m_rendererFactory = nullptr;
+
+    void AcquireNeededDependencies();
+    Rat::Core::ErrorSeverity CreateMainWindow();
+    void InitializeThreads();
+    void CreateRHLLoop();
+};

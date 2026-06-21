@@ -14,6 +14,14 @@ target_sources(CoreModule.Common
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/Application/HardCodedApplicationInitializer.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/BuildSettings/IBuildSettingsInitializer.h
             ${CMAKE_CURRENT_SOURCE_DIR}/Public/BuildSettings/HardCodedBuildSettingsInitializer.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Identification/IIdentifierGenerator.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Identification/DefaultIdentifierGenerator.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/RuntimeAttributes.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/PlatformInteractors/PlatformRuntimeData.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Mapping/RatSubMapper.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Mapping/RatMapper.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Mapping/IRatMapperInitializer.h
+            ${CMAKE_CURRENT_SOURCE_DIR}/Public/Mapping/RatMapperInitializerBase.h
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ProjectSettings/ProjectSettings.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/ProjectSettings/HardCodedProjectSettingsInitializer.cpp
@@ -22,6 +30,8 @@ target_sources(CoreModule.Common
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/BuildSettings/BuildSettings.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/Application/HardCodedApplicationInitializer.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/Private/BuildSettings/HardCodedBuildSettingsInitializer.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Identification/DefaultIdentifierGenerator.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/Private/Mapping/RatMapperInitializerBase.cpp
 )
 
 target_include_directories(CoreModule.Common
@@ -32,7 +42,7 @@ target_include_directories(CoreModule.Common
 )
 
 target_link_libraries(CoreModule.Common
-
+        PUBLIC MemoryModule
 )
 
 if(MSVC)

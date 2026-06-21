@@ -9,9 +9,7 @@ public:
     void OpenContext() override;
     void CloseContext() override;
 
-    [[nodiscard]] const DiContainer* GetContainer() const override {
-        return m_diContainer;
-    }
+    [[nodiscard]] const DiContainer* GetContainer() const override;
 
     ~DependencyContextBase() override;
 protected:
